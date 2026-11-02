@@ -16,7 +16,7 @@ try:
         gps = f.read()
     comp.html(gps, height=180)
 except:
-    st.info("Add location.html file for Real GPS - Use My Real Location")
+    st.write("Add location.html file for Real GPS - Use My Real Location")
 
 # --- STATE & AREA ---
 state = st.selectbox("State", ["Abuja","Lagos","Kano","Rivers","Kaduna"])
@@ -35,14 +35,23 @@ with t1:
     st.write(f"Welcome to {area}, {state} market - Real Location enabled")
     if os.path.exists(CSV_FILE):
         df = pd.read_csv(CSV_FILE)
-        df_area = df[df["area"].str.contains(area, case=False, na=False) | df["state"].str.contains(state, case=False, na=False)]
-        st.write(f"**{len(df_area)} adverts live for {area}**")
-        st.link_button("📍 View on Google Maps", "https://maps.google.com/?q=" + area.replace(" ", "+"))
+        try:
+            df_area = df[df["area"].str.contains(area, case=False, na=False) | df["state"].str.contains(state, case=False, na=False)]
+            st.write(f"**{len(df_area)} adverts live for {area}**")
+        except:
+            st.write(f"Market ready for {area}")
+    st.link_button("View on Google Maps", "https://maps.google.com/?q=" + area.replace(" ", "+"))
 
 with t2:
     st.subheader("Advertise Here - Post Your Business")
     biz = st.text_input("Business Name", placeholder="e.g. Mama Food Wuse 2")
     what = st.text_input("What you sell", placeholder="e.g. Jollof Rice, iPhone 14")
-    price = st.number_input("Price N", 100, 10000000, 2000)
-    whatsapp = st.text_input("WhatsApp Number", placeholder="e.g. 08012345678")
-    st.caption
+    price = st.number_input("Price N", 100, 10000000, 2002)
+    whatsapp = st.text_input("WhatsApp Number", placeholder="e.g. 08116911722")
+    st.write("Use format 080... we go convert to wa.me automatically")
+    
+    if st.button("Post Advert Now"):
+        if biz and what and whatsapp:
+            wa = whatsapp.strip().replace(" ", "").replace("+", "")
+            if wa.startswith("0"):
+                wa = "234" + wa
