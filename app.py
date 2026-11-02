@@ -1,14 +1,29 @@
 import streamlit as st
 import urllib.parse
 
-st.set_page_config(page_title="Row Economy", layout="centered")
+st.set_page_config(page_title='Row', layout='centered')
 
-if 'ads' not in st.session_state:
-    st.session_state.ads = 0
+WHATSAPP='2348116911722'
 
-WHATSAPP = "2348116911722"
-NUM = "08116911722"
+st.title('Row Economy')
+st.write('Market for Nigeria')
 
-STATES = ["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","FCT Abuja","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara"]
+state=st.selectbox('State',['Abia','Lagos','FCT Abuja','Kano','Rivers','Oyo'],index=2)
+area=st.text_input('Area','Wuse')
 
-st.title("ROW ECONOMY VILLAGE
+tab1,tab2=st.tabs(['Food','Cars'])
+
+with tab1:
+    people=st.number_input('People',1,500,10)
+    meal=st.selectbox('Meal',['Rice','Spaghetti'])
+    total=people*1500
+    st.write(total)
+    txt='Food '+str(people)+' '+area+' '+state
+    link='https://wa.me/'+WHATSAPP+'?text='+urllib.parse.quote(txt)
+    st.link_button('Order',link)
+
+with tab2:
+    st.write('Cars - Need Certificate')
+    car=st.selectbox('Car',['Corolla','Sienna','Hiace'])
+    price=st.number_input('Price',5000,5000000,20000)
+    cert=st.file_uploader('Upload CAC or License
