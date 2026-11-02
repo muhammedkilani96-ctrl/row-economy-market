@@ -4,7 +4,7 @@ import urllib.parse
 W='2348116911722'
 
 st.title('Row')
-st.write('Food Event Cloth Car')
+st.write('Verified Market')
 
 s=st.selectbox('State',['Lagos','Abuja','Kano','Rivers'])
 a=st.text_input('Area','Wuse')
@@ -34,34 +34,49 @@ with t2:
 with t3:
     cl=st.selectbox('Cloth',['Shirt','Native','Hijab'])
     sz=st.selectbox('Size',['M','L','XL'])
-    pr3=st.number_input('Price',1000,20000,5000,key='c')
     txt3='Cloth '+cl+' '+sz+' '+a+' '+s
     q3=urllib.parse.quote(txt3)
     lk3='https://wa.me/'+W+'?text='+q3
     st.link_button('Buy Cloth',lk3)
 
 with t4:
-    st.write('Car Verified Only')
+    st.subheader('Car - Law Protected')
+    st.info('Must upload cert + agree')
+    
     car=st.selectbox('Car',['Corolla','Sienna','Hiace'])
-    pr4=st.number_input('Car Price',5000,5000000,20000,key='car')
-    ct=st.selectbox('Cert',['CAC','License','NIN'])
-    cert=st.file_uploader('cert')
-    if cert:
-        st.success('Cert OK Verified')
-        txt4='Car '+car+' '+ct+' Verified '+a+' '+s
+    chassis=st.text_input('Chassis Number')
+    pr4=st.number_input('Price',5000,5000000,20000,key='car')
+    
+    st.write('Step 1: Upload Cert')
+    ct=st.selectbox('Cert Type',['CAC','License','NIN+Paper'])
+    cert=st.file_uploader('Upload cert')
+    
+    st.write('Step 2: Law Check')
+    agree1=st.checkbox('I confirm car not stolen, papers genuine')
+    agree2=st.checkbox('I agree Row is only marketplace, not owner')
+    agree3=st.checkbox('I agree details go to Police if fake')
+    
+    st.link_button('Check if stolen - Police CMR','https://cmris.npf.gov.ng')
+    
+    if cert and agree1 and agree2 and agree3 and chassis!='':
+        st.success('VERIFIED - Ready to post')
+        txt4='Car '+car+' Chassis '+chassis+' Verified '+a+' '+s
         q4=urllib.parse.quote(txt4)
         lk4='https://wa.me/'+W+'?text='+q4
-        st.link_button('Submit Car',lk4)
+        st.link_button('Submit for Admin Approval',lk4)
+        st.write('Badge: GREEN VERIFIED DEALER')
     else:
-        st.error('Upload cert first')
+        st.error('Complete all: cert + 3 ticks + chassis')
+        st.button('Submit',disabled=True)
 
 with t5:
     st.write('Village Square')
-    st.write('Drum Food')
-    st.write('Calabash Cloth')
-    st.write('Hut Event')
-    st.write('Garage Car Verified')
+    st.write('Garage - Verified Only')
     vid=st.file_uploader('video')
     if vid:
         st.video(vid)
         st.success('Posted')
+
+st.divider()
+st.caption('Disclaimer: Row is marketplace only. Verify chassis at cmris.npf.gov.ng before buying.')
+st.caption('Report stolen car: 08116911722')
