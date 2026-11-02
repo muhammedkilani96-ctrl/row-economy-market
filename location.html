@@ -1,0 +1,19 @@
+<div style="text-align:center;padding:10px;">
+<button onclick="getLoc()" style="background:#006600;color:white;padding:14px;border-radius:12px;border:1px solid #00FF66;width:100%;font-weight:bold;">Use My Real Location</button>
+<p id="loc" style="color:#00FF66;margin-top:12px;"></p>
+</div>
+<script>
+function getLoc(){
+  var el=document.getElementById("loc");
+  el.innerHTML="Getting...";
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(function(p){
+      var lat=p.coords.latitude.toFixed(5);
+      var lon=p.coords.longitude.toFixed(5);
+      el.innerHTML="GPS: "+lat+","+lon+"<br><a href=https://www.google.com/maps?q="+lat+","+lon+" target=_blank style=color:#00FF66;>Open Maps</a>";
+    },function(e){
+      el.innerHTML="Allow location in browser";
+    });
+  }
+}
+  </script>
