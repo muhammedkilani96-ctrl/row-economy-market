@@ -3,72 +3,52 @@ import urllib.parse as u
 
 W="2348116911722"
 
-st.markdown("<style>.stApp{background:#fdf6e3;}h1{color:#3b1f0b !important;}</style>",unsafe_allow_html=True)
+st.set_page_config(page_title="Row Economy",layout="wide")
 
-st.title("Row Economy")
+st.markdown("""
+<style>
+.stApp{background:white;}
+header{visibility:hidden;}
+.main-green{background:#006600;color:white;padding:15px;border-radius:0 0 20px 20px;}
+.welcome{background:#e6f4ea;padding:15px;border-radius:12px;}
+.banner{background:#006600;color:white;padding:15px;border-radius:12px;}
+.card{border:1px solid #00660033;padding:10px;border-radius:12px;}
+.stButton>button{background:#006600;color:white;border-radius:8px;width:100%;}
+</style>
+""",unsafe_allow_html=True)
 
-# --- STATES SHORT ---
-S=["Abuja","Lagos","Kano"]
-s=st.selectbox("State",S)
-a=st.text_input("Area","Wuse")
+# --- TOP GREEN HEADER ---
+st.markdown('<div class="main-green"><h1 style="color:white !important;">Row Economy</h1></div>',unsafe_allow_html=True)
 
-# --- ADINKRA CATS ---
-c1,c2,c3,c4=st.columns(4)
-with c1:
-  st.write("🪘 Food")
-  st.caption("Gye Nyame ♻️")
-with c2:
-  st.write("🛖 Event")
-  st.caption("Sankofa 🔄")
-with c3:
-  st.write("🏺 Cloth")
-  st.caption("Duafe 🌸")
-with c4:
-  st.write("🚗 Car")
-  st.caption("Ese Ne 🤝")
+# --- BOTTOM NAV LIKE IMAGE ---
+nav=st.tabs(["Home","Explore","Sell","Chats","Profile"])
 
-t1,t2,t3,t4,t5=st.tabs(["Food","Event","Cloth","Car","Square"])
+with nav[0]:
+  # Welcome
+  name=st.text_input("Your name","Chinedu")
+  st.markdown(f'<div class="welcome"><h3>Welcome back, {name}!</h3><p>Find products, events, services near you - made in Nigeria 🇳🇬</p></div>',unsafe_allow_html=True)
+  
+  st.write("")
+  search=st.text_input("Search","",placeholder="Search for food, fabrics, cars, events...")
+  
+  st.write("")
+  st.markdown('<div class="banner"><h3>🪘 Empowering Local Trade</h3><p>Buy • Sell • Connect with your community</p></div>',unsafe_allow_html=True)
+  
+  st.write("")
+  st.subheader("Explore Categories")
+  c1,c2,c3,c4,c5=st.columns(5)
+  with c1:
+    st.button("🍲\nFood")
+  with c2:
+    st.button("🗓️\nEvent")
+  with c3:
+    st.button("👗\nCloth")
+  with c4:
+    st.button("🚗\nCars")
+  with c5:
+    st.button("🏘️\nSquare")
 
-with t1:
-  p=st.number_input("People",1,100,10)
-  st.write(f"N {p*1500}")
-  txt=f"Food {p} {a} {s}"
-  st.link_button("Order Food","https://wa.me/"+W+"?text="+u.quote(txt))
-
-with t2:
-  ev=st.text_input("Event","Concert")
-  pr=st.number_input("Price",500,50000,2000)
-  q=st.number_input("Qty",1,20,1)
-  st.write(f"N {pr*q}")
-  st.link_button("Buy Ticket","https://wa.me/"+W+"?text="+u.quote(ev))
-
-with t3:
-  CL=["Ankara","Native","Shirt"]
-  cl=st.selectbox("Cloth",CL)
-  SZ=["M","L","XL"]
-  sz=st.selectbox("Size",SZ)
-  st.link_button("Buy Cloth","https://wa.me/"+W+"?text="+u.quote(cl))
-
-with t4:
-  st.warning("Verified Garage")
-  CAR=["Corolla","Sienna","Hiace"]
-  car=st.selectbox("Car",CAR)
-  vin=st.text_input("VIN")
-  cert=st.file_uploader("Upload cert")
-  ag1=st.checkbox("Car genuine")
-  ag2=st.checkbox("Marketplace only")
-  ag3=st.checkbox("Report if fake")
-  if cert and ag1 and ag2 and ag3 and vin!="":
-    st.success("VERIFIED")
-    st.link_button("Submit","https://wa.me/"+W+"?text="+u.quote(vin))
-  else:
-    st.error("Need cert + ticks + VIN")
-
-with t5:
-  st.write("Village Square")
-  vid=st.file_uploader("Video")
-  if vid:
-    st.video(vid)
-    st.success("Posted!")
-
-st.caption("Row - Gye Nyame ♻️ Sankofa 🔄 Duafe 🌸")
+  st.subheader("Featured Near You")
+  f1,f2=st.columns(2)
+  with f1:
+    st.markdown('<div class="card">',
