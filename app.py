@@ -1,56 +1,102 @@
 import streamlit as st
 import urllib.parse
 
-st.set_page_config(page_title="ROW ECONOMY Market", page_icon="🛒", layout="wide")
+st.set_page_config(page_title="ROW ECONOMY - Everything Market", page_icon="🛒", layout="wide")
 
-if 'products' not in st.session_state:
-    st.session_state.products = [
-        {"name":"iPhone 12 UK Used","price":250000,"location":"Ogbomoso","category":"Phones","vendor":"Muhammed","phone":"2348012345678","desc":"Neat UK used, battery 92%"},
-        {"name":"Rice 50kg Bag","price":55000,"location":"Ilorin","category":"Food","vendor":"Alhaja","phone":"2348012345678","desc":"Mama Gold, clean"},
-        {"name":"Benz GLK 2010","price":4500000,"location":"Abuja","category":"Cars","vendor":"Kelly","phone":"2348012345678","desc":"Registered, full option"},
+st.markdown("""
+<style>
+.main {background: #f8fff8;}
+.stButton>button {background: #16a34a; color: white; border-radius: 8px; width: 100%;}
+</style>
+""", unsafe_allow_html=True)
+
+# HEADER
+col1, col2 = st.columns([1,5])
+with col1:
+    st.markdown("## 🛒")
+with col2:
+    st.title("ROW ECONOMY")
+    st.caption("Everything Market - Ogbomoso | Ilorin | Abuja | Nationwide")
+
+# SESSION STATE FOR REQUESTS
+if "requests" not in st.session_state:
+    st.session_state.requests = []
+
+tab1, tab2 = st.tabs(["🛒 MARKET - Buy Anything", "🙏 REQUESTS - I Need Something"])
+
+# === TAB 1: MARKET ===
+with tab1:
+    st.subheader("🛒 Everything Market")
+    
+    # Filters from your screenshot
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        search = st.text_input("🔍 Search product", placeholder="iPhone, Rice, Car...")
+    with c2:
+        loc_filter = st.selectbox("📍 Filter by Location", ["All", "Ogbomoso", "Ilorin", "Abuja", "Nationwide"])
+    with c3:
+        cat_filter = st.selectbox("📦 Filter by Category", ["All", "Phones", "Groceries", "Vehicles", "Fashion", "Others"])
+
+    # Sample products
+    products = [
+        {"name": "iPhone 12 UK Used 128GB", "price": "₦250,000", "loc": "Ogbomoso", "cat": "Phones", "phone": "2348100000000"},
+        {"name": "Mama Gold Rice 50kg", "price": "₦75,000", "loc": "Ilorin", "cat": "Groceries", "phone": "2348100000000"},
+        {"name": "Toyota Corolla 2010", "price": "₦3,200,000", "loc": "Abuja", "cat": "Vehicles", "phone": "2348100000000"},
     ]
 
-st.title("🛒 ROW ECONOMY - Everything Market")
-st.caption("Buy & Sell Anything - Ogbomoso | Ilorin | Abuja | Nationwide")
+    for p in products:
+        if (loc_filter == "All" or p["loc"] == loc_filter) and (cat_filter == "All" or p["cat"] == cat_filter) and (search.lower() in p["name"].lower() or search == ""):
+            with st.container(border=True):
+                col_a, col_b = st.columns([3,1])
+                with col_a:
+                    st.write(f"**{p['name']}**")
+                    st.write(f"{p['price']} | 📍 {p['loc']} | {p['cat']}")
+                with col_b:
+                    msg = urllib.parse.quote(f"Hello, I saw {p['name']} for {p['price']} on ROW ECONOMY")
+                    wa_link = f"https://wa.me/{p['phone']}?text={msg}"
+                    st.link_button("💬 Buy via WhatsApp", wa_link)
 
-with st.sidebar:
-    st.header("➕ Sell Something")
-    with st.form("sell"):
-        name = st.text_input("Product Name")
-        price = st.number_input("Price (₦)", min_value=0)
-        location = st.selectbox("Location", ["Ogbomoso","Ilorin","Abuja","Lagos","Others"])
-        category = st.selectbox("Category", ["Phones","Food","Cars","Fashion","Electronics","Property","Others"])
-        vendor = st.text_input("Your Name")
-        phone = st.text_input("WhatsApp Number (234...)")
-        desc = st.text_area("Description")
-        submit = st.form_submit_button("Post Product")
-        if submit and name and price:
-            st.session_state.products.insert(0, {"name":name,"price":price,"location":location,"category":category,"vendor":vendor,"phone":phone,"desc":desc})
-            st.success(f"{name} posted!")
+# === TAB 2: REQUEST SPACE ===
+with tab2:
+    st.subheader("🙏 Request Space - Tell us what you need")
+    st.info("No see wetin you dey find? Post your need, sellers go contact you!")
 
-col1, col2, col3 = st.columns(3)
-with col1:
-    search = st.text_input("🔍 Search product")
-with col2:
-    loc_filter = st.selectbox("📍 Filter by Location", ["All","Ogbomoso","Ilorin","Abuja","Lagos","Others"])
-with col3:
-    cat_filter = st.selectbox("📦 Filter by Category", ["All","Phones","Food","Cars","Fashion","Electronics","Property","Others"])
+    with st.form("request_form", clear_on_submit=True):
+        r_item = st.text_input("What do you need? *", placeholder="e.g. iPhone 11 64GB, Shop for rent in Ogbomoso")
+        r_budget = st.text_input("Your Budget", placeholder="e.g. ₦150k - 180k")
+        r_loc = st.selectbox("Your Location", ["Ogbomoso", "Ilorin", "Abuja", "Nationwide", "Other"])
+        r_phone = st.text_input("Your WhatsApp Number *", placeholder="08012345678")
+        r_desc = st.text_area("More details", placeholder="Describe exactly what you want...")
+        submitted = st.form_submit_button("📢 Post My Request")
 
-filtered = st.session_state.products
-if search:
-    filtered = [p for p in filtered if search.lower() in p['name'].lower()]
-if loc_filter != "All":
-    filtered = [p for p in filtered if p['location'] == loc_filter]
-if cat_filter != "All":
-    filtered = [p for p in filtered if p['category'] == cat_filter]
+        if submitted:
+            if r_item and r_phone:
+                st.session_state.requests.append({
+                    "item": r_item, "budget": r_budget, "loc": r_loc, "phone": r_phone, "desc": r_desc
+                })
+                st.success("✅ Request Posted! Sellers will chat you on WhatsApp.")
+                st.balloons()
+            else:
+                st.error("Please fill item and WhatsApp number")
 
-st.write(f"**{len(filtered)} Products Found**")
+    st.divider()
+    st.write(f"### 📋 Live Requests ({len(st.session_state.requests)})")
+    
+    if not st.session_state.requests:
+        st.caption("No requests yet. Be the first to post!")
+    else:
+        for req in reversed(st.session_state.requests):
+            with st.container(border=True):
+                st.write(f"**NEED: {req['item']}**")
+                st.write(f"💰 Budget: {req['budget']} | 📍 {req['loc']}")
+                if req['desc']:
+                    st.write(f"📝 {req['desc']}")
+                clean_phone = ''.join(filter(str.isdigit, req['phone']))
+                if clean_phone.startswith('0'):
+                    clean_phone = '234' + clean_phone[1:]
+                msg = urllib.parse.quote(f"Hello, I saw your request for {req['item']} on ROW ECONOMY. I have it!")
+                wa_link = f"https://wa.me/{clean_phone}?text={msg}"
+                st.link_button(f"✅ I Have This - Chat {req['phone']}", wa_link)
 
-cols = st.columns(3)
-for i, p in enumerate(filtered):
-    with cols[i % 3]:
-        st.markdown(f"**{p['name']}**\n💰 ₦{p['price']:,} | 📍 {p['location']} | 👤 {p['vendor']}")
-        msg = f"Hello {p['vendor']}, I want to buy {p['name']} for ₦{p['price']:,} on ROW ECONOMY. Location: {p['location']}"
-        wa_link = f"https://wa.me/{p['phone']}?text={urllib.parse.quote(msg)}"
-        st.link_button(f"💬 Buy {p['name']}", wa_link)
-        st.divider()
+st.divider()
+st.caption("ROW ECONOMY © 2026 - Buy & Sell Anything, Request Anything")
