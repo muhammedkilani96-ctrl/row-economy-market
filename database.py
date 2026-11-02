@@ -1,26 +1,9 @@
-import streamlit as st
-import base64
-
+import json, os
+DB_FILE="adverts.json"
 def get_adverts():
-    if "adverts" not in st.session_state:
-        st.session_state.adverts = []
-    return st.session_state.adverts
-
-def add_advert(business, what, price, whatsapp, area, state, image=None, category="Other"):
-    ads = get_adverts()
-    img_str = None
-    if image:
-        img_str = base64.b64encode(image.getvalue()).decode()
-    ads.append({
-        "business": business,
-        "what": what,
-        "price": price,
-        "whatsapp": whatsapp,
-        "area": area,
-        "state": state,
-        "image": img_str,
-        "category": category
-    })
-
-def count_adverts():
-    return len(get_adverts())
+    if not os.path.exists(DB_FILE): return []
+    try: return json.loads(open(DB_FILE).read())
+    except: return []
+def add_advert(ad):
+    ads=get_adverts(); ads.insert(0,ad)
+    open(DB_FILE,"w").write(json.dumps(ads))
