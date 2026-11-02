@@ -1,40 +1,47 @@
 import streamlit as st
+import urllib.parse
+from datetime import datetime
 
-st.set_page_config(page_title="Row Economy Market", page_icon="🛒", layout="wide")
+st.set_page_config(page_title="Row Economy Market", page_icon="🛒", layout="centered")
 
-if "ad_count" not in st.session_state:
-    st.session_state.ad_count = 0
+if 'ads_today' not in st.session_state:
+    st.session_state.ads_today = 0
+if 'ads_date' not in st.session_state:
+    st.session_state.ads_date = datetime.now().date()
 
-st.title("🛒 Naija Market AI - Row Economy")
-st.write("Type wetin you wan cook, we calculate how much you need!")
+if st.session_state.ads_date != datetime.now().date():
+    st.session_state.ads_today = 0
+    st.session_state.ads_date = datetime.now().date()
 
-people = st.number_input("How many people you wan cook for?", min_value=1, value=10)
+WHATSAPP = "2348116911722"
+DISPLAY_NUM = "08116911722"
+PAYSTACK_EMAIL = "muhammedkilani96@gmail.com"
 
-if people:
-    spaghetti_packs = (people + 3) // 4
-    oil_bottles = 1 if people <= 10 else 2
-    rice_kg = people * 0.15
-    
-    st.success(f"For {people} people:")
-    st.write(f"🍝 Spaghetti: {spaghetti_packs} packs @ N1000 = N{spaghetti_packs*1000}")
-    st.write(f"🛢️ Groundnut Oil: {oil_bottles} bottle @ N4500")
-    st.write(f"🍚 Rice: {rice_kg:.1f}kg")
-    
-    # YOUR REAL NUMBER - 08116911722
-    wa_link = f"https://wa.me/2348116911722?text=Hello%20Row%20Economy!%20I%20want%20to%20order%20for%20{people}%20people:%20{spaghetti_packs}%20spaghetti%20packs"
-    st.link_button("💬 Order via WhatsApp - 08116911722", wa_link)
+PRICES = {
+    "Spaghetti 500g": 1000,
+    "Rice 1kg (Parboiled)": 1500,
+    "Indomie (1 pack)": 350,
+    "Groundnut Oil 1L": 1500,
+    "Tomatoes 1kg": 1200,
+    "Chicken 1kg": 4000,
+    "Maggi (1 pack)": 50
+}
 
-st.divider()
+st.markdown(f"""
+<h1 style='color:#0b6e3a;'>🛒 Row Economy Market</h1>
+<p><b>How many people you wan cook for?</b> We calculate, you order via WhatsApp <b>{DISPLAY_NUM}</b></p>
+<p style='background:#e8f5e9;padding:8px;border-radius:8px;'>📍 Abuja Seller: Wuse/Garki • Delivery N500-N1500 • Verified ✓<br>
+🎁 10 FREE Ads Per Day • Ads used today: {st.session_state.ads_today}/10</p>
+""", unsafe_allow_html=True)
 
-st.title("Advert Room - 10 Ads Free Per Day")
+people = st.number_input("Number of people you wan cook for", min_value=1, max_value=500, value=10, step=1)
+meal_type = st.selectbox("Wetin you wan cook?", ["Spaghetti Jollof", "Rice & Stew", "Indomie Special", "Full Package (Rice+Spag+Oil)"])
 
-if st.session_state.ad_count < 10:
-    st.write(f"Ads seen today: {st.session_state.ad_count}/10 FREE")
-    if st.button("View Advert"):
-        st.session_state.ad_count += 1
-        st.balloons()
-        st.success("Ad watched! Thanks!")
-        st.rerun()
-else:
-    st.error(f"Ads seen today: {st.session_state.ad_count}/10 - FREE FINISHED!")
-   
+def calc():
+    if meal_type == "Spaghetti Jollof":
+        packs = max(1, (people + 3)//4)
+        return {"Spaghetti 500g": packs, "Groundnut Oil 1L": max(1, packs//2), "Tomatoes 1kg": max(1, packs//2), "Maggi (1 pack)": packs*2}
+    elif meal_type == "Rice & Stew":
+        return {"Rice 1kg (Parboiled)": max(1, (people+4)//5), "Groundnut Oil 1L": 1, "Tomatoes 1kg": 1, "Chicken 1kg": max(1, people//5)}
+    elif meal_type == "Indomie Special":
+       
