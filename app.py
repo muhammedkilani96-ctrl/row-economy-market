@@ -1,13 +1,17 @@
 import streamlit as st
 import streamlit.components.v1 as comp
 
-st.set_page_config(page_title="Row Economy - Naija Market", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Row Economy", layout="wide")
 
-# === BLACK + GREEN WHITE GREEN THEME ===
-st.markdown("<style>.stApp{background:#000000 !important;}h1,h2,h3{color:#00FF66 !important;}h1{font-weight:900;}p,div,label,span{color:#FFFFFF !important;}.stButton>button{background:#006600 !important;color:white !important;border:1px solid #00FF66 !important;border-radius:10px;padding:10px;font-weight:bold;width:100%;}.stTabs [data-baseweb=tab]{color:white !important;}.stTextInput>div>div>input,.stNumberInput>div>div>input,.stTextArea>div>textarea{background:#111111 !important;color:white !important;border:1px solid #00FF66 !important;}</style>", unsafe_allow_html=True)
+st.markdown("<style>.stApp{background:#000000;}h1,h2{color:#00FF66;}p,div,label{color:white;}.stButton>button{background:#006600;color:white;border:1px solid #00FF66;border-radius:10px;width:100%;}</style>", unsafe_allow_html=True)
 
 st.title("Row Economy")
-st.markdown("**Naija Market • Black Background • Green White Green • Advertise Here • Real Location**")
+st.write("Black Background - Green White Green - Real Location - Advertise Here")
 
-# === REAL LOCATION LIKE GOOGLE ===
-comp.html('<div style="text-align:center;padding:10px;"><button onclick="getLoc()" style="background:#006600;color:white;padding:14px 20px;border-radius:12px;border:1.5px solid #00FF66;width:100%;font-weight:bold;font-size:16
+# FIXED REAL LOCATION - triple quote safe
+location_html = """
+<div style="text-align:center;">
+<button onclick="getLoc()" style="background:#006600;color:white;padding:12px;border-radius:10px;border:1px solid #00FF66;width:100%;font-weight:bold;">
+Use My Real Location
+</button>
+<p id="loc" style="color:#00FF66;margin-top:10
