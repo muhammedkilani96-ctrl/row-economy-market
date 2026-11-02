@@ -20,8 +20,9 @@ if people:
     st.write(f"🛢️ Groundnut Oil: {oil_bottles} bottle @ N4500")
     st.write(f"🍚 Rice: {rice_kg:.1f}kg")
     
-    if st.button("Order via WhatsApp"):
-        st.link_button("Chat Seller", "https://wa.me/2348031234567")
+    # YOUR REAL NUMBER - 08116911722
+    wa_link = f"https://wa.me/2348116911722?text=Hello%20Row%20Economy!%20I%20want%20to%20order%20for%20{people}%20people:%20{spaghetti_packs}%20spaghetti%20packs"
+    st.link_button("💬 Order via WhatsApp - 08116911722", wa_link)
 
 st.divider()
 
@@ -36,21 +37,4 @@ if st.session_state.ad_count < 10:
         st.rerun()
 else:
     st.error(f"Ads seen today: {st.session_state.ad_count}/10 - FREE FINISHED!")
-    st.write("**Pay N200 to continue watching ads today**")
-    # YOUR REAL PAYSTACK LINK
-    st.link_button("🔒 Pay N200 with Paystack (REAL MONEY)", "https://paystack.shop/pay/row-economy-200")
-    st.info("After payment, click below to reset")
-    if st.button("✅ I don pay N200 - Reset to 0/10"):
-        st.session_state.ad_count = 0
-        st.success("Payment confirmed! You fit watch 10 more ads!")
-        st.rerun()
-
-st.divider()
-
-st.header("Ranking - Best Sellers")
-st.table({
-    "name": ["Indomie Carton", "Rice 50kg", "Groundnut Oil", "Spaghetti"],
-    "price": [12000, 65000, 4500, 1000],
-    "sold": [50, 45, 30, 12],
-    "stock": [100, 20, 40, 50]
-})
+   
