@@ -1,29 +1,34 @@
 import streamlit as st
 import urllib.parse
 
-st.set_page_config(page_title='Row', layout='centered')
-
 WHATSAPP='2348116911722'
 
-st.title('Row Economy')
-st.write('Market for Nigeria')
+st.title('Row')
+st.write('Market')
 
-state=st.selectbox('State',['Abia','Lagos','FCT Abuja','Kano','Rivers','Oyo'],index=2)
-area=st.text_input('Area','Wuse')
+s=st.selectbox('State',['Lagos','Abuja','Kano'])
+a=st.text_input('Area','Wuse')
 
-tab1,tab2=st.tabs(['Food','Cars'])
+t1,t2=st.tabs(['Food','Cars'])
 
-with tab1:
-    people=st.number_input('People',1,500,10)
-    meal=st.selectbox('Meal',['Rice','Spaghetti'])
-    total=people*1500
-    st.write(total)
-    txt='Food '+str(people)+' '+area+' '+state
-    link='https://wa.me/'+WHATSAPP+'?text='+urllib.parse.quote(txt)
-    st.link_button('Order',link)
+with t1:
+    p=st.number_input('People',1,500,10)
+    tot=p*1500
+    st.write(tot)
+    txt='Food '+str(p)+' '+a+' '+s
+    lk='https://wa.me/'+WHATSAPP+'?text='+urllib.parse.quote(txt)
+    st.link_button('Order',lk)
 
-with tab2:
-    st.write('Cars - Need Certificate')
-    car=st.selectbox('Car',['Corolla','Sienna','Hiace'])
-    price=st.number_input('Price',5000,5000000,20000)
-    cert=st.file_uploader('Upload CAC or License
+with t2:
+    st.write('Car Verified')
+    car=st.selectbox('Car',['Corolla','Sienna'])
+    pr=st.number_input('Price',5000,5000000,20000)
+    st.write('Upload cert')
+    cert=st.file_uploader('cert')
+    if cert:
+        st.success('OK Verified')
+        txt2='Car '+car+' '+a+' '+s+' Verified'
+        lk2='https://wa.me/'+WHATSAPP+'?text='+urllib.parse.quote(txt2)
+        st.link_button('Submit',lk2)
+    else:
+        st.error('Upload cert')
