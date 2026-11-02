@@ -6,7 +6,7 @@ def get_adverts():
         st.session_state.adverts = []
     return st.session_state.adverts
 
-def add_advert(business, what, price, whatsapp, area, state, image=None):
+def add_advert(business, what, price, whatsapp, area, state, image=None, category="Other"):
     ads = get_adverts()
     img_str = None
     if image:
@@ -18,7 +18,8 @@ def add_advert(business, what, price, whatsapp, area, state, image=None):
         "whatsapp": whatsapp,
         "area": area,
         "state": state,
-        "image": img_str
+        "image": img_str,
+        "category": category
     })
 
 def count_adverts():
