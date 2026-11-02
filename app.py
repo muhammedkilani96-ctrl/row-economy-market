@@ -1,119 +1,85 @@
 import streamlit as st
-import urllib.parse
-from datetime import datetime
+import pandas as pd
+import random
 
-USE_DB=False
-supabase=None
-BUCKET="Image"
-try:
- from supabase import create_client
- URL=st.secrets["SUPABASE_URL"]
- KEY=st.secrets["SUPABASE_KEY"]
- BUCKET=st.secrets.get("BUCKET_NAME","Image")
- supabase=create_client(URL,KEY)
- USE_DB=True
-except: USE_DB=False
+st.set_page_config(page_title="Naija Market AI", page_icon="🛒", layout="wide")
 
-st.set_page_config(page_title="ROW ECONOMY",page_icon="🛒",layout="wide")
+if 'products' not in st.session_state:
+    st.session_state.products = [
+        {"name": "Rice 50kg", "price": 65000, "sold": 45},
+        {"name": "Indomie Carton", "price": 12000, "sold": 50},
+        {"name": "Groundnut Oil", "price": 4500, "sold": 30},
+    ]
+if 'ad_views' not in st.session_state:
+    st.session_state.ad_views = 0
+if 'user_points' not in st.session_state:
+    st.session_state.user_points = 85
+if 'cart' not in st.session_state:
+    st.session_state.cart = []
 
-def upload_image(file):
- if not USE_DB or not file: return None
- try:
-  fname=f"{int(datetime.now().timestamp())}_{file.name}".replace(" ","_")
-  supabase.storage.from_(BUCKET).upload(fname,file.getvalue(),{"content-type":file.type})
-  return supabase.storage.from_(BUCKET).get_public_url(fname)
- except Exception as e:
-  st.error(f"Upload: {e}")
-  return None
+st.title("🛒 Naija Market AI — Shop + AI + Adverts + Ranking")
+st.caption("10 Products FREE | AI Personal Shopper | Advert Space ₦500/week")
 
-def fetch(t):
- if USE_DB:
-  try: return supabase.table(t).select("*").order("created_at",desc=True).execute().data
-  except: return []
- else: return []
+st.divider()
+st.subheader("📦 Your Shop — 10-10-500 Rule")
+product_count = len(st.session_state.products)
+if product_count <= 10:
+    st.success(f"✅ FREE PLAN: {product_count}/10 products — You dey enjoy free!")
+else:
+    extra = product_count - 10
+    fee = ((extra + 9)//10) * 200
+    st.warning(f"⚠️ You don pass free: {product_count} products. Extra: {extra} → Pay ₦{fee}")
+    if st.button(f"Pay ₦{fee} to unlock", type="primary"):
+        st.balloons()
+        st.success("Payment successful!")
 
-def insert(t,data):
- if USE_DB:
-  try: supabase.table(t).insert(data).execute(); return True
-  except Exception as e: st.error(e); return False
- else: return False
+new_prod = st.text_input("Add product name")
+new_price = st.number_input("Price ₦", min_value=100, value=1000)
+if st.button("Add Product"):
+    if new_prod and new_prod.strip():
+        st.session_state.products.append({
+            "name": new_prod.strip(),
+            "price": new_price,
+            "sold": random.randint(1, 10),
+        })
+        st.rerun()
+    else:
+        st.warning("Please enter a product name.")
 
-st.title("ROW ECONOMY 🛒")
-st.caption(f"{'🟢 PERMANENT DB LIVE' if USE_DB else '🔴 Secrets missing'} | Image Bucket: {BUCKET}")
+st.dataframe(pd.DataFrame(st.session_state.products), use_container_width=True)
 
-tab1,tab2,tab3,tab4=st.tabs(["MARKET","REQUESTS","SERVICES","CHAT"])
+st.divider()
+st.subheader("🤖 Acting AI — Personal Shopper")
+customer_query = st.text_input("Customer: e.g., 'I need gift for my babe for 20k'")
+if customer_query:
+    if st.session_state.products:
+        suggestions = random.sample(st.session_state.products, min(2, len(st.session_state.products)))
+        st.info(f"🤖 AI: Based on '{customer_query}', I suggest:")
+        for s in suggestions:
+            st.write(f"- {s['name']} - ₦{s['price']}")
+    else:
+        st.info("No products yet. Add some products to get recommendations.")
 
-with tab1:
- with st.expander("SELL + PICTURE",expanded=True):
-  with st.form("sell",clear_on_submit=True):
-   n=st.text_input("Product Name *")
-   p=st.text_input("Price *")
-   cat=st.selectbox("Category",["Phones","Groceries","Vehicles","Fashion","Electronics","Others"])
-   loc=st.selectbox("Location",["Ogbomoso","Ilorin","Abuja","Nationwide"])
-   ph=st.text_input("WhatsApp *")
-   desc=st.text_area("Description")
-   img=st.file_uploader("Picture",type=['jpg','png','jpeg'])
-   if st.form_submit_button("POST ✅"):
-    if n and p and ph:
-     cl="".join(filter(str.isdigit,ph)); 
-     if cl.startswith("0"): cl="234"+cl[1:]
-     iurl=upload_image(img)
-     insert("products",{"name":n,"price":p,"loc":loc,"cat":cat,"phone":cl,"description":desc,"image_url":iurl})
-     st.success("Posted permanently!")
-    else: st.warning("Fill required")
- search=st.text_input("Search Market")
- for prod in fetch("products"):
-  if search.lower() in prod.get("name","").lower():
-   with st.container(border=True):
-    if prod.get("image_url"): st.image(prod["image_url"],width=300)
-    st.write(f"**{prod.get('name')}** - {prod.get('price')} | {prod.get('loc')}")
-    st.caption(prod.get("description",""))
-    m=urllib.parse.quote(f"Hello, I saw {prod.get('name')} on ROW ECONOMY")
-    st.link_button(f"Buy {prod.get('phone')}",f"https://wa.me/{prod.get('phone')}?text={m}")
+st.divider()
+st.subheader("📢 Advert Room — 10 Ads Free Per Day")
+if st.session_state.ad_views < 10:
+    st.caption(f"Ads seen today: {st.session_state.ad_views}/10 FREE")
+    if st.button("View Advert"):
+        st.session_state.ad_views += 1
+        st.rerun()
+else:
+    st.info("🔒 You don see 10 adverts today — Come back tomorrow!")
 
-with tab2:
- with st.form("req",clear_on_submit=True):
-  item=st.text_input("Need *"); bud=st.text_input("Budget"); loc=st.selectbox("Loc",["Ogbomoso","Ilorin","Abuja","Nationwide"],key="rl"); ph=st.text_input("WhatsApp *",key="rp")
-  if st.form_submit_button("Post Request"):
-   if item and ph:
-    cl="".join(filter(str.isdigit,ph)); 
-    if cl.startswith("0"): cl="234"+cl[1:]
-    insert("requests",{"item":item,"budget":bud,"loc":loc,"phone":cl}); st.success("Posted!")
- for r in fetch("requests"):
-  with st.container(border=True):
-   st.write(f"🔎 {r.get('item')} | {r.get('budget')} | {r.get('loc')}")
-   m=urllib.parse.quote(f"Hi, I saw your request for {r.get('item')}")
-   st.link_button("Contact",f"https://wa.me/{r.get('phone')}?text={m}")
-
-with tab3:
- with st.expander("SERVICE + PICTURE",expanded=True):
-  with st.form("serv",clear_on_submit=True):
-   sn=st.text_input("Business *"); sk=st.selectbox("Skill",["Barber","Hair Dresser","Painter","Fashion Designer","Makeup Artist","Nail Tech","Others"]); pr=st.text_input("Price"); sl=st.selectbox("Base",["Ogbomoso","Ilorin","Abuja","Nationwide"],key="sl"); sp=st.text_input("WhatsApp *",key="sp"); sd=st.text_area("About"); si=st.file_uploader("Work Pic",type=['jpg','png','jpeg'],key="si")
-   if st.form_submit_button("List Service"):
-    if sn and sp:
-     cl="".join(filter(str.isdigit,sp)); 
-     if cl.startswith("0"): cl="234"+cl[1:]
-     iurl=upload_image(si)
-     insert("services",{"name":sn,"skill":sk,"price":pr,"loc":sl,"phone":cl,"raw":sp,"description":sd,"image_url":iurl}); st.success("Listed!")
- for s in fetch("services"):
-  with st.container(border=True):
-   if s.get("image_url"): st.image(s["image_url"],width=300)
-   st.write(f"**{s.get('name')}** - {s.get('skill')} | {s.get('price')}")
-   st.caption(s.get("description",""))
-   m=urllib.parse.quote(f"Hello {s.get('name')}, I saw your service on ROW ECONOMY")
-   st.link_button(f"Book {s.get('raw','')}",f"https://wa.me/{s.get('phone')}?text={m}")
-
-with tab4:
- chats=fetch("chats"); box=st.container(height=350)
- with box:
-  for c in chats:
-   with st.container(border=True): st.write(f"**{c.get('username')}** {c.get('loc')} {c.get('time','')}"); st.write(c.get("msg",""))
- with st.form("chat",clear_on_submit=True):
-  c1,c2=st.columns(2)
-  with c1: un=st.text_input("Name *")
-  with c2: ul=st.selectbox("Loc",["Ogbomoso","Ilorin","Abuja","Others"])
-  um=st.text_area("Message *")
-  if st.form_submit_button("Send"):
-   if un and um:
-    now=datetime.now().strftime("%I:%M %p")
-    insert("chats",{"username":un,"loc":ul,"msg":um,"time":now}); st.rerun()
+st.divider()
+c1, c2 = st.columns(2)
+with c1:
+    st.subheader("🏆 Weekly Sales Ranking")
+    df_rank = pd.DataFrame(st.session_state.products).sort_values("sold", ascending=False)
+    st.dataframe(df_rank, use_container_width=True)
+with c2:
+    st.subheader("👤 Avatar Ranking — VIP")
+    st.metric("Your Points", st.session_state.user_points)
+    if st.button("Simulate Buy (Gain 10 points)"):
+        st.session_state.user_points += 10
+        st.balloons()
+        st.rerun()
