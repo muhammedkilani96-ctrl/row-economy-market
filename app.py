@@ -3,52 +3,62 @@ import urllib.parse as u
 
 W="2348116911722"
 
-st.set_page_config(page_title="Row Economy",layout="wide")
+st.set_page_config(page_title="Row Economy")
 
-st.markdown("""
-<style>
-.stApp{background:white;}
-header{visibility:hidden;}
-.main-green{background:#006600;color:white;padding:15px;border-radius:0 0 20px 20px;}
-.welcome{background:#e6f4ea;padding:15px;border-radius:12px;}
-.banner{background:#006600;color:white;padding:15px;border-radius:12px;}
-.card{border:1px solid #00660033;padding:10px;border-radius:12px;}
-.stButton>button{background:#006600;color:white;border-radius:8px;width:100%;}
-</style>
-""",unsafe_allow_html=True)
+st.markdown("<style>.stApp{background:white;}h1{color:#006600;}</style>",unsafe_allow_html=True)
 
-# --- TOP GREEN HEADER ---
-st.markdown('<div class="main-green"><h1 style="color:white !important;">Row Economy</h1></div>',unsafe_allow_html=True)
+st.title("Row Economy")
+st.caption("Naija Green White Green")
 
-# --- BOTTOM NAV LIKE IMAGE ---
 nav=st.tabs(["Home","Explore","Sell","Chats","Profile"])
 
 with nav[0]:
-  # Welcome
   name=st.text_input("Your name","Chinedu")
-  st.markdown(f'<div class="welcome"><h3>Welcome back, {name}!</h3><p>Find products, events, services near you - made in Nigeria 🇳🇬</p></div>',unsafe_allow_html=True)
+  st.success(f"Welcome back, {name}! Find products made in Nigeria")
   
-  st.write("")
-  search=st.text_input("Search","",placeholder="Search for food, fabrics, cars, events...")
+  search=st.text_input("Search food, fabrics, cars, events")
   
-  st.write("")
-  st.markdown('<div class="banner"><h3>🪘 Empowering Local Trade</h3><p>Buy • Sell • Connect with your community</p></div>',unsafe_allow_html=True)
+  st.success("Empowering Local Trade - Buy Sell Connect")
   
-  st.write("")
   st.subheader("Explore Categories")
   c1,c2,c3,c4,c5=st.columns(5)
-  with c1:
-    st.button("🍲\nFood")
-  with c2:
-    st.button("🗓️\nEvent")
-  with c3:
-    st.button("👗\nCloth")
-  with c4:
-    st.button("🚗\nCars")
-  with c5:
-    st.button("🏘️\nSquare")
+  c1.button("Food")
+  c2.button("Event")
+  c3.button("Cloth")
+  c4.button("Cars")
+  c5.button("Square")
 
   st.subheader("Featured Near You")
   f1,f2=st.columns(2)
   with f1:
-    st.markdown('<div class="card">',
+    st.write("**Fresh Yam & Vegetables**")
+    st.caption("Kano Market - N5,500")
+    st.link_button("View","https://wa.me/"+W+"?text="+u.quote("Yam"))
+  with f2:
+    st.write("**Ankara Green White**")
+    st.caption("Lagos - N12,000")
+    st.link_button("View","https://wa.me/"+W+"?text="+u.quote("Ankara"))
+
+  st.divider()
+  S=["Abuja","Lagos","Kano"]
+  s=st.selectbox("State",S)
+  a=st.text_input("Area","Wuse")
+
+with nav[1]:
+  st.subheader("Explore")
+  st.slider("Price",500,50000,2000)
+
+with nav[2]:
+  st.subheader("Sell - Post Product")
+  pname=st.text_input("Product name")
+  pprice=st.number_input("Price",100,1000000,2000)
+  pimg=st.file_uploader("Upload photo")
+  if st.button("Post"):
+    st.success("Posted to Village Square")
+
+with nav[3]:
+  st.subheader("Chats")
+  st.link_button("Open WhatsApp","https://wa.me/"+W)
+
+with nav[4]:
+  st.subheader
