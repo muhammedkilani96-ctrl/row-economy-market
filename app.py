@@ -6,20 +6,13 @@ from datetime import datetime
 
 st.set_page_config(page_title="ROW ECONOMY SUPER", layout="centered")
 
-def load_file(name, default):
-    try:
-        with open(name, "r") as f:
-            return json.load(f)
-    except:
-        return default
-
-def save_file(name, data):
-    with open(name, "w") as f:
-        json.dump(data, f)
+if "products" not in st.session_state:
+    st.session_state.products = []
+if "lives" not in st.session_state:
+    st.session_state.lives = []
 
 if "user" not in st.session_state:
     st.title("ROW ECONOMY SUPER")
-    st.info("Login: 08116911722 / Kilani247")
     phone = st.text_input("Phone")
     pwd = st.text_input("Password", type="password")
     if st.button("LOGIN"):
@@ -27,42 +20,60 @@ if "user" not in st.session_state:
             st.session_state.user = phone.strip()
             st.rerun()
         else:
-            st.error("Wrong login")
+            st.error("Wrong")
     st.stop()
 
-products = load_file("products.json", [])
-lives = load_file("lives.json", [])
-
 st.title("ROW ECONOMY SUPER")
-st.success("Welcome 08116911722 | Bal N500000")
+st.success(f"Welcome {st.session_state.user} | Bal N500000")
 
 tab1, tab2, tab3, tab4 = st.tabs(["LIVE MARKET", "POST PRODUCT", "GO LIVE", "MAP"])
 
 with tab1:
     st.header("LIVE MARKETPLACE")
-    if lives:
-        for lv in lives[::-1][:5]:
-            st.error(f"LIVE {lv['user']}: {lv['title']}")
+    if st.session_state.lives:
+        for lv in st.session_state.lives[::-1]:
+            st.warning(f"LIVE: {lv['title']} by {lv['user']}")
     st.divider()
-    if len(products) == 0:
+    if len(st.session_state.products) == 0:
         st.write("No products yet - Be first to post!")
     else:
-        for p in products[::-1]:
-            st.write(f"{p['name']} - N{p['price']}")
-            st.write(f"Seller: {p['phone']}")
+        for p in st.session_state.products[::-1]:
+            st.subheader(f"{p['name']} - N{p['price']}")
+            st.write(f"Seller: {p['phone']} | {p['time']}")
             st.write(p['desc'])
-            if p.get('img'):
-                st.image(p['img'])
-            st.link_button("Chat Seller", f"https://wa.me/{p['phone']}")
+            st.link_button("Chat Seller on WhatsApp", f"https://wa.me/{p['phone']}")
             st.divider()
 
 with tab2:
-    st.header("POST PRODUCT")
-    pname = st.text_input("Product Name")
-    pprice = st.number_input("Price", min_value=100, value=1000)
-    pdesc = st.text_area("Description")
-    pphone = st.text_input("WhatsApp", value="08116911722")
-    pimg = st.text_input("Image Link")
-    if st.button("POST PRODUCT NOW"):
-        if pname:
-            new_product = {}
+    st.header("POST PRODUCT - LEAVE IMAGE EMPTY!")
+    pname = st.text_input("Product Name *", key="pn")
+    pprice = st.number_input("Price *", min_value=100, value=1000, key="pp")
+    pdesc = st.text_area("Description", key="pd")
+    pphone = st.text_input("WhatsApp Number", value="08116911722", key="ph")
+    if st.button("POST PRODUCT NOW", type="primary", key="postbtn"):
+        if pname.strip() == "":
+            st.error("Type Product Name first!")
+        else:
+            new_product = {
+                "name": pname.strip(),
+                "price": pprice,
+                "desc": pdesc,
+                "phone": pphone,
+                "user": st.session_state.user,
+                "time": datetime.now().strftime("%H:%M")
+            }
+            st.session_state.products.append(new_product)
+            st.success("POSTED! Check LIVE MARKET now!")
+            st.balloons()
+            st.snow()
+
+with tab3:
+    st.header("GO LIVE - SCROLL DOWN IF BLANK!")
+    st.write("If you see black, swipe UP to see form")
+    ltitle = st.text_input("Live Title *", key="lt")
+    ldesc = st.text_input("What are you selling?", key="ld")
+    c1, c2 = st.columns(2)
+    with c1:
+        if st.button("START LIVE", type="primary"):
+            if ltitle:
+                st.session_state.lives.append({"user": st.session_state.user, "title
