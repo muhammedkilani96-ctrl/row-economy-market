@@ -1,24 +1,59 @@
 import streamlit as st
-from datetime import datetime
-def show(area,state):
-    st.subheader("🔴 ROW LIVE")
-    live_title=st.text_input("Live Title", "Selling Ankara Wuse 2")
-    product=st.text_input("Product for live"); price=st.number_input("Price",0,1000000,5000)
-    go=st.checkbox("I'M LIVE NOW 🔴")
-    if not go: st.info("Tick to start live"); return
-    c1,c2=st.columns([2,1])
-    with c1:
-        st.markdown(f"<div style='background:black;color:#39FF14;padding:15px;border-radius:15px;text-align:center'>🔴 LIVE {live_title}<br>📍{area},{state} | Gifts {st.session_state.live_gifts}<br>📹 LIVE VIDEO</div>",unsafe_allow_html=True)
-        vid=st.file_uploader("Upload live clip",type=["mp4"],key="live")
-        if vid: st.video(vid)
-        st.link_button(f"BUY N{price}", f"https://wa.me/2348116911722?text=I want {product} LIVE N{price}", use_container_width=True)
-    with c2:
-        st.metric("Cowries", f"{st.session_state.live_gifts} 🪘")
-        if st.button("🌹 N50"): st.session_state.live_gifts+=5; st.balloons()
-        if st.button("🪘 Drum N100"): st.session_state.live_gifts+=10
-        if st.button("👑 Crown N500"): st.session_state.live_gifts+=50; st.snow()
-        st.write("💬 Live Chat")
-        chat=st.text_input("Comment",key="lc")
-        if st.button("Send Chat"):
-            if chat: st.session_state.live_comments.append(f"{chat}")
-        for x in st.session_state.live_comments[-8:]: st.write(x)
+import json, hashlib, random, pandas as pd
+st.set_page_config(page_title='ROW ECONOMY', layout='centered')
+def load(f,d):
+ try: return json.loads(open(f).read())
+ except: return d
+def save(f,d):
+ open(f,'w').write(json.dumps(d))
+def hp(p):
+ return hashlib.sha256(p.encode()).hexdigest()
+u=load('users.json',{})
+u['08116911722']={'pw':hp('Kilani247')}
+save('users.json',u)
+w=load('wallets.json',{})
+if w.get('08116911722',0)<1000:
+ w['08116911722']=500000
+ save('wallets.json',w)
+if 'user' not in st.session_state:
+ st.title('ROW ECONOMY SUPER')
+ st.info('Login 08116911722 / Kilani247')
+ ph=st.text_input('Phone')
+ pw=st.text_input('Password',type='password')
+ if st.button('Login'):
+  us=load('users.json',{})
+  if ph in us and us[ph]['pw']==hp(pw):
+   st.session_state.user=ph
+   st.rerun()
+ st.stop()
+bal=load('wallets.json',{}).get(st.session_state.user,0)
+tabs=st.tabs(['Home','SNAP MAP','SECURITY','SOS','CHAT','Wallet'])
+with tabs[0]:
+ st.metric('People',10)
+ st.metric('Wallet',f'N{bal}')
+with tabs[1]:
+ st.title('SNAP MAP')
+ df=pd.DataFrame({'lat':[9.06+random.uniform(-0.03,0.03) for _ in range(30)],'lon':[7.48+random.uniform(-0.03,0.03) for _ in range(30)]})
+ st.map(df)
+with tabs[2]:
+ st.title('SECURITY MAP')
+ df2=pd.DataFrame({'lat':[9.0765,9.0579,6.5244],'lon':[7.4851,7.4951,3.3792]})
+ st.map(df2)
+ st.write('NANS HQ, Police HQ, Zone 2')
+with tabs[3]:
+ if st.button('SEND SOS'): st.error('SOS SENT')
+ st.link_button('Call 112','tel:112')
+with tabs[4]:
+ chats=load('global_chat.json',[])
+ for c in chats[-20:]: st.write(f"{c['name']}: {c['msg']}")
+ m=st.text_input('Msg')
+ if st.button('Send'):
+  chats.append({'name':st.session_state.user,'msg':m})
+  save('global_chat.json',chats)
+  st.rerun()
+with tabs[5]:
+ st.title(f'N{bal}')
+ st.image(f'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={st.session_state.user}')
+ if st.button('Logout'):
+  del st.session_state.user
+  st.rerun()
