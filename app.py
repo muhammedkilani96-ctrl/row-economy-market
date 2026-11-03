@@ -1,62 +1,39 @@
 import streamlit as st
 import requests
 
-st.set_page_config(page_title="Row Economy Market", layout="wide")
+# --- FIX FOR PHONE PASTE BREAKING ---
+def get_secret(name):
+    try:
+        raw = st.secrets[name]
+    except:
+        return ""
+    # Remove all spaces, newlines, tabs that phone adds
+    cleaned = str(raw).replace("\n","").replace("\r","").replace(" ","").replace("\t","").strip()
+    # Remove any surrounding quotes if you accidentally pasted with extra quotes
+    cleaned = cleaned.strip('"').strip("'").strip()
+    # Re-add if needed? No, keep clean
+    # If cleaning removed https://, restore - but our replace removed spaces only, not ://
+    # Actually we removed spaces only, so :// safe. We did replace(" ","") only.
+    # For URL we need to keep ://, so don't remove : or /
+    return cleaned
 
-try:
-    SUPABASE_URL = st.secrets["SUPABASE_URL"]
-    SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
-    BTC_WALLET = st.secrets.get("BTC_WALLET", "bc1q...")
-    USDT_WALLET = st.secrets.get("USDT_WALLET", "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb")
-    has_secrets = True
-except:
-    has_secrets = False
-    SUPABASE_URL = ""
-    SUPABASE_KEY = ""
-    BTC_WALLET = "bc1q..."
-    USDT_WALLET = "T..."
+# For URL we clean differently - keep :// 
+def get_url_secret(name):
+    try:
+        raw = st.secrets[name]
+    except:
+        return ""
+    s = str(raw).replace("\n","").replace("\r","").replace(" ","").replace("\t","").strip()
+    s = s.strip('"').strip("'")
+    return s
 
-st.markdown("### We accept Naira, USDT, BTC")
-tab1, tab2, tab3 = st.tabs(["Market", "Sell", "My Shop"])
+st.set_page_config(page_title="ROW Economy Market", layout="wide")
+st.title("ROW Economy Market")
 
-with tab1:
-    st.subheader("Search product")
-    q = st.text_input("Search", placeholder="rice, shoe...")
-    if not has_secrets:
-        st.warning("Secrets not loaded")
-    else:
-        headers = {"apikey": SUPABASE_KEY, "Authorization": f"Bearer {SUPABASE_KEY}"}
-        url = f"{SUPABASE_URL}/rest/v1/products?select=*&order=id.desc"
-        r = requests.get(url, headers=headers, timeout=15)
-        if r.status_code == 200:
-            products = r.json()
-            for p in products:
-                if q.lower() in str(p.get('name','')).lower() or not q:
-                    with st.container(border=True):
-                        st.write(f"**{p.get('name')}** - ₦{p.get('price')}")
-                        if p.get('image_url'):
-                            st.image(p.get('image_url'), width=200)
-                        with st.expander("Pay with Crypto / Naira"):
-                            st.code(f"BTC: {BTC_WALLET}")
-                            st.code(f"USDT: {USDT_WALLET}")
-        else:
-            st.error(r.text[:300])
+SUPABASE_URL = get_url_secret("SUPABASE_URL")
+SUPABASE_KEY = get_secret("SUPABASE_KEY")
 
-with tab2:
-    st.subheader("Post Product")
-    name = st.text_input("Product Name")
-    price = st.number_input("Price", min_value=0)
-    desc = st.text_area("Description")
-    whatsapp = st.text_input("WhatsApp")
-    img_url = st.text_input("Image URL")
-    if st.button("Post Product", type="primary"):
-        headers = {"apikey": SUPABASE_KEY, "Authorization": f"Bearer {SUPABASE_KEY}", "Content-Type": "application/json", "Prefer": "return=representation"}
-        data = {"name": name, "price": price, "description": desc, "whatsapp": whatsapp, "image_url": img_url}
-        r = requests.post(f"{SUPABASE_URL}/rest/v1/products", headers=headers, json=data, timeout=15)
-        if r.status_code in [200,201]:
-            st.success("Posted! Check Market tab")
-        else:
-            st.error(r.text[:400])
-
-with tab3:
-    st.write("My Shop")
+# Show debug - you can remove later
+if not SUPABASE_URL or not SUPABASE_KEY:
+    st.error("Secrets not found! Go to Manage app -> Settings -> Secrets and paste them.")
+    st.code('SUPABASE_URL = "https://erglyztemazyluaqlhwc.supabase.co"\nSUPABASE_KEY = "your
