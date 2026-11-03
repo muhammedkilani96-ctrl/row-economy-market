@@ -1,92 +1,77 @@
 import streamlit as st
 import pandas as pd
-import random
-from datetime import datetime
+from supabase import create_client
 
-st.set_page_config(page_title='ROW SUPER', layout='centered')
+# CONNECT TO SUPABASE
+SUPABASE_URL = st.secrets["SUPABASE_URL"]
+SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-if 'products' not in st.session_state:
-    st.session_state.products=[]
-if 'lives' not in st.session_state:
-    st.session_state.lives=[]
+st.set_page_config(page_title="Row Market - Permanent", layout="wide")
+st.title("🛒 Row Economy Market - PERMANENT")
 
-if 'user' not in st.session_state:
-    st.title('ROW ECONOMY SUPER MARKET')
-    phone=st.text_input('Phone')
-    pwd=st.text_input('Password', type='password')
-    if st.button('LOGIN'):
-        if phone.strip()=='08116911722' and pwd.strip().lower()=='kilani247':
-            st.session_state.user=phone.strip()
-            st.rerun()
-        else:
-            st.error('Use 08116911722 / kilani247')
-    st.stop()
+# TABS
+tab1, tab2, tab3 = st.tabs(["🏠 Market", "➕ Sell Product", "🔴 Go Live"])
 
-st.title('ROW ECONOMY SUPER')
-st.success('Welcome '+st.session_state.user)
+# LOAD PRODUCTS FROM SUPABASE
+def load_products():
+    res = supabase.table("products").select("*").order("created_at", desc=True).execute()
+    return res.data
 
-t1,t2,t3,t4=st.tabs(['LIVE MARKET','POST PRODUCT','GO LIVE','MAP'])
+# TAB 1 - MARKET
+with tab1:
+    st.subheader("Products wey dey")
+    products = load_products()
+    if not products:
+        st.info("No products yet. Be first to sell!")
+    else:
+        cols = st.columns(3)
+        for i, p in enumerate(products):
+            with cols[i % 3]:
+                if p.get("image_link"):
+                    st.image(p["image_link"], use_container_width=True)
+                st.write(f"**{p['name']}**")
+                st.write(f"₦{p['price']:,}")
+                st.caption(p.get("description",""))
+                st.caption(f"📞 {p.get('phone','')} | Seller: {p.get('seller','')}")
+                if st.button(f"WhatsApp {p['name']}", key=f"wa_{p['id']}"):
+                    st.markdown(f"[Chat on WhatsApp](https://wa.me/{p['phone']})")
 
-with t1:
-    st.header('LIVE MARKET')
-    search=st.text_input('Search')
-    for lv in st.session_state.lives[::-1]:
-        st.warning('LIVE: '+lv['title'])
-    st.divider()
-    plist=st.session_state.products[::-1]
-    if search:
-        plist=[p for p in plist if search.lower() in p['name'].lower()]
-    if len(plist)==0:
-        st.write('No products yet')
-    for p in plist:
-        st.subheader(p['name']+' - N'+str(p['price']))
-        st.write(p['desc'])
-        st.write('Seller: '+p['phone']+' | '+p['time'])
-        st.link_button('Chat Seller', 'https://wa.me/'+p['phone'])
-        if p.get('img'):
-            try:
-                st.image(p['img'], width=200)
-            except:
-                pass
-        st.divider()
-
-with t2:
-    st.header('POST PRODUCT')
-    pname=st.text_input('Name *', key='pn')
-    pprice=st.number_input('Price', value=1000, key='pp')
-    pdesc=st.text_area('Description', key='pd')
-    pphone=st.text_input('WhatsApp', value='08116911722', key='ph')
-    pimg=st.text_input('Image Link (optional)', key='pi')
-    if st.button('POST NOW', type='primary'):
-        if pname.strip()=='':
-            st.error('Enter name')
-        else:
-            st.session_state.products.append({'name':pname,'price':pprice,'desc':pdesc,'phone':pphone,'img':pimg,'time':datetime.now().strftime('%H:%M')})
-            st.success('Posted! Check LIVE MARKET')
-            st.balloons()
-            st.snow()
-
-with t3:
-    st.header('GO LIVE')
-    ltitle=st.text_input('Live Title', key='lt')
-    c1,c2=st.columns(2)
-    with c1:
-        if st.button('START LIVE', type='primary'):
-            if ltitle:
-                st.session_state.lives.append({'title':ltitle,'user':st.session_state.user,'time':datetime.now().strftime('%H:%M')})
-                st.success('YOU ARE LIVE!')
+# TAB 2 - SELL
+with tab2:
+    st.subheader("Add Your Product")
+    with st.form("sell_form"):
+        name = st.text_input("Product Name")
+        price = st.number_input("Price (₦)", min_value=0)
+        desc = st.text_area("Description")
+        phone = st.text_input("WhatsApp Number (e.g 2348012345678)")
+        image = st.text_input("Image Link (from imgur, etc)")
+        seller = st.text_input("Your Name / Shop Name")
+        submit = st.form_submit_button("Post Product")
+        if submit:
+            if name and price:
+                supabase.table("products").insert({
+                    "name": name, "price": price, "description": desc,
+                    "phone": phone, "image_link": image, "seller": seller
+                }).execute()
+                st.success("✅ Product posted permanently! Go check Market tab!")
                 st.balloons()
-    with c2:
-        if st.button('END LIVE'):
-            st.session_state.lives=[]
-            st.warning('Ended')
+            else:
+                st.error("Name and Price required")
 
-with t4:
-    st.header('ABUJA MAP')
-    df=pd.DataFrame({'lat':[9.06+random.uniform(-0.05,0.05) for _ in range(15)],'lon':[7.48+random.uniform(-0.05,0.05) for _ in range(15)]})
-    st.map(df)
-    st.write('Products: '+str(len(st.session_state.products)))
-    st.write('Live: '+str(len(st.session_state.lives)))
-    if st.button('Logout'):
-        del st.session_state.user
-        st.rerun()
+# TAB 3 - LIVE
+with tab3:
+    st.subheader("Live Selling")
+    lives_res = supabase.table("lives").select("*").order("created_at", desc=True).execute()
+    lives = lives_res.data
+    if lives:
+        for l in lives:
+            st.write(f"🔴 LIVE: {l['title']} by {l['seller']}")
+    st.divider()
+    with st.form("live_form"):
+        title = st.text_input("Live Title (e.g Selling Shoes)")
+        seller_live = st.text_input("Your Name")
+        go_live = st.form_submit_button("Start Live")
+        if go_live and title:
+            supabase.table("lives").insert({"title": title, "seller": seller_live}).execute()
+            st.success("You are LIVE now!")
