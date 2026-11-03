@@ -54,3 +54,25 @@ with tab1:
                     st.divider()
     except Exception as e:
         st.error(str(e))
+with tab2:
+    st.subheader("Post Product")
+    name = st.text_input("Product Name")
+    price = st.number_input("Price", min_value=0)
+    desc = st.text_area("Description")
+    whatsapp = st.text_input("WhatsApp 234...")
+    seller = st.text_input("Shop Name")
+    up_file = st.file_uploader("Upload Pic/Video", type=["jpg","jpeg","png","mp4","mov","webm"])
+    if st.button("Post Product"):
+        image_url = ""
+        if up_file is not None:
+            ext = up_file.name.split(".")[-1]
+            fname = str(uuid.uuid4()) + "." + ext
+            sh = {"apikey": KEY, "Authorization": "Bearer " + KEY, "Content-Type": up_file.type}
+            up_res = requests.post(URL + "/storage/v1/object/product-images/" + fname, headers=sh, data=up_file.getvalue(), timeout=30)
+            if up_res.status_code in [200, 201]:
+                image_url = URL + "/storage/v1/object/public/product-images/" + fname
+        data = {"name": name, "price": price, "description": desc, "whatsapp": whatsapp, "seller_name": seller, "image_url": image_url}
+        post_r = requests.post(URL + "/rest/v1/products", headers=HEADERS, json=data, timeout=20)
+        if post_r.status_code in [200, 201]:
+            st.success("Posted!")
+            st.balloons()
