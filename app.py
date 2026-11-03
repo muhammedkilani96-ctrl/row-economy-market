@@ -1,24 +1,34 @@
 import streamlit as st
-import pandas as pd
-from supabase import create_client
+import requests
 
-# CONNECT TO SUPABASE
 SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-st.set_page_config(page_title="Row Market - Permanent", layout="wide")
+HEADERS = {
+    "apikey": SUPABASE_KEY,
+    "Authorization": f"Bearer {SUPABASE_KEY}",
+    "Content-Type": "application/json"
+}
+
+st.set_page_config(page_title="Row Market Permanent", layout="wide")
 st.title("🛒 Row Economy Market - PERMANENT")
 
-# TABS
+def load_products():
+    url = f"{SUPABASE_URL}/rest/v1/products?select=*&order=created_at.desc"
+    r = requests.get(url, headers=HEADERS)
+    if r.status_code == 200:
+        return r.json()
+    return []
+
+def load_lives():
+    url = f"{SUPABASE_URL}/rest/v1/lives?select=*&order=created_at.desc"
+    r = requests.get(url, headers=HEADERS)
+    if r.status_code == 200:
+        return r.json()
+    return []
+
 tab1, tab2, tab3 = st.tabs(["🏠 Market", "➕ Sell Product", "🔴 Go Live"])
 
-# LOAD PRODUCTS FROM SUPABASE
-def load_products():
-    res = supabase.table("products").select("*").order("created_at", desc=True).execute()
-    return res.data
-
-# TAB 1 - MARKET
 with tab1:
     st.subheader("Products wey dey")
     products = load_products()
@@ -30,48 +40,49 @@ with tab1:
             with cols[i % 3]:
                 if p.get("image_link"):
                     st.image(p["image_link"], use_container_width=True)
-                st.write(f"**{p['name']}**")
-                st.write(f"₦{p['price']:,}")
+                st.write(f"**{p.get('name')}**")
+                st.write(f"₦{p.get('price',0):,}")
                 st.caption(p.get("description",""))
-                st.caption(f"📞 {p.get('phone','')} | Seller: {p.get('seller','')}")
-                if st.button(f"WhatsApp {p['name']}", key=f"wa_{p['id']}"):
-                    st.markdown(f"[Chat on WhatsApp](https://wa.me/{p['phone']})")
+                st.caption(f"📞 {p.get('phone','')} | {p.get('seller','')}")
+                if p.get('phone'):
+                    st.link_button(f"WhatsApp {p.get('name')}", f"https://wa.me/{p.get('phone')}")
 
-# TAB 2 - SELL
 with tab2:
     st.subheader("Add Your Product")
     with st.form("sell_form"):
         name = st.text_input("Product Name")
         price = st.number_input("Price (₦)", min_value=0)
         desc = st.text_area("Description")
-        phone = st.text_input("WhatsApp Number (e.g 2348012345678)")
-        image = st.text_input("Image Link (from imgur, etc)")
+        phone = st.text_input("WhatsApp Number e.g 2348012345678")
+        image = st.text_input("Image Link")
         seller = st.text_input("Your Name / Shop Name")
         submit = st.form_submit_button("Post Product")
         if submit:
             if name and price:
-                supabase.table("products").insert({
-                    "name": name, "price": price, "description": desc,
-                    "phone": phone, "image_link": image, "seller": seller
-                }).execute()
-                st.success("✅ Product posted permanently! Go check Market tab!")
-                st.balloons()
+                data = {"name": name, "price": int(price), "description": desc, "phone": phone, "image_link": image, "seller": seller}
+                url = f"{SUPABASE_URL}/rest/v1/products"
+                r = requests.post(url, headers=HEADERS, json=data)
+                if r.status_code in [200,201]:
+                    st.success("✅ Product posted permanently!")
+                    st.balloons()
+                else:
+                    st.error(f"Error: {r.text}")
             else:
-                st.error("Name and Price required")
+                st.error("Name and Price needed")
 
-# TAB 3 - LIVE
 with tab3:
     st.subheader("Live Selling")
-    lives_res = supabase.table("lives").select("*").order("created_at", desc=True).execute()
-    lives = lives_res.data
-    if lives:
-        for l in lives:
-            st.write(f"🔴 LIVE: {l['title']} by {l['seller']}")
+    lives = load_lives()
+    for l in lives:
+        st.write(f"🔴 LIVE: {l.get('title')} by {l.get('seller')}")
     st.divider()
     with st.form("live_form"):
-        title = st.text_input("Live Title (e.g Selling Shoes)")
+        title = st.text_input("Live Title")
         seller_live = st.text_input("Your Name")
         go_live = st.form_submit_button("Start Live")
         if go_live and title:
-            supabase.table("lives").insert({"title": title, "seller": seller_live}).execute()
-            st.success("You are LIVE now!")
+            data = {"title": title, "seller": seller_live}
+            url = f"{SUPABASE_URL}/rest/v1/lives"
+            r = requests.post(url, headers=HEADERS, json=data)
+            if r.status_code in [200,201]:
+                st.success("You are LIVE!")
