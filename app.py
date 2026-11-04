@@ -120,7 +120,7 @@ if st.button("Ask AI"):
         if not found.empty:
             st.session_state.notfound = False
             st.success("AI found " + str(len(found)) + " for you:")
-            for _, row in found.iterrows():
+                for _, row in show_products.iloc[::-1].iterrows():
                 nm = row.get("name", "")
                 pr = row.get("price", "")
                 loc = row.get("location", "")
