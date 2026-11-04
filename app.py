@@ -88,20 +88,16 @@ if loc_search and not products.empty:
     st.info("No products yet. Be the first to post!")
 else:
     for _, row in products.iloc[::-1].iterrows():
-        nm = row.get("name", "")
-        pr = row.get("price", "")
-        loc = row.get("location", "")
-        ph = row.get("phone", "")
-        if pd.isna(ph) or str(ph) == "":
-            ph = row.get("whatsapp", "")
-        st.write("**" + str(nm) + " - N" + show_price(pr) + " - " + str(loc) + "**")
-        st.write(str(loc))
-        cl = clean_phone(ph)
-        if cl:
-            st.link_button("WhatsApp " + show_phone(ph), "https://wa.me/" + cl + "?text=Hi, I want " + str(nm))
+        st.subheader("Search by Location")
+loc_search = st.text_input(...)
+show_products = products
+if loc_search...
+if show_products.empty:
+    st.info(...)
+else:
+    for _, row in show_products.iloc[::-1].iterrows():
+        ...
         st.divider()
-st.header("Ask AI - Find Product Fast")
-st.write("Example: I need Rice for Wuse")
 ai_q = st.text_input("What do you need?", value=st.session_state.q, placeholder="I need rice", key="ai_input")
 if st.button("Ask AI"):
     st.session_state.q = ai_q
