@@ -27,26 +27,46 @@ def load_products():
 def clean_phone(phone):
     if pd.isna(phone) or str(phone) == "":
         return ""
-    c = re.sub(r'\D', '', str(phone))
+    s = str(phone).strip()
+    if s.endswith(".0"):
+        s = s[:-2]
+    c = re.sub(r'\D', '', s)
     if c.startswith("0"):
         c = "234" + c[1:]
     return c
 
-# ===== HEADER =====
+def fmt_phone(phone):
+    c = clean_phone(phone)
+    if c.startswith("234"):
+        c = "0" + c[3:]
+    return c
+
+def fmt_price(price):
+    try:
+        return f"{int(float(price)):,}"
+    except:
+        return str(price)
+
+if "ai_query" not in st.session_state:
+    st.session_state.ai_query = ""
+if "ai_not_found" not in st.session_state:
+    st.session_state.ai_not_found = False
+
 st.title("ROW ECONOMY MARKET - Abuja")
 st.write("Buy and Sell Near You. Chat Seller Direct on WhatsApp.")
 st.write("Help: 08116911722")
 
 df = load_products()
-# Remove waitlist rows from marketplace view
 products = pd.DataFrame()
+waitlist = pd.DataFrame()
 if not df.empty:
     if 'location' in df.columns:
         products = df[df['location'].astype(str).str.upper() != "WAITLIST"].copy()
+        waitlist = df[df['location'].astype(str).str.upper() == "WAITLIST"].copy()
+        products = products.drop_duplicates(subset=['name','price','location'], keep='last')
     else:
         products = df.copy()
 
-# ===== LIVE MAP =====
 st.header("LIVE MAP - Abuja")
 if not products.empty and 'lat' in products.columns and 'lon' in products.columns:
     map_df = products.copy()
@@ -60,7 +80,6 @@ if not products.empty and 'lat' in products.columns and 'lon' in products.column
 else:
     st.map(pd.DataFrame({'lat': [9.066], 'lon': [7.483]}))
 
-# ===== PRODUCT LIST =====
 if products.empty:
     st.info("No products yet. Be the first to post!")
 else:
@@ -68,31 +87,4 @@ else:
         name = row.get('name', '')
         price = row.get('price', '')
         location = row.get('location', '')
-        phone = row.get('phone', '')
-        if pd.isna(phone) or str(phone) == "":
-            phone = row.get('whatsapp', '')
-        st.write(f"**{name} - ₦{price} - {location}**")
-        clean = clean_phone(phone)
-        if clean:
-            st.link_button(f"Chat Seller - {name}", f"https://wa.me/{clean}?text=Hi, I want {name} from ROW Economy Market")
-        st.divider()
-
-# ===== ASK AI =====
-st.header("🤖 Ask AI - Find Product Fast")
-st.write("Example: I need Rice for Wuse")
-ai_q = st.text_input("What do you need?", key="ai_q", placeholder="I need rice")
-if st.button("Ask AI"):
-    if not ai_q:
-        st.warning("Type wetin you need")
-    elif products.empty:
-        st.info("No products yet")
-    else:
-        # Simple AI: remove stop words, match keywords
-        stop = {"i", "need", "want", "for", "in", "a", "an", "the", "please", "buy", "get", "find", "me"}
-        words = [w.lower() for w in re.findall(r'\w+', ai_q) if w.lower() not in stop]
-        mask = pd.Series([False]*len(products))
-        for w in words:
-            mask = mask | products.astype(str).apply(lambda x: x.str.contains(w, case=False, na=False)).any(axis=1)
-        found = products[mask]
-        if not found.empty:
-            st
+        phone = row.get('phone
