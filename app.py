@@ -83,4 +83,5 @@ if loc_search and not products.empty:
 if show_products.empty:
     st.info("No products yet. Be the first to post!")
 else:
-    for _, row in show_products.iloc[::-1].iter
+    rev = show_products.iloc[::-1]
+for _, row in rev.iterrows():
