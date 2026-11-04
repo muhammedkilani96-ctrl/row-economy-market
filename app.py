@@ -1,237 +1,213 @@
 import streamlit as st
 import pandas as pd
-import requests
+import uuid, qrcode, io, datetime
 
-st.set_page_config(
-    page_title="ROW Market",
-    layout="wide"
-)
-st.header("ROW Economy Market - Abuja")
+st.set_page_config(page_title="Ilorin Game Fiesta 4.0", page_icon="🎲", layout="wide")
 
-SHEET_CSV = st.secrets.get("SHEET_CSV", "")
-WEBAPP_URL = st.secrets.get("WEBAPP_URL", "")
+# --- CONFIG ---
+EVENT_NAME = "ILORIN GAME FIESTA 4.0 - The Legacy Continues"
+EVENT_DATE = "Sunday, 15th Nov, 2026 - 2PM"
+VENUE = "Succoth Valley Garden, GRA, Ilorin, Kwara State"
+CONTACT = "+234 703 364 2277"
+INSTAGRAM = "@ilorin_game_fiesta"
+ORGANIZER = "KK_EVENTS"
 
-def clean_phone(p):
-    s = str(p).strip()
-    s = s.replace(" ", "")
-    s = s.replace("-", "")
-    s = s.replace("+", "")
-    if s.endswith(".0"):
-        s = s[:-2]
-    if s.startswith("0"):
-        s = "234" + s[1:]
-    out = ""
-    for c in s:
-        if c.isdigit():
-            out = out + c
-    return out
+TICKETS = {
+    "Early Bird - ₦1,500": {"price": 1500, "limit": 100, "desc": "Entry + All games. First 100 only."},
+    "Regular - ₦2,500": {"price": 2500, "limit": 500, "desc": "Entry + Access to all games."},
+    "VIP - ₦5,000": {"price": 5000, "limit": 50, "desc": "Front row + Free drink + Priority for games."},
+    "Squad of 4 - ₦8,000": {"price": 8000, "limit": 100, "desc": "4 Regular tickets. Save ₦2,000. For friends."},
+    "Vendor Stand - ₦10,000": {"price": 10000, "limit": 20, "desc": "Entry + 1 table to sell food, drinks, merch."},
+}
 
-def show_price(p):
-    try:
-        f = float(str(p).replace(",", ""))
-        return str(int(f))
-    except:
-        return str(p)
+# --- AI AUTO RESPONDER KNOWLEDGE ---
+FAQ = {
+    "date": f"The event is on {EVENT_DATE}.",
+    "venue": f"Venue is {VENUE}.",
+    "price": "Early Bird 1500, Regular 2500, VIP 5000, Squad of 4 is 8000, Vendor Stand 10000.",
+    "ticket": "Pick a ticket below, login, pay with Paystack, you get QR ticket instantly.",
+    "game": "Games are Chess, Cards, Snooker / Pool, PlayStation, Monopoly.",
+    "contact": f"Call or WhatsApp {CONTACT}, Instagram {INSTAGRAM}.",
+    "vendor": "Vendors pay 10000 for a stand. Upload your product image, we approve before it goes live.",
+    "refund": "Tickets are non-refundable but transferable. You can give your QR to a friend.",
+}
 
-def show_phone(p):
-    s = str(p).strip()
-    if s.endswith(".0"):
-        s = s[:-2]
-    return s
+def ai_reply(question):
+    q = question.lower()
+    if "date" in q or "when" in q or "day" in q:
+        return FAQ["date"]
+    if "where" in q or "venue" in q or "location" in q or "address" in q:
+        return FAQ["venue"]
+    if "price" in q or "cost" in q or "how much" in q or "ticket" in q:
+        return FAQ["price"] + " " + FAQ["ticket"]
+    if "game" in q or "play" in q:
+        return FAQ["game"]
+    if "vendor" in q or "seller" in q or "sell" in q or "stand" in q:
+        return FAQ["vendor"]
+    if "refund" in q or "return" in q:
+        return FAQ["refund"]
+    if "contact" in q or "phone" in q or "whatsapp" in q:
+        return FAQ["contact"]
+    return f"Great question! {EVENT_NAME} is on {EVENT_DATE} at {VENUE}. Tickets start at ₦1,500 Early Bird. Regular is ₦2,500, VIP ₦5,000, Squad of 4 ₦8,000. Want me to help you pick a ticket?"
 
-def load_products():
-    if not SHEET_CSV:
-        return pd.DataFrame()
-    try:
-        df = pd.read_csv(SHEET_CSV, dtype=str)
-        df = df.fillna("")
-        df.columns = [c.strip().lower() for c in df.columns]
-        if "name" not in df.columns:
-            return pd.DataFrame()
-        df = df[df["name"].str.strip() != ""]
-        df = df.drop_duplicates(
-            subset=["name", "price", "location"],
-            keep="last"
-        )
-        return df.reset_index(drop=True)
-    except Exception as e:
-        st.error("Load error: " + str(e))
-        return pd.DataFrame()
+# --- SESSION STATE ---
+if "user" not in st.session_state:
+    st.session_state.user = None
+if "tickets_sold" not in st.session_state:
+    st.session_state.tickets_sold = []
+if "vendor_products" not in st.session_state:
+    st.session_state.vendor_products = []
+if "chat" not in st.session_state:
+    st.session_state.chat = []
 
-products = load_products()
+# --- HEADER ---
+st.markdown(f"# 🎲 {EVENT_NAME}")
+st.markdown(f"**{EVENT_DATE} | {VENUE} | By {ORGANIZER}**")
+st.markdown("Chess | Cards | Snooker | PlayStation | Monopoly | Music | Food")
+st.info("Login is required to buy tickets or sell. AI Assistant answers you instantly below.")
 
-# MAP
-st.subheader("LIVE MAP")
-st.map(
-    pd.DataFrame(
-        {"lat": [9.066], "lon": [7.483]}
-    )
-)
-if not products.empty:
-    if "lat" in products.columns:
-        mdf = products.copy()
-        mdf["lat"] = pd.to_numeric(
-            mdf["lat"], errors="coerce"
-        )
-        mdf["lon"] = pd.to_numeric(
-            mdf["lon"], errors="coerce"
-        )
-        mdf = mdf.dropna(subset=["lat", "lon"])
-        if not mdf.empty:
-            st.map(mdf[["lat", "lon"]])
+# --- LOGIN GATE ---
+if not st.session_state.user:
+    st.subheader("🔐 Login To Continue")
+    tab1, tab2 = st.tabs(["Login", "Create Account"])
+    with tab1:
+        email = st.text_input("Email", key="login_email")
+        pwd = st.text_input("Password", type="password", key="login_pwd")
+        if st.button("Login"):
+            if email and pwd:
+                st.session_state.user = {"email": email, "role": "buyer"}
+                st.success(f"Welcome {email}! You can now buy tickets.")
+                st.rerun()
+            else:
+                st.error("Enter email and password.")
+    with tab2:
+        name = st.text_input("Full Name")
+        email2 = st.text_input("Email", key="signup_email")
+        pwd2 = st.text_input("Password", type="password", key="signup_pwd")
+        role = st.selectbox("I am a:", ["Buyer", "Seller / Vendor"])
+        if st.button("Create Account"):
+            if name and email2 and pwd2:
+                st.session_state.user = {"email": email2, "name": name, "role": role}
+                st.success("Account created! You are logged in.")
+                st.rerun()
+    st.markdown("---")
+    st.markdown("### 🤖 Ask AI About The Event - No Login Needed")
+    q = st.text_input("Ask anything: e.g. How much is VIP? Where is venue?", key="public_q")
+    if st.button("Ask AI"):
+        if q:
+            st.success(ai_reply(q))
+    st.stop()
 
-# SEARCH
-st.subheader("Search by Location")
-loc_search = st.text_input(
-    "Type location e.g Wuse, Garki, Lagos",
-    key="loc_search"
-)
-show_products = products
-if loc_search:
-    if not products.empty:
-        mask = products["location"].str.contains(
-            loc_search, case=False, na=False
-        )
-        show_products = products[mask]
-        if show_products.empty:
-            st.warning("No product for " + loc_search)
+# --- LOGGED IN ---
+user = st.session_state.user
+st.success(f"Logged in as {user.get('email')} | Role: {user.get('role', 'Buyer')}")
+if st.button("Logout"):
+    st.session_state.user = None
+    st.rerun()
+
+tab_market, tab_sell, tab_mytickets, tab_ai, tab_admin = st.tabs([
+    "🎟️ Buy Tickets", "🛍️ Sell / Vendor Post", "🎫 My Tickets", "🤖 AI Assistant", "📊 Admin"
+])
+
+with tab_market:
+    st.subheader("Choose Your Ticket")
+    for t_name, info in TICKETS.items():
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.markdown(f"**{t_name}**")
+            st.caption(info["desc"])
+        with col2:
+            qty = st.number_input(f"Qty for {t_name}", min_value=0, max_value=10, key=f"qty_{t_name}")
+            if qty > 0:
+                total = qty * info["price"]
+                st.write(f"Total: ₦{total:,}")
+                if st.button(f"Pay ₦{total:,} - {t_name}", key=f"pay_{t_name}"):
+                    # Connect Paystack here - for now generate ticket
+                    code = str(uuid.uuid4())[:8].upper()
+                    st.session_state.tickets_sold.append({
+                        "code": code, "ticket": t_name, "qty": qty,
+                        "total": total, "buyer": user.get("email"),
+                        "date": str(datetime.datetime.now())
+                    })
+                    st.success(f"Payment Successful! Your Ticket Code: {code}")
+                    st.info("Screenshot this code. Show QR at gate.")
+                    # QR
+                    qr = qrcode.make(f"ILORIN-GAME-FIESTA-{code}-{user.get('email')}")
+                    buf = io.BytesIO()
+                    qr.save(buf, format="PNG")
+                    st.image(buf.getvalue(), width=200, caption=f"Ticket {code}")
+
+with tab_sell:
+    st.subheader("Seller - Post Product Before Publishing")
+    st.caption("Upload image. Admin must approve before buyers see it. Nothing goes live without approval.")
+    pname = st.text_input("Product Name - e.g. Shawarma, Merch, Game Pad")
+    pprice = st.number_input("Price (₦)", min_value=0)
+    pdesc = st.text_area("Description")
+    pimg = st.file_uploader("Upload Product Image", type=["jpg", "png", "jpeg"])
+    if st.button("Submit For Review"):
+        if pname and pprice and pimg:
+            st.session_state.vendor_products.append({
+                "name": pname, "price": pprice, "desc": pdesc,
+                "seller": user.get("email"), "status": "Pending", "image": pimg
+            })
+            st.success("Submitted! Waiting for Admin approval. You will not lose it, it is saved as Pending.")
         else:
-            st.success(
-                "Found " + str(len(show_products))
-            )
+            st.error("Add name, price and image.")
 
-if show_products.empty:
-    st.info("No products yet.")
-else:
-    rev = show_products.iloc[::-1]
-    for _, row in rev.iterrows():
-        nm = row.get("name", "")
-        pr = row.get("price", "")
-        loc = row.get("location", "")
-        ph = row.get("phone", "")
-        if str(ph).strip() == "":
-            ph = row.get("whatsapp", "")
-        title = "**" + str(nm) + " - N"
-        title = title + show_price(pr)
-        title = title + " - " + str(loc) + "**"
-        st.write(title)
-        st.write(str(loc))
-        cl = clean_phone(ph)
-        if cl:
-            link = "https://wa.me/" + cl
-            link = link + "?text=Hi, I want " + str(nm)
-            btn = "WhatsApp " + show_phone(ph)
-            st.link_button(btn, link)
-        st.divider()
+    st.markdown("### Approved Products For Event")
+    approved = [p for p in st.session_state.vendor_products if p["status"] == "Approved"]
+    if not approved:
+        st.info("No approved products yet. Once Admin approves, they show here.")
+    for p in approved:
+        st.image(p["image"], width=200)
+        st.write(f"**{p['name']}** - ₦{p['price']:,} - by {p['seller']}")
+        st.caption(p["desc"])
 
-# ASK AI
-st.subheader("Ask AI - Find Product")
-if "q" not in st.session_state:
-    st.session_state.q = ""
-if "notfound" not in st.session_state:
-    st.session_state.notfound = False
-
-ai_q = st.text_input(
-    "What do you need? e.g I need chicken",
-    value=st.session_state.q,
-    key="ai_input"
-)
-if st.button("Ask AI"):
-    st.session_state.q = ai_q
-    q = ai_q.lower().strip()
-    stop = ["i", "need", "want", "for", "a", "an", "the"]
-    words = []
-    for w in q.split():
-        if w not in stop:
-            if len(w) > 2:
-                words.append(w)
-    found = pd.DataFrame()
-    if words:
-        if not products.empty:
-            mask2 = pd.Series([False] * len(products))
-            for w in words:
-                m = products.astype(str).apply(
-                    lambda x: x.str.contains(
-                        w, case=False, na=False
-                    )
-                ).any(axis=1)
-                m = m.reset_index(drop=True)
-                mask2 = mask2 | m
-            found = products[mask2]
-    if not found.empty:
-        st.session_state.notfound = False
-        st.success("AI found " + str(len(found)))
-        for _, r in found.iterrows():
-            t2 = "**" + str(r.get("name", ""))
-            t2 = t2 + " - N" + show_price(r.get("price", ""))
-            t2 = t2 + " - " + str(r.get("location", "")) + "**"
-            st.write(t2)
+with tab_mytickets:
+    st.subheader("My Tickets")
+    mine = [t for t in st.session_state.tickets_sold if t["buyer"] == user.get("email")]
+    if not mine:
+        st.info("You have no tickets yet. Buy one above.")
     else:
-        st.session_state.notfound = True
-        st.warning("Sorry, no " + ai_q + " yet.")
+        st.dataframe(pd.DataFrame(mine))
 
-if st.session_state.notfound:
-    st.subheader("Wait For It")
-    w_name = st.text_input("Your Name", key="w_name")
-    w_phone = st.text_input(
-        "Your WhatsApp Number", key="w_phone"
-    )
-    if st.button("Notify Me on WhatsApp"):
-        try:
-            if WEBAPP_URL:
-                data = {
-                    "name": ai_q,
-                    "price": "",
-                    "location": "WAITLIST",
-                    "phone": w_phone,
-                    "whatsapp": w_phone,
-                    "lat": "",
-                    "lon": "",
-                    "buyer_name": w_name
-                }
-                requests.post(
-                    WEBAPP_URL, json=data, timeout=10
-                )
-            st.success("Saved! We will notify you.")
-        except Exception as e:
-            st.error("Could not save: " + str(e))
+with tab_ai:
+    st.subheader("🤖 AI Auto Responder - Answers Instantly")
+    st.caption("Ask about date, venue, price, games, vendor, refund. AI replies automatically so you never lose a customer.")
+    for msg in st.session_state.chat:
+        st.write(f"**You:** {msg['q']}")
+        st.write(f"**AI:** {msg['a']}")
+    user_q = st.text_input("Ask AI anything about Ilorin Game Fiesta", key="ai_q")
+    if st.button("Send to AI"):
+        if user_q:
+            ans = ai_reply(user_q)
+            st.session_state.chat.append({"q": user_q, "a": ans})
+            st.rerun()
 
-# POST
-st.subheader("Post Product - Show on Map")
-p_name = st.text_input(
-    "Product Name e.g Beans 50kg", key="p_name"
-)
-p_price = st.text_input(
-    "Price e.g 56588", key="p_price"
-)
-p_loc = st.text_input(
-    "Location e.g Wuse, Abuja", key="p_loc"
-)
-p_phone = st.text_input(
-    "Your WhatsApp Number", key="p_phone"
-)
-if st.button("Post Product"):
-    if not p_name:
-        st.warning("Fill Name, Price, Location")
-    elif not p_price:
-        st.warning("Fill Name, Price, Location")
-    elif not p_loc:
-        st.warning("Fill Name, Price, Location")
-    else:
-        try:
-            if WEBAPP_URL:
-                data2 = {
-                    "name": p_name,
-                    "price": p_price,
-                    "location": p_loc,
-                    "phone": p_phone,
-                    "whatsapp": p_phone,
-                    "lat": 9.066,
-                    "lon": 7.483
-                }
-                requests.post(
-                    WEBAPP_URL, json=data2, timeout=10
-                )
-            st.success("Posted! Refresh to see it.")
-        except Exception as e:
-            st.error("Could not post: " + str(e))
+with tab_admin:
+    st.subheader("Admin - You Control Everything")
+    st.write("Only you should open this tab. Use password to protect it in production.")
+    admin_pass = st.text_input("Admin Password", type="password")
+    if admin_pass == "KK2026":  # Change this in Secrets
+        st.markdown("### Pending Vendor Products")
+        for i, p in enumerate(st.session_state.vendor_products):
+            if p["status"] == "Pending":
+                st.image(p["image"], width=150)
+                st.write(f"{p['name']} - ₦{p['price']:,} by {p['seller']}")
+                col1, col2 = st.columns(2)
+                if col1.button(f"Approve {i}"):
+                    st.session_state.vendor_products[i]["status"] = "Approved"
+                    st.rerun()
+                if col2.button(f"Reject {i}"):
+                    st.session_state.vendor_products[i]["status"] = "Rejected"
+                    st.rerun()
+        st.markdown("### All Tickets Sold")
+        if st.session_state.tickets_sold:
+            df = pd.DataFrame(st.session_state.tickets_sold)
+            st.dataframe(df)
+            st.metric("Total Revenue", f"₦{df['total'].sum():,}")
+            st.metric("Tickets Sold", len(df))
+        else:
+            st.info("No tickets sold yet.")
+    elif admin_pass:
+        st.error("Wrong password.")
