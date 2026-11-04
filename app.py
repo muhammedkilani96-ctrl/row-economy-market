@@ -76,7 +76,15 @@ else:
 st.header("LIVE MAP - Abuja")
 
 
-if products.empty:
+st.subheader("Search by Location")
+loc_search = st.text_input("Type location e.g Wuse, Garki, Lagos, Ibadan", key="loc_search")
+show_products = products
+if loc_search and not products.empty:
+    show_products = products[products["location"].astype(str).str.contains(loc_search, case=False, na=False)]
+    if show_products.empty:
+        st.warning("No product for " + loc_search + " yet.")
+    else:
+        st.success("Found " + str(len(show_products)) + " for " + loc_search)
     st.info("No products yet. Be the first to post!")
 else:
     for _, row in products.iloc[::-1].iterrows():
