@@ -1,132 +1,94 @@
 import streamlit as st
 import pandas as pd
-import urllib.parse
-import re
 import requests
+import re
 
-# --- YOUR REAL SHEET - ALREADY PUT ---
-SHEET_ID = "1DMODScWNcjddoxARnCFQIp3jIrqLZ0EI770GaLuYXVA"
-CSV_URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv"
+st.set_page_config(page_title="Abuja Market", layout="wide")
 
-# --- YOUR NEW APPS SCRIPT LINK - FOR WRITING TO SHEET ---
 SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxD0TcnR6NayT4pCYslMDaH8dXvFrQhmxDLANC1wqcOs006OmF8frhUOCY_m34CHqfv/exec"
+SHEET_ID = "1DMODScWNcjddoxARnCFQIp3jIrqLZ0EI770GaLuYXVA"
+SHEET_CSV = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Sheet1"
 
-def send_to_sheet(data):
+def send_to_sheet(payload):
     try:
-        r = requests.post(SCRIPT_URL, json=data, timeout=10)
-        return True
-    except Exception as e:
+        r = requests.post(SCRIPT_URL, json=payload, timeout=15)
+        return r.status_code == 200
+    except:
         return False
 
-st.set_page_config(page_title="ROW Economy Market - Abuja", layout="wide")
-st.title("🛒 ROW ECONOMY MARKET - Abuja")
-st.write("No more waka waka for market. Find am, Chat Seller, Buy am.")
-
-@st.cache_data(ttl=30)
 def load_products():
     try:
-        df = pd.read_csv(CSV_URL)
+        df = pd.read_csv(SHEET_CSV)
         df.columns = [c.strip().lower() for c in df.columns]
-        df = df.dropna(subset=["name"])
-        def clean_num(x):
-            m = re.search(r"(\d+\.\d+|\d+)", str(x))
-            return float(m.group(1)) if m else 9.066
-        df["lat"] = df["lat"].apply(clean_num)
-        df["lon"] = df["lon"].apply(clean_num)
-        df["price"] = pd.to_numeric(df["price"], errors="coerce").fillna(0)
-        df["whatsapp"] = df["whatsapp"].astype(str).str.replace(r"\.0", "", regex=True)
-        return df.to_dict("records")
-    except Exception as e:
-        return [
-            {"name": "Fresh Rice 50kg", "price": 85000, "location": "Wuse Market, Abuja", "whatsapp": "2348116911722", "lat": 9.066, "lon": 7.483}
-        ]
+        return df
+    except:
+        return pd.DataFrame()
 
-if "waitlist" not in st.session_state:
-    st.session_state.waitlist = []
-if "show_wait" not in st.session_state:
-    st.session_state.show_wait = False
-if "last_search" not in st.session_state:
-    st.session_state.last_search = ""
-if "new_products" not in st.session_state:
-    st.session_state.new_products = []
+st.title("🛒 Abuja Market - Buy & Sell Near You")
 
-all_products = load_products() + st.session_state.new_products
+tab1, tab2, tab3 = st.tabs(["🏠 Marketplace", "➕ Post Product", "📋 Waitlist"])
 
-st.subheader("📍 Live Map - Abuja")
-df_map = pd.DataFrame(all_products)
-st.map(df_map, latitude="lat", longitude="lon", zoom=11)
-
-st.subheader("Available Products")
-for p in all_products:
-    st.write(f"**{p['name']} - N{int(float(p['price'])):,} - {p['location']}**")
-    msg = f"Hello, I see your {p['name']} for N{int(float(p['price']))} for {p['location']}. Is it still available?"
-    link = f"https://wa.me/{p['whatsapp']}?text={urllib.parse.quote(msg)}"
-    st.link_button(f"Chat Seller - {p['name']}", link)
-
-st.divider()
-st.subheader("🤖 Ask AI - Find Product Fast")
-query = st.text_input("What do you need?", key="ai_input")
-if st.button("Ask AI"):
-    st.session_state.last_search = query
-    q = query.lower()
-    found = []
-    for p in all_products:
-        for word in str(p['name']).lower().split():
-            if word in q and word not in ["50kg", "fresh"]:
-                found.append(p)
-                break
-    if found:
-        st.success(f"AI found {len(found)} for you:")
-        for p in found:
-            st.write(f"✅ **{p['name']} - N{int(float(p['price'])):,} - {p['location']}**")
-            msg = f"Hello, I see your {p['name']} for N{int(float(p['price']))} for {p['location']}. Is it still available?"
-            link = f"https://wa.me/{p['whatsapp']}?text={urllib.parse.quote(msg)}"
-            st.link_button(f"Chat Seller - {p['name']}", link)
-        st.session_state.show_wait = False
+with tab1:
+    df = load_products()
+    if df.empty:
+        st.info("No products yet. Be the first to post!")
     else:
-        st.warning(f"Sorry, we have no {query} available right now.")
-        st.write("Do you want to **Post a Product** or **Wait** till we have an order of your request?")
-        st.write("If you wait, **I'll text you directly on your WhatsApp** once we have what you requested.")
-        st.session_state.show_wait = True
+        # Filter out waitlist rows
+        if 'location' in df.columns:
+            df = df[df['location'].astype(str).str.upper() != "WAITLIST"]
+        search = st.text_input("🔍 Search product, e.g. Yam, Rice")
+        if search:
+            df = df[df.astype(str).apply(lambda x: x.str.contains(search, case=False, na=False)).any(axis=1)]
+        for _, row in df.iloc[::-1].iterrows():
+            with st.container(border=True):
+                name = row.get('name', '')
+                price = row.get('price', '')
+                location = row.get('location', '')
+                phone = row.get('phone', '')
+                if pd.isna(phone) or str(phone) == "":
+                    phone = row.get('whatsapp', '')
+                st.subheader(f"{name} - ₦{price}")
+                st.write(f"📍 {location}")
+                if phone and str(phone) != "nan":
+                    clean = re.sub(r'\D', '', str(phone))
+                    if clean.startswith("0"):
+                        clean = "234" + clean[1:]
+                    st.link_button(f"💬 WhatsApp {phone}", f"https://wa.me/{clean}")
+                else:
+                    st.write("No phone")
 
-if st.session_state.show_wait:
-    st.subheader("⏳ Wait For It - We Go Text You")
-    st.write(f"You are waiting for: **{st.session_state.last_search}**")
-    wa = st.text_input("Your WhatsApp Number (e.g 08116911722)", key="wait_wa")
-    if st.button("Notify Me on WhatsApp"):
-        if wa:
-            st.session_state.waitlist.append({"request": st.session_state.last_search, "whatsapp": wa})
-            # SEND TO SHEET
-            send_to_sheet({"type": "waitlist", "request": st.session_state.last_search, "whatsapp": wa})
-            st.success(f"Done! We don save your request for '{st.session_state.last_search}'. Once we have am, we go text you directly on WhatsApp {wa}. No need to dey check everyday.")
-            st.session_state.show_wait = False
-        else:
-            st.error("Abeg put your WhatsApp number first.")
+with tab2:
+    st.subheader("Post Your Product")
+    with st.form("post_form"):
+        name = st.text_input("Product Name *", placeholder="e.g. Test Yam")
+        price = st.text_input("Price *", placeholder="e.g. 5000")
+        location = st.text_input("Location *", placeholder="e.g. Garki")
+        whatsapp = st.text_input("WhatsApp Number *", placeholder="e.g. 08116911722")
+        submit = st.form_submit_button("Post Product", type="primary")
+        if submit:
+            if not name or not price or not location or not whatsapp:
+                st.error("Fill all fields")
+            else:
+                wa_clean = re.sub(r'\D', '', whatsapp)
+                ok = send_to_sheet({"type": "product", "name": name, "price": price, "location": location, "phone": wa_clean, "whatsapp": wa_clean, "lat": 9.066, "lon": 7.483})
+                if ok:
+                    st.success("✅ Posted! Refresh Marketplace tab to see am.")
+                    st.balloons()
+                else:
+                    st.error("Failed to post. Try again.")
 
-st.divider()
-st.subheader("📦 Post Product - Show on Map")
-st.info("New products go show instantly. To make am permanent for everybody, also add am as new row for your Google Sheet.")
-with st.form("post_form"):
-    name = st.text_input("Product Name (e.g Yam 10 tubers)")
-    price = st.number_input("Price (Naira)", min_value=0, step=100)
-    location = st.text_input("Location (e.g Garki Market, Abuja)")
-    whatsapp = st.text_input("Your WhatsApp Number (e.g 08116911722)")
-    submit = st.form_submit_button("Post Product")
-    if submit and name and price and location and whatsapp:
-        wa_clean = whatsapp.replace(" ", "").replace("+", "")
-        if wa_clean.startswith("0"):
-            wa_clean = "234" + wa_clean[1:]
-        new_p = {"name": name, "price": price, "location": location, "whatsapp": wa_clean, "lat": 9.066, "lon": 7.483}
-        st.session_state.new_products.append(new_p)
-        # SEND TO SHEET VIA APPS SCRIPT
-        ok = send_to_sheet({"type": "product", "name": name, "price": price, "location": location, "whatsapp": wa_clean, "lat": 9.066, "lon": 7.483})
-        if ok:
-            st.success(f"Posted! {name} don show for Map now and don enter Google Sheet.")
-        else:
-            st.success(f"Posted! {name} don show for Map now.")
-        for w in st.session_state.waitlist:
-            if any(word.lower() in name.lower() for word in w["request"].lower().split() if len(word) > 2):
-                st.info(f"🔔 Somebody dey wait for this: {w['request']} - WhatsApp: {w['whatsapp']}. Text them now!")
-
-st.write("---")
-st.write("📲 ROW Economy Market | Abuja | 08116911722")
+with tab3:
+    st.subheader("Join Waitlist - Tell us wetin you want")
+    with st.form("wait_form"):
+        request = st.text_input("What do you want to buy?", placeholder="e.g. Fresh Catfish")
+        phone2 = st.text_input("Your WhatsApp Number", placeholder="e.g. 08116911722")
+        submit2 = st.form_submit_button("Join Waitlist")
+        if submit2:
+            if not request or not phone2:
+                st.error("Fill request and phone")
+            else:
+                ok = send_to_sheet({"type": "waitlist", "request": request, "phone": phone2, "whatsapp": phone2})
+                if ok:
+                    st.success("✅ You don join waitlist!")
+                else:
+                    st.error("Failed. Try again.")
