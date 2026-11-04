@@ -2,54 +2,47 @@ import streamlit as st
 from supabase import create_client
 import time
 
-st.set_page_config(page_title="Row Economy Market - LIVE", page_icon="🛒", layout="wide")
+st.set_page_config(page_title="Row Economy Market", layout="wide")
 
 URL = st.secrets["SUPABASE_URL"]
 KEY = st.secrets["SUPABASE_KEY"]
 supabase = create_client(URL, KEY)
 
-# PUT YOUR WHATSAPP NUMBER HERE - e.g. 2348031234567 (234 + number without 0)
-SELLER_WHATSAPP = "2348031234567"
-
 st.markdown("""
 <style>
 .main {background-color:#0a0a0a; color:white;}
-.live-badge {background:#ff2d55; color:white; padding:4px 12px; border-radius:20px; font-weight:800; font-size:14px;}
+.live-badge {background:#ff2d55; color:white; padding:4px 12px; border-radius:20px; font-weight:800;}
 .host-box {background:#1a1a1a; padding:12px; border-radius:16px;}
 .product-card {background:#171717; border-radius:18px; padding:14px; border:1px solid #2a2a2a;}
 </style>
 """, unsafe_allow_html=True)
 
-c1, c2 = st.columns([3,1])
-with c1:
-    st.markdown("### Row Economy Market")
-    st.caption("Wuse Market - Abuja - Live Shopping")
-with c2:
-    st.markdown('<span class="live-badge">LIVE</span> - 128 watching', unsafe_allow_html=True)
-
-st.markdown('<div class="host-box"><b>@WuseSeller</b> - 5.0 stars | 1.2k followers - Wuse Market</div>', unsafe_allow_html=True)
+st.markdown("### Row Economy Market")
+st.caption("Wuse Market - Abuja - Live Shopping")
+st.markdown('<span class="live-badge">LIVE</span> - 128 watching', unsafe_allow_html=True)
+st.markdown('<div class="host-box"><b>@WuseSeller</b> - 5.0 stars | Wuse Market</div>', unsafe_allow_html=True)
 st.markdown("### Fresh Rice Available Now - Ask Me Price!")
-st.caption("Fresh stock from Wuse Market. Delivery available in Abuja. Tap WhatsApp to order.")
+st.caption("Fresh stock from Wuse Market. Delivery available in Abuja.")
 
 st.subheader("Your Live Camera")
 photo = st.camera_input("Take Photo", label_visibility="collapsed")
-live_title = st.text_input("Live Title", value="Fresh Rice Available Now - Wuse Market")
+live_title = st.text_input("Live Title", value="Fresh Rice Available Now")
 
-col_a, col_b = st.columns(2)
-with col_a:
+c1, c2 = st.columns(2)
+with c1:
     if st.button("Start Live", use_container_width=True):
         try:
             supabase.table("live_sessions").insert({"title": live_title, "is_live": True}).execute()
             st.success("You are LIVE now!")
         except Exception as e:
-            st.error(f"Could not start live: {e}")
-with col_b:
+            st.error("Could not start live")
+with c2:
     if st.button("End Live", use_container_width=True):
         try:
             supabase.table("live_sessions").update({"is_live": False}).eq("is_live", True).execute()
             st.info("Live ended.")
         except Exception as e:
-            st.error(f"Error: {e}")
+            st.error("Error")
 
 st.markdown("### Support Seller")
 g1, g2, g3, g4 = st.columns(4)
@@ -67,11 +60,11 @@ with g4:
         st.success("Thank you! Diamond sent!")
 
 st.markdown("### Live Comments")
-comment_name = st.text_input("Your Name", placeholder="e.g. Amina")
-comment_text = st.text_input("Ask a question", placeholder="e.g. How much is delivery to Garki?")
+cname = st.text_input("Your Name", placeholder="e.g. Amina")
+ctext = st.text_input("Ask a question", placeholder="e.g. How much is delivery to Garki?")
 if st.button("Send Comment"):
-    if comment_name and comment_text:
-        st.success(f"{comment_name}: {comment_text} - Sent!")
+    if cname and ctext:
+        st.success("Comment sent!")
     else:
         st.error("Please enter name and question")
 
@@ -84,13 +77,11 @@ try:
     res = supabase.table("products").select("*").order("created_at", desc=True).execute()
     products = res.data or []
 except Exception as e:
-    st.error(f"Could not load products: {e}")
+    st.error("Could not load products")
     products = []
 
 if search:
     products = [p for p in products if search.lower() in str(p.get("name", "")).lower()]
-if category != "All":
-    products = [p for p in products if category.lower() in str(p.get("category", "") or "").lower() + str(p.get("name", "")).lower()]
 
 if not products:
     st.info("No products yet. Post your first product below.")
@@ -100,4 +91,42 @@ else:
         price = p.get("price", 0) or 0
         desc = p.get("description") or ""
         img = p.get("image_url") or ""
-        unit
+        unit = p.get("unit", "") or ""
+        st.markdown('<div class="product-card">', unsafe_allow_html=True)
+        if img and img.startswith("http"):
+            st.image(img, use_container_width=True)
+        st.markdown("### " + str(name))
+        if unit:
+            st.markdown("## N" + f"{price:,.0f}" + " / " + str(unit))
+        else:
+            st.markdown("## N" + f"{price:,.0f}")
+        if desc:
+            st.write(desc)
+        st.caption("5.0 stars | Wuse Market | Delivery in Abuja")
+        if st.button("Buy Now", key="buy_" + str(p.get("id"))):
+            st.success("Order started! Tap WhatsApp below to complete.")
+        st.markdown("[Chat on WhatsApp](https://wa.me/2348031234567)")
+        st.markdown("</div><br>", unsafe_allow_html=True)
+
+st.markdown("---")
+st.markdown("## Post Product")
+with st.form("post_form"):
+    pname = st.text_input("Product Name", placeholder="Rice 50kg")
+    pprice = st.number_input("Price (N)", min_value=0, value=85000)
+    punit = st.selectbox("Unit", ["bag", "pcs", "kg", "litre", "basket"])
+    pdesc = st.text_area("Description", placeholder="Fresh 50kg bag of rice from Wuse Market.")
+    pimage = st.text_input("Product Image Link", placeholder="Paste image link here")
+    submit = st.form_submit_button("Post Product", use_container_width=True)
+    if submit:
+        if not pname or not pdesc:
+            st.error("Name + Desc needed!")
+        else:
+            try:
+                supabase.table("products").insert({"name": pname, "price": pprice, "unit": punit, "description": pdesc, "image_url": pimage}).execute()
+                st.success("Posted! Refresh to see it.")
+                time.sleep(1)
+                st.rerun()
+            except Exception as e:
+                st.error("Error posting")
+
+st.caption("Row Economy Market - Wuse Market sellers")
