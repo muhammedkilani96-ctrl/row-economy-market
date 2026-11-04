@@ -105,28 +105,4 @@ else:
         st.caption("5.0 stars | Wuse Market | Delivery in Abuja")
         if st.button("Buy Now", key="buy_" + str(p.get("id"))):
             st.success("Order started! Tap WhatsApp below to complete.")
-        st.markdown("[Chat on WhatsApp](https://wa.me/2348031234567)")
-        st.markdown("</div><br>", unsafe_allow_html=True)
-
-st.markdown("---")
-st.markdown("## Post Product")
-with st.form("post_form"):
-    pname = st.text_input("Product Name", placeholder="Rice 50kg")
-    pprice = st.number_input("Price (N)", min_value=0, value=85000)
-    punit = st.selectbox("Unit", ["bag", "pcs", "kg", "litre", "basket"])
-    pdesc = st.text_area("Description", placeholder="Fresh 50kg bag of rice from Wuse Market.")
-    pimage = st.text_input("Product Image Link", placeholder="Paste image link here")
-    submit = st.form_submit_button("Post Product", use_container_width=True)
-    if submit:
-        if not pname or not pdesc:
-            st.error("Name + Desc needed!")
-        else:
-            try:
-                supabase.table("products").insert({"name": pname, "price": pprice, "unit": punit, "description": pdesc, "image_url": pimage}).execute()
-                st.success("Posted! Refresh to see it.")
-                time.sleep(1)
-                st.rerun()
-            except Exception as e:
-                st.error("Error posting")
-
-st.caption("Row Economy Market - Wuse Market sellers")
+        st.markdown("[Chat on
