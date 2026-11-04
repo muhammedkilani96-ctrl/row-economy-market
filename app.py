@@ -2,10 +2,21 @@ import streamlit as st
 import pandas as pd
 import urllib.parse
 import re
+import requests
 
 # --- YOUR REAL SHEET - ALREADY PUT ---
 SHEET_ID = "1DMODScWNcjddoxARnCFQIp3jIrqLZ0EI770GaLuYXVA"
 CSV_URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv"
+
+# --- YOUR NEW APPS SCRIPT LINK - FOR WRITING TO SHEET ---
+SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxD0TcnR6NayT4pCYslMDaH8dXvFrQhmxDLANC1wqcOs006OmF8frhUOCY_m34CHqfv/exec"
+
+def send_to_sheet(data):
+    try:
+        r = requests.post(SCRIPT_URL, json=data, timeout=10)
+        return True
+    except Exception as e:
+        return False
 
 st.set_page_config(page_title="ROW Economy Market - Abuja", layout="wide")
 st.title("🛒 ROW ECONOMY MARKET - Abuja")
@@ -15,17 +26,14 @@ st.write("No more waka waka for market. Find am, Chat Seller, Buy am.")
 def load_products():
     try:
         df = pd.read_csv(CSV_URL)
-        # Make headers small - so WhatsApp / whatsapp both work
         df.columns = [c.strip().lower() for c in df.columns]
         df = df.dropna(subset=["name"])
-        # Clean lat/lon - remove "E2 =" if e still dey
         def clean_num(x):
             m = re.search(r"(\d+\.\d+|\d+)", str(x))
             return float(m.group(1)) if m else 9.066
         df["lat"] = df["lat"].apply(clean_num)
         df["lon"] = df["lon"].apply(clean_num)
         df["price"] = pd.to_numeric(df["price"], errors="coerce").fillna(0)
-        # Clean whatsapp
         df["whatsapp"] = df["whatsapp"].astype(str).str.replace(r"\.0", "", regex=True)
         return df.to_dict("records")
     except Exception as e:
@@ -88,6 +96,8 @@ if st.session_state.show_wait:
     if st.button("Notify Me on WhatsApp"):
         if wa:
             st.session_state.waitlist.append({"request": st.session_state.last_search, "whatsapp": wa})
+            # SEND TO SHEET
+            send_to_sheet({"type": "waitlist", "request": st.session_state.last_search, "whatsapp": wa})
             st.success(f"Done! We don save your request for '{st.session_state.last_search}'. Once we have am, we go text you directly on WhatsApp {wa}. No need to dey check everyday.")
             st.session_state.show_wait = False
         else:
@@ -108,7 +118,12 @@ with st.form("post_form"):
             wa_clean = "234" + wa_clean[1:]
         new_p = {"name": name, "price": price, "location": location, "whatsapp": wa_clean, "lat": 9.066, "lon": 7.483}
         st.session_state.new_products.append(new_p)
-        st.success(f"Posted! {name} don show for Map now.")
+        # SEND TO SHEET VIA APPS SCRIPT
+        ok = send_to_sheet({"type": "product", "name": name, "price": price, "location": location, "whatsapp": wa_clean, "lat": 9.066, "lon": 7.483})
+        if ok:
+            st.success(f"Posted! {name} don show for Map now and don enter Google Sheet.")
+        else:
+            st.success(f"Posted! {name} don show for Map now.")
         for w in st.session_state.waitlist:
             if any(word.lower() in name.lower() for word in w["request"].lower().split() if len(word) > 2):
                 st.info(f"🔔 Somebody dey wait for this: {w['request']} - WhatsApp: {w['whatsapp']}. Text them now!")
