@@ -61,7 +61,7 @@ waitlist = pd.DataFrame()
 if not df.empty and "location" in df.columns:
     products = df[df["location"].astype(str).str.upper() != "WAITLIST"].copy()
     waitlist = df[df["location"].astype(str).str.upper() == "WAITLIST"].copy()
-    products = products.drop_duplicates(subset=["name", "price", "location"], keep="last")
+    products = products.reset_index(drop=True)
 
 st.header("LIVE MAP - Abuja")
 st.map(pd.DataFrame({"lat": [9.066], "lon": [7.483]}))
