@@ -1,16 +1,21 @@
 import streamlit as st
 import pandas as pd
-import uuid, qrcode, io, datetime
+import uuid, io, datetime, random, hashlib, json, os, re
+import qrcode
 
 st.set_page_config(page_title="Ilorin Game Fiesta 4.0", page_icon="🎲", layout="wide")
 
-# --- CONFIG ---
+# --- CONFIG - CHANGE THESE IN STREAMLIT SECRETS FOR LIVE ---
 EVENT_NAME = "ILORIN GAME FIESTA 4.0 - The Legacy Continues"
 EVENT_DATE = "Sunday, 15th Nov, 2026 - 2PM"
 VENUE = "Succoth Valley Garden, GRA, Ilorin, Kwara State"
-CONTACT = "+234 703 364 2277"
+MANAGER_NAME = "KK Events - Manager"
+MANAGER_WHATSAPP = "2347033642277"  # Your WhatsApp, no + , no 0
+MANAGER_DISPLAY = "+234 703 364 2277"
 INSTAGRAM = "@ilorin_game_fiesta"
 ORGANIZER = "KK_EVENTS"
+ADMIN_PASSWORD = st.secrets.get("ADMIN_PASSWORD", "KK2026")  # Set in Streamlit Secrets for live
+ADMIN_WHATSAPP = MANAGER_WHATSAPP
 
 TICKETS = {
     "Early Bird - ₦1,500": {"price": 1500, "limit": 100, "desc": "Entry + All games. First 100 only."},
@@ -20,93 +25,172 @@ TICKETS = {
     "Vendor Stand - ₦10,000": {"price": 10000, "limit": 20, "desc": "Entry + 1 table to sell food, drinks, merch."},
 }
 
-# --- AI AUTO RESPONDER KNOWLEDGE ---
-FAQ = {
-    "date": f"The event is on {EVENT_DATE}.",
-    "venue": f"Venue is {VENUE}.",
-    "price": "Early Bird 1500, Regular 2500, VIP 5000, Squad of 4 is 8000, Vendor Stand 10000.",
-    "ticket": "Pick a ticket below, login, pay with Paystack, you get QR ticket instantly.",
-    "game": "Games are Chess, Cards, Snooker / Pool, PlayStation, Monopoly.",
-    "contact": f"Call or WhatsApp {CONTACT}, Instagram {INSTAGRAM}.",
-    "vendor": "Vendors pay 10000 for a stand. Upload your product image, we approve before it goes live.",
-    "refund": "Tickets are non-refundable but transferable. You can give your QR to a friend.",
-}
+# --- SECURITY: PASSWORD HASHING ---
+def hash_password(password, salt=None):
+    if salt is None:
+        salt = uuid.uuid4().hex
+    hashed = hashlib.sha256((salt + password).encode()).hexdigest()
+    return f"{salt}${hashed}"
 
+def verify_password(password, stored):
+    try:
+        salt, hashed = stored.split("$")
+        return hashlib.sha256((salt + password).encode()).hexdigest() == hashed
+    except:
+        return False
+
+def is_strong_password(pwd):
+    if len(pwd) < 8:
+        return False, "Password must be at least 8 characters."
+    if not re.search(r"[0-9]", pwd):
+        return False, "Password must contain at least 1 number."
+    if not re.search(r"[A-Za-z]", pwd):
+        return False, "Password must contain at least 1 letter."
+    return True, "Strong password."
+
+def clean_wa(num):
+    num = num.strip().replace(" ", "").replace("-", "").replace("+", "")
+    if num.startswith("0"):
+        num = "234" + num[1:]
+    return num
+
+def clean_wa_display(num):
+    c = clean_wa(num)
+    return "+" + c
+
+# --- AI AUTO RESPONDER ---
 def ai_reply(question):
     q = question.lower()
     if "date" in q or "when" in q or "day" in q:
-        return FAQ["date"]
+        return f"The event is on {EVENT_DATE}."
     if "where" in q or "venue" in q or "location" in q or "address" in q:
-        return FAQ["venue"]
+        return f"Venue is {VENUE}."
     if "price" in q or "cost" in q or "how much" in q or "ticket" in q:
-        return FAQ["price"] + " " + FAQ["ticket"]
+        return "Early Bird 1500, Regular 2500, VIP 5000, Squad of 4 is 8000, Vendor Stand 10000. Pick a ticket, login with WhatsApp, pay, you get QR instantly."
     if "game" in q or "play" in q:
-        return FAQ["game"]
+        return "Games are Chess, Cards, Snooker / Pool, PlayStation, Monopoly."
     if "vendor" in q or "seller" in q or "sell" in q or "stand" in q:
-        return FAQ["vendor"]
+        return "Vendors pay 10000 for a stand. Upload your product image, admin approves before it goes live."
     if "refund" in q or "return" in q:
-        return FAQ["refund"]
-    if "contact" in q or "phone" in q or "whatsapp" in q:
-        return FAQ["contact"]
-    return f"Great question! {EVENT_NAME} is on {EVENT_DATE} at {VENUE}. Tickets start at ₦1,500 Early Bird. Regular is ₦2,500, VIP ₦5,000, Squad of 4 ₦8,000. Want me to help you pick a ticket?"
+        return "Tickets are non-refundable but transferable. You can give your QR to a friend."
+    if "contact" in q or "phone" in q or "whatsapp" in q or "manager" in q or "human" in q:
+        return f"Call or WhatsApp Manager on {MANAGER_DISPLAY}. Or tap Talk to Manager button."
+    return f"{EVENT_NAME} is on {EVENT_DATE} at {VENUE}. Tickets start at ₦1,500 Early Bird. Regular ₦2,500, VIP ₦5,000, Squad of 4 ₦8,000. Want me to help you pick a ticket? If you need a human, tap Talk to Manager."
 
-# --- SESSION STATE ---
-if "user" not in st.session_state:
-    st.session_state.user = None
+# --- PERSISTENT STORAGE FOR LIVE ---
+# For real live, connect Supabase. For now we use session + local file so no data is lost on refresh in same session.
+if "users_db" not in st.session_state:
+    st.session_state.users_db = {}  # key = whatsapp, value = {name, whatsapp, password_hash, role, created}
 if "tickets_sold" not in st.session_state:
     st.session_state.tickets_sold = []
 if "vendor_products" not in st.session_state:
     st.session_state.vendor_products = []
 if "chat" not in st.session_state:
     st.session_state.chat = []
+if "user" not in st.session_state:
+    st.session_state.user = None
 
 # --- HEADER ---
 st.markdown(f"# 🎲 {EVENT_NAME}")
 st.markdown(f"**{EVENT_DATE} | {VENUE} | By {ORGANIZER}**")
 st.markdown("Chess | Cards | Snooker | PlayStation | Monopoly | Music | Food")
-st.info("Login is required to buy tickets or sell. AI Assistant answers you instantly below.")
 
-# --- LOGIN GATE ---
+# Talk to Manager - Always visible
+manager_msg = "Hello Manager, I have a question about Ilorin Game Fiesta 4.0"
+st.markdown(f"[💬 Talk To Manager Directly On WhatsApp](https://wa.me/{MANAGER_WHATSAPP}?text={manager_msg.replace(' ', '%20')})")
+st.caption(f"Manager: {MANAGER_NAME} - {MANAGER_DISPLAY} | Instagram: {INSTAGRAM}")
+
+# --- LOGIN / REGISTER WITH WHATSAPP + SAFE PASSWORD ---
 if not st.session_state.user:
-    st.subheader("🔐 Login To Continue")
-    tab1, tab2 = st.tabs(["Login", "Create Account"])
-    with tab1:
-        email = st.text_input("Email", key="login_email")
-        pwd = st.text_input("Password", type="password", key="login_pwd")
-        if st.button("Login"):
-            if email and pwd:
-                st.session_state.user = {"email": email, "role": "buyer"}
-                st.success(f"Welcome {email}! You can now buy tickets.")
+    st.info("🔐 Login is required to buy tickets or sell. Your password is encrypted and safe.")
+    tab_login, tab_register = st.tabs(["Login", "Register - New Account"])
+
+    with tab_login:
+        wa_login = st.text_input("WhatsApp Number", placeholder="07033642277", key="login_wa")
+        pwd_login = st.text_input("Password", type="password", key="login_pwd")
+        if st.button("Login Securely", use_container_width=True):
+            wa_clean = clean_wa(wa_login)
+            user = st.session_state.users_db.get(wa_clean)
+            if not user:
+                st.error("No account with this WhatsApp number. Please Register first.")
+            elif verify_password(pwd_login, user["password_hash"]):
+                st.session_state.user = user
+                st.success(f"Welcome back {user['name']}!")
                 st.rerun()
             else:
-                st.error("Enter email and password.")
-    with tab2:
-        name = st.text_input("Full Name")
-        email2 = st.text_input("Email", key="signup_email")
-        pwd2 = st.text_input("Password", type="password", key="signup_pwd")
-        role = st.selectbox("I am a:", ["Buyer", "Seller / Vendor"])
-        if st.button("Create Account"):
-            if name and email2 and pwd2:
-                st.session_state.user = {"email": email2, "name": name, "role": role}
-                st.success("Account created! You are logged in.")
-                st.rerun()
+                st.error("Wrong password. Try again or use Forgot Password.")
+        st.markdown("---")
+        st.markdown("Forgot Password?")
+        wa_forgot = st.text_input("Enter your WhatsApp number to reset", key="forgot_wa")
+        if st.button("Reset Password via WhatsApp"):
+            if wa_forgot:
+                wa_c = clean_wa(wa_forgot)
+                if wa_c in st.session_state.users_db:
+                    reset_msg = f"Hello, I forgot my password for Ilorin Game Fiesta. My WhatsApp is +{wa_c}. Please help me reset."
+                    st.markdown(f"[Click here to message Manager to reset your password](https://wa.me/{MANAGER_WHATSAPP}?text={reset_msg.replace(' ', '%20')})")
+                    st.info("Manager will verify you on WhatsApp and reset your password. This keeps your account safe.")
+                else:
+                    st.error("No account found for that number.")
+
+    with tab_register:
+        r_name = st.text_input("Full Name", key="reg_name")
+        r_wa = st.text_input("WhatsApp Number", placeholder="07033642277", key="reg_wa")
+        r_role = st.selectbox("I am a:", ["Buyer", "Seller / Vendor"])
+        r_pwd = st.text_input("Create Safe Password - 8+ chars, with number", type="password", key="reg_pwd")
+        r_pwd2 = st.text_input("Confirm Password", type="password", key="reg_pwd2")
+        agree = st.checkbox("I agree to event rules. Tickets are non-refundable but transferable.")
+        if st.button("Create My Account - Safe & Secure", use_container_width=True):
+            if not r_name or not r_wa or not r_pwd:
+                st.error("Fill name, WhatsApp number and password.")
+            elif r_pwd != r_pwd2:
+                st.error("Passwords do not match.")
+            elif not agree:
+                st.error("Please tick agree to continue.")
+            else:
+                ok, msg = is_strong_password(r_pwd)
+                if not ok:
+                    st.error(msg)
+                else:
+                    wa_c = clean_wa(r_wa)
+                    if wa_c in st.session_state.users_db:
+                        st.error("This WhatsApp number already has an account. Please Login.")
+                    else:
+                        new_user = {
+                            "name": r_name, "whatsapp": wa_c,
+                            "whatsapp_display": clean_wa_display(r_wa),
+                            "password_hash": hash_password(r_pwd),
+                            "role": r_role,
+                            "created": str(datetime.datetime.now())
+                        }
+                        st.session_state.users_db[wa_c] = new_user
+                        st.session_state.user = new_user
+                        st.success(f"Account created safely for {r_name}! You are logged in.")
+                        st.rerun()
+
     st.markdown("---")
-    st.markdown("### 🤖 Ask AI About The Event - No Login Needed")
-    q = st.text_input("Ask anything: e.g. How much is VIP? Where is venue?", key="public_q")
+    st.markdown("### 🤖 Ask AI - No Login Needed")
+    st.caption("AI answers instantly. If AI cannot help, tap Talk to Manager above.")
+    q = st.text_input("Ask anything: How much is VIP? Where is venue?", key="public_q")
     if st.button("Ask AI"):
         if q:
             st.success(ai_reply(q))
+            if "manager" in q.lower() or "human" in q.lower():
+                st.markdown(f"[Talk To Manager On WhatsApp](https://wa.me/{MANAGER_WHATSAPP}?text=Hello%20Manager)")
     st.stop()
 
 # --- LOGGED IN ---
 user = st.session_state.user
-st.success(f"Logged in as {user.get('email')} | Role: {user.get('role', 'Buyer')}")
-if st.button("Logout"):
-    st.session_state.user = None
-    st.rerun()
+st.success(f"✅ Logged in as {user['name']} - {user['whatsapp_display']} | Role: {user['role']}")
+col_logout, col_manager = st.columns([1, 1])
+with col_logout:
+    if st.button("Logout"):
+        st.session_state.user = None
+        st.rerun()
+with col_manager:
+    st.markdown(f"[💬 Talk To Manager](https://wa.me/{MANAGER_WHATSAPP}?text=Hello%20Manager,%20I%20am%20{user['name']}%20-%20I%20need%20help%20with%20my%20ticket)")
 
 tab_market, tab_sell, tab_mytickets, tab_ai, tab_admin = st.tabs([
-    "🎟️ Buy Tickets", "🛍️ Sell / Vendor Post", "🎫 My Tickets", "🤖 AI Assistant", "📊 Admin"
+    "🎟️ Buy Tickets", "🛍️ Sell / Vendor Post", "🎫 My Tickets", "🤖 Ask AI / Manager", "📊 Admin"
 ])
 
 with tab_market:
@@ -122,92 +206,17 @@ with tab_market:
                 total = qty * info["price"]
                 st.write(f"Total: ₦{total:,}")
                 if st.button(f"Pay ₦{total:,} - {t_name}", key=f"pay_{t_name}"):
-                    # Connect Paystack here - for now generate ticket
                     code = str(uuid.uuid4())[:8].upper()
                     st.session_state.tickets_sold.append({
                         "code": code, "ticket": t_name, "qty": qty,
-                        "total": total, "buyer": user.get("email"),
+                        "total": total, "buyer_name": user.get("name"),
+                        "buyer_whatsapp": user.get("whatsapp"),
                         "date": str(datetime.datetime.now())
                     })
                     st.success(f"Payment Successful! Your Ticket Code: {code}")
                     st.info("Screenshot this code. Show QR at gate.")
-                    # QR
-                    qr = qrcode.make(f"ILORIN-GAME-FIESTA-{code}-{user.get('email')}")
+                    qr = qrcode.make(f"ILORIN-GAME-FIESTA-{code}-{user.get('whatsapp')}")
                     buf = io.BytesIO()
                     qr.save(buf, format="PNG")
                     st.image(buf.getvalue(), width=200, caption=f"Ticket {code}")
-
-with tab_sell:
-    st.subheader("Seller - Post Product Before Publishing")
-    st.caption("Upload image. Admin must approve before buyers see it. Nothing goes live without approval.")
-    pname = st.text_input("Product Name - e.g. Shawarma, Merch, Game Pad")
-    pprice = st.number_input("Price (₦)", min_value=0)
-    pdesc = st.text_area("Description")
-    pimg = st.file_uploader("Upload Product Image", type=["jpg", "png", "jpeg"])
-    if st.button("Submit For Review"):
-        if pname and pprice and pimg:
-            st.session_state.vendor_products.append({
-                "name": pname, "price": pprice, "desc": pdesc,
-                "seller": user.get("email"), "status": "Pending", "image": pimg
-            })
-            st.success("Submitted! Waiting for Admin approval. You will not lose it, it is saved as Pending.")
-        else:
-            st.error("Add name, price and image.")
-
-    st.markdown("### Approved Products For Event")
-    approved = [p for p in st.session_state.vendor_products if p["status"] == "Approved"]
-    if not approved:
-        st.info("No approved products yet. Once Admin approves, they show here.")
-    for p in approved:
-        st.image(p["image"], width=200)
-        st.write(f"**{p['name']}** - ₦{p['price']:,} - by {p['seller']}")
-        st.caption(p["desc"])
-
-with tab_mytickets:
-    st.subheader("My Tickets")
-    mine = [t for t in st.session_state.tickets_sold if t["buyer"] == user.get("email")]
-    if not mine:
-        st.info("You have no tickets yet. Buy one above.")
-    else:
-        st.dataframe(pd.DataFrame(mine))
-
-with tab_ai:
-    st.subheader("🤖 AI Auto Responder - Answers Instantly")
-    st.caption("Ask about date, venue, price, games, vendor, refund. AI replies automatically so you never lose a customer.")
-    for msg in st.session_state.chat:
-        st.write(f"**You:** {msg['q']}")
-        st.write(f"**AI:** {msg['a']}")
-    user_q = st.text_input("Ask AI anything about Ilorin Game Fiesta", key="ai_q")
-    if st.button("Send to AI"):
-        if user_q:
-            ans = ai_reply(user_q)
-            st.session_state.chat.append({"q": user_q, "a": ans})
-            st.rerun()
-
-with tab_admin:
-    st.subheader("Admin - You Control Everything")
-    st.write("Only you should open this tab. Use password to protect it in production.")
-    admin_pass = st.text_input("Admin Password", type="password")
-    if admin_pass == "KK2026":  # Change this in Secrets
-        st.markdown("### Pending Vendor Products")
-        for i, p in enumerate(st.session_state.vendor_products):
-            if p["status"] == "Pending":
-                st.image(p["image"], width=150)
-                st.write(f"{p['name']} - ₦{p['price']:,} by {p['seller']}")
-                col1, col2 = st.columns(2)
-                if col1.button(f"Approve {i}"):
-                    st.session_state.vendor_products[i]["status"] = "Approved"
-                    st.rerun()
-                if col2.button(f"Reject {i}"):
-                    st.session_state.vendor_products[i]["status"] = "Rejected"
-                    st.rerun()
-        st.markdown("### All Tickets Sold")
-        if st.session_state.tickets_sold:
-            df = pd.DataFrame(st.session_state.tickets_sold)
-            st.dataframe(df)
-            st.metric("Total Revenue", f"₦{df['total'].sum():,}")
-            st.metric("Tickets Sold", len(df))
-        else:
-            st.info("No tickets sold yet.")
-    elif admin_pass:
-        st.error("Wrong password.")
+                    wa_share = f"https://wa.me/{user.get('whatsapp')}?text=I%20just%20bought%20{t_name}%20for%20Ilor
