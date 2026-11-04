@@ -27,7 +27,6 @@ with tab1:
         prod_list = [p['name'] for p in products]
         sel = st.selectbox("Select Product", prod_list, key="dash_prod")
         if sel:
-            # find id
             pid = next(p['id'] for p in products if p['name']==sel)
             filtered = [f for f in prices if f['product_id']==pid]
             if not filtered:
@@ -69,4 +68,30 @@ with tab2:
         for p in products:
             c1,c2 = st.columns([4,1])
             c1.write(f"{p['name']} ({p['unit']})")
-            if c
+            if c2.button("X", key=f"p{p['id']}"):
+                supabase.table("products").delete().eq("id", p['id']).execute()
+                st.rerun()
+
+with tab3:
+    st.subheader("Record New Price")
+    if not markets or not products:
+        st.info("Add at least 1 market and 1 product in Manage tab first")
+    else:
+        with st.form("add_price", clear_on_submit=True):
+            m_names = [m['name'] for m in markets]
+            p_names = [p['name'] for p in products]
+            sel_m_name = st.selectbox("Market", m_names)
+            sel_p_name = st.selectbox("Product", p_names)
+            price_val = st.number_input("Price (₦)", min_value=0.0, step=100.0)
+            date_val = st.date_input("Date", value=date.today())
+            if st.form_submit_button("Save Price"):
+                mid = next(m['id'] for m in markets if m['name']==sel_m_name)
+                pid = next(p['id'] for p in products if p['name']==sel_p_name)
+                supabase.table("market_prices").insert({
+                    "market_id": mid,
+                    "product_id": pid,
+                    "price": price_val,
+                    "date_recorded": str(date_val)
+                }).execute()
+                st.success(f"Saved! {sel_p_name} at {sel_m_name} = ₦{price_val}")
+                st.rerun()
