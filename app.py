@@ -62,9 +62,19 @@ if not df.empty and "location" in df.columns:
     products = df[df["location"].astype(str).str.upper() != "WAITLIST"].copy()
     waitlist = df[df["location"].astype(str).str.upper() == "WAITLIST"].copy()
     products = products.reset_index(drop=True)
-
+if not products.empty and "lat" in products.columns and "lon" in products.columns:
+    mdf = products.copy()
+    mdf["lat"] = pd.to_numeric(mdf["lat"], errors="coerce")
+    mdf["lon"] = pd.to_numeric(mdf["lon"], errors="coerce")
+    mdf = mdf.dropna(subset=["lat", "lon"])
+    if not mdf.empty:
+        st.map(mdf[["lat", "lon"]])
+    else:
+        st.map(pd.DataFrame({"lat": [9.066], "lon": [7.483]}))
+else:
+    st.map(pd.DataFrame({"lat": [9.066], "lon": [7.483]}))
 st.header("LIVE MAP - Abuja")
-st.map(pd.DataFrame({"lat": [9.066], "lon": [7.483]}))
+
 
 if products.empty:
     st.info("No products yet. Be the first to post!")
