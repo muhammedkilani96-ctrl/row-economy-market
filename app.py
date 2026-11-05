@@ -3,18 +3,19 @@ import urllib.parse
 
 st.set_page_config(page_title="Row Economy", layout="wide")
 
-# DATA - renamed to goods, NOT items
+# DATA
 if "goods" not in st.session_state:
     st.session_state.goods = []
-    st.session_state.goods.append("Horlance|Car AC Repair|25000|Osun & Oyo|09046044472|Car Mart")
-    st.session_state.goods.append("Mama T|Bag of Rice|45000|Abuja|09046044472|Food")
+    st.session_state.goods.append("Horlance|Car AC Repair|25000|Osun & Oyo|09046044472|Car Mart|YES")
+    st.session_state.goods.append("Mama T|Bag of Rice|45000|Abuja|09046044472|Food|YES")
 
 if "cat" not in st.session_state:
     st.session_state.cat = "All"
 
-# HEADER
+# HEADER - GREEN LIKE K&K
 st.markdown("<h1 style='background:#00A651;color:white;text-align:center;padding:15px;border-radius:0 0 20px 20px'>ROW ECONOMY</h1>", unsafe_allow_html=True)
-search = st.text_input("Search", placeholder="Ask Mama Oloja - What are you looking for today?")
+st.markdown("<p style='text-align:center'>Ask Mama Oloja - What are you looking for today?</p>", unsafe_allow_html=True)
+search = st.text_input("Search", placeholder="Ask Mama Oloja...")
 
 # CATEGORIES
 st.write("### Categories")
@@ -40,13 +41,12 @@ with a4:
     if st.button("Chat Rooms"):
         st.session_state.cat = "Chat Rooms"
 
-st.write("Showing:")
-st.write(st.session_state.cat)
+st.write("Showing: " + st.session_state.cat)
 if st.button("Show All"):
     st.session_state.cat = "All"
     st.rerun()
 
-# LISTINGS
+# FEATURED LISTING - CARD STYLE LIKE K&K
 st.write("### Featured Listing")
 for line in st.session_state.goods:
     parts = line.split("|")
@@ -56,49 +56,12 @@ for line in st.session_state.goods:
     loc = parts[3]
     wa = parts[4]
     cat = parts[5]
+    ver = parts[6]
     if st.session_state.cat != "All":
         if cat != st.session_state.cat:
             continue
     if search:
         if search.lower() not in name.lower():
             continue
-    st.write("**" + seller + "**")
-    st.write(name)
-    st.write("Location: " + loc)
-    st.write("WhatsApp: " + wa)
-    st.write("Price: N" + price)
-    msg = urllib.parse.quote("Hello " + seller)
-    link = "https://wa.me/234" + wa[1:] + "?text=" + msg
-    st.link_button("Chat on WhatsApp", link)
-    st.write("---")
-
-# MAMA OLOJA
-st.write("### Mama Oloja AI")
-st.write("Welcome my dear, I can help you find the best price.")
-q = st.text_input("Ask Mama Oloja", placeholder="e.g. rice")
-if q:
-    st.success("Mama Oloja: I found " + q + " for you above. Chat seller now.")
-
-# SELLER FORM
-st.write("### Sell - FREE for First 10")
-st.write("1 Name  2 WhatsApp  3 Location  4 Pictures  5 Price")
-with st.form("f"):
-    n1 = st.text_input("1. Your Name")
-    n2 = st.text_input("2. WhatsApp")
-    n3 = st.selectbox("3. Location", ["Abuja", "Osun & Oyo", "Ogbomoso", "Ilorin", "Lagos"])
-    n4 = st.selectbox("Category", ["Food", "Phones", "Clothes", "Perfume", "Car Mart", "Services", "Tickets", "Chat Rooms"])
-    n5 = st.text_input("5. Product Name")
-    n6 = st.text_input("5. Price - numbers only e.g. 25000")
-    pic = st.file_uploader("4. Upload Picture", type=["jpg", "png"])
-    go = st.form_submit_button("POST MY GOODS FOR FREE")
-    if go:
-        if n1 == "" or n2 == "":
-            st.error("Fill Name and WhatsApp")
-        elif n5 == "":
-            st.error("Fill Product Name")
-        else:
-            new = n1 + "|" + n5 + "|" + n6 + "|" + n3 + "|" + n2 + "|" + n4
-            st.session_state.goods.append(new)
-            st.success("Done! Your goods are LIVE!")
-            st.balloons()
-            st.rerun()
+    # CARD
+    st.markdown("<div style='background:white;border:1px solid #eee;border-radius:16px;padding:16
