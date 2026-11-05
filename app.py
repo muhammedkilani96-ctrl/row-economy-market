@@ -43,5 +43,10 @@ if st.button("POST MY GOODS FOR FREE"):
     st.success("Pay: "+n7)
     st.success("Delivery: "+n8)
     st.balloons()
-st.markdown("### Bottom")
-st.markdown("Home | Shop | Orders | Profile")
+b1="<div style='background:#00A651;"
+b1+="padding:14px;border-radius:20px 20px 0 0;"
+b1+="color:white;text-align:center'>"
+b1+="<b>Home</b> &nbsp; | &nbsp; "
+b1+="<b>Shop</b> &nbsp; | &nbsp; "
+b1+="<b>Orders</b> &nbsp; | &nbsp; <b>Profile</b></div>"
+st.markdown(b1, unsafe_allow_html=True)
