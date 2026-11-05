@@ -1,47 +1,55 @@
 import streamlit as st
 import urllib.parse
 st.set_page_config(page_title="Row Economy", layout="wide")
-st.markdown("<style>header{visibility:hidden} .block-container{padding:0px !important}</style>", unsafe_allow_html=True)
+st.markdown("<style>header{visibility:hidden} .block-container{padding:0px !important} body{background:white} .stApp{background:white}</style>", unsafe_allow_html=True)
 if "goods" not in st.session_state:
     st.session_state.goods = []
     st.session_state.goods.append("Horlance Auto Cooling Ltd|Car AC Repair|25000|Osun & Oyo State|09046044472|Car Mart|YES")
     st.session_state.goods.append("Mama T|Bag of Rice|45000|Abuja|09046044472|Food|YES")
 if "cat" not in st.session_state:
     st.session_state.cat = "All"
-st.markdown("<div style='background:#00A651;padding:14px 14px 28px 14px;border-radius:0 0 24px 24px'><div style='display:flex;justify-content:space-between;align-items:center;color:white'><span style='font-size:24px'>☰</span><b style='font-size:24px'>ROW ECONOMY</b><span style='background:#FF8A00;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px'>👤</span></div></div>", unsafe_allow_html=True)
-search = st.text_input("S", placeholder="Ask Mama Oloja - What are you looking for today?", label_visibility="collapsed")
-st.markdown("<div style='display:flex;justify-content:space-between;padding:12px 14px 6px'><b style='font-size:20px'>Categories</b><span style='color:#00A651'>See all ></span></div>", unsafe_allow_html=True)
+st.markdown("<div style='background:linear-gradient(90deg,#00A651,#00C853);padding:16px 14px 30px 14px;border-radius:0 0 28px 28px;color:white'><div style='display:flex;justify-content:space-between;align-items:center'><span style='font-size:26px'>☰</span><b style='font-size:26px'>ROW ECONOMY</b><span style='background:#FF8A00;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px'>👤</span></div><p style='text-align:center;font-size:13px;margin:6px 0 0 0'>Nigeria's Sweetest Market</p></div>", unsafe_allow_html=True)
+search = st.text_input("S", placeholder="🔍 Ask Mama Oloja - What are you looking for today? 🎤", label_visibility="collapsed")
+st.markdown("<div style='display:flex;justify-content:space-between;padding:14px 14px 6px'><b style='font-size:21px;color:#111'>Categories</b><span style='color:#00A651;font-weight:bold'>See all ></span></div>", unsafe_allow_html=True)
 c1, c2, c3, c4 = st.columns(4)
 with c1:
-    if st.button("Perfume"):
+    st.markdown("<div style='background:#FFE4F1;border-radius:16px;padding:12px;text-align:center;font-size:30px'>🧴</div><p style='text-align:center;color:#111'>Perfume</p>", unsafe_allow_html=True)
+    if st.button("Perfume", key="p1"):
         st.session_state.cat = "Perfume"
 with c2:
-    if st.button("Clothes"):
+    st.markdown("<div style='background:#D6EAF8;border-radius:16px;padding:12px;text-align:center;font-size:30px'>👕</div><p style='text-align:center;color:#111'>Clothes</p>", unsafe_allow_html=True)
+    if st.button("Clothes", key="p2"):
         st.session_state.cat = "Clothes"
 with c3:
-    if st.button("Phones"):
+    st.markdown("<div style='background:#D6EAF8;border-radius:16px;padding:12px;text-align:center;font-size:30px'>📱</div><p style='text-align:center;color:#111'>Phones</p>", unsafe_allow_html=True)
+    if st.button("Phones", key="p3"):
         st.session_state.cat = "Phones"
 with c4:
-    if st.button("Food"):
+    st.markdown("<div style='background:#FFE8CC;border-radius:16px;padding:12px;text-align:center;font-size:30px'>🍲</div><p style='text-align:center;color:#111'>Food</p>", unsafe_allow_html=True)
+    if st.button("Food", key="p4"):
         st.session_state.cat = "Food"
 c5, c6, c7, c8 = st.columns(4)
 with c5:
-    if st.button("Car Mart"):
+    st.markdown("<div style='background:#FFE8CC;border-radius:16px;padding:12px;text-align:center;font-size:30px'>🚗</div><p style='text-align:center;color:#111'>Car Mart</p>", unsafe_allow_html=True)
+    if st.button("Car Mart", key="p5"):
         st.session_state.cat = "Car Mart"
 with c6:
-    if st.button("Services"):
+    st.markdown("<div style='background:#D5F5E3;border-radius:16px;padding:12px;text-align:center;font-size:30px'>💼</div><p style='text-align:center;color:#111'>Services</p>", unsafe_allow_html=True)
+    if st.button("Services", key="p6"):
         st.session_state.cat = "Services"
 with c7:
-    if st.button("Tickets"):
+    st.markdown("<div style='background:#FADBD8;border-radius:16px;padding:12px;text-align:center;font-size:30px'>🎟️</div><p style='text-align:center;color:#111'>Tickets</p>", unsafe_allow_html=True)
+    if st.button("Tickets", key="p7"):
         st.session_state.cat = "Tickets"
 with c8:
-    if st.button("Chat Rooms"):
+    st.markdown("<div style='background:#D5F5E3;border-radius:16px;padding:12px;text-align:center;font-size:30px'>💬</div><p style='text-align:center;color:#111'>Chat Rooms</p>", unsafe_allow_html=True)
+    if st.button("Chat Rooms", key="p8"):
         st.session_state.cat = "Chat Rooms"
 st.write("Showing: " + st.session_state.cat)
 if st.button("Show All"):
     st.session_state.cat = "All"
     st.rerun()
-st.markdown("<div style='display:flex;justify-content:space-between;padding:10px 14px'><b style='font-size:20px'>Featured Listing</b><span style='color:#00A651'>See all ></span></div>", unsafe_allow_html=True)
+st.markdown("<div style='display:flex;justify-content:space-between;padding:10px 14px'><b style='font-size:21px;color:#111'>Featured Listing</b><span style='color:#00A651;font-weight:bold'>See all ></span></div>", unsafe_allow_html=True)
 for line in st.session_state.goods:
     p = line.split("|")
     seller = p[0]
@@ -58,26 +66,26 @@ for line in st.session_state.goods:
         skip = True
     if skip:
         continue
-    st.markdown("<div style='background:white;margin:0 14px 14px 14px;padding:14px;border-radius:18px;box-shadow:0 2px 10px #eee'>", unsafe_allow_html=True)
+    st.markdown("<div style='background:white;margin:0 14px 16px 14px;padding:16px;border-radius:20px;box-shadow:0 4px 20px #E8E8E8;border:1px solid #F0F0F0'>", unsafe_allow_html=True)
     if ver == "YES":
-        st.markdown("<div style='text-align:right'><span style='background:#00A651;color:white;padding:4px 10px;border-radius:20px;font-size:12px'>VERIFIED</span></div>", unsafe_allow_html=True)
-    st.markdown("<b style='font-size:17px'>" + seller + "</b>", unsafe_allow_html=True)
-    st.write("Product: " + name + " - N" + price)
-    st.write("Location: " + loc)
-    st.write("WhatsApp: " + wa)
+        st.markdown("<div style='text-align:right'><span style='background:#00A651;color:white;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:bold'>✔ VERIFIED</span></div>", unsafe_allow_html=True)
+    st.markdown("<b style='font-size:19px;color:#111'>" + seller + "</b>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#333;font-size:16px'>🔧 " + name + " - <b style='color:#00A651'>N" + price + "</b></p>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#666'>📍 " + loc + "</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#666'>🟢 WhatsApp " + wa + "</p>", unsafe_allow_html=True)
     if "AC" in name:
         st.image("https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600", use_container_width=True)
     else:
         st.image("https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600", use_container_width=True)
     msg = urllib.parse.quote("Hello " + seller + ", I saw your " + name)
     link = "https://wa.me/234" + wa[1:] + "?text=" + msg
-    st.link_button("Chat on WhatsApp", link, use_container_width=True)
+    st.link_button("💬 Chat on WhatsApp", link, use_container_width=True)
     st.markdown("</div>", unsafe_allow_html=True)
-st.markdown("<div style='display:flex;gap:8px;padding:0 14px'><div style='text-align:center'><div style='font-size:30px'>Mama</div><span style='background:#00A651;color:white;font-size:10px;padding:2px 6px;border-radius:10px'>Mama Oloja AI</span></div><div style='background:#D5F5E3;border-radius:16px;padding:10px;flex:1'>Welcome my dear, I can help you find the best price in the market.</div></div>", unsafe_allow_html=True)
+st.markdown("<div style='display:flex;gap:8px;padding:0 14px'><div style='text-align:center'><div style='font-size:36px'>👩🏾</div><span style='background:#00A651;color:white;font-size:10px;padding:3px 7px;border-radius:10px'>Mama Oloja AI</span></div><div style='background:#D5F5E3;border-radius:18px;padding:12px;flex:1;color:#111'>Welcome my dear, I can help you find the best price in the market. <span style='float:right;font-size:11px;color:#888'>now</span></div></div>", unsafe_allow_html=True)
 q = st.text_input("Ask Mama", placeholder="Ask Mama Oloja...", label_visibility="collapsed")
 if q:
     st.success("Mama Oloja: I found " + q + " for you above.")
-st.markdown("<div style='padding:14px'><b style='font-size:18px'>Sell - FREE for First 10</b><br>1 Name  2 WhatsApp  3 Location  4 Pictures  5 Price</div>", unsafe_allow_html=True)
+st.markdown("<div style='padding:16px'><b style='font-size:19px;color:#111'>Sell - FREE for First 10 🎉</b><br><span style='color:#555'>1 Name  2 WhatsApp  3 Location  4 Pictures  5 Price</span></div>", unsafe_allow_html=True)
 with st.form("f"):
     n1 = st.text_input("1. Your Name")
     n2 = st.text_input("2. WhatsApp")
@@ -97,4 +105,7 @@ with st.form("f"):
         else:
             new = n1 + "|" + n5 + "|" + n6 + "|" + n3 + "|" + n2 + "|" + n4 + "|NO"
             st.session_state.goods.append(new)
-            st.success
+            st.success("Done! Your goods are LIVE!")
+            st.balloons()
+            st.rerun()
+st.markdown("<div style='background:white;display:flex;justify-content:space-around;padding:12px;border-top:1px solid #eee;color:#111'><span>🏠<br>Home</span><span>🏪<br>Shop</span><span>📋<br>Orders</span><span>👤<br>Profile</span></div>", unsafe_allow_html=True)
