@@ -39,25 +39,31 @@ with h:
     st.markdown("<div style='background:#DCFCE7;padding:14px;border-radius:18px;text-align:center'>💬</div>", unsafe_allow_html=True)
     st.markdown("<center>Chat Rooms</center>")
 st.markdown("### Featured Listing")
-m1="<div style='background:#D1FAE5;"
-m1+="padding:14px;border-radius:18px'>"
-m1+="<b>Mama Oloja AI</b><br>"
-m1+="Welcome my dear, I can help you "
-m1+="find the best price in the market.</div>"
+f1="<div style='background:white;"
+f1+="padding:16px;border-radius:20px;"
+f1+="box-shadow:0 4px 16px #EDEDED'>"
+f1+="<span style='background:#00A651;color:white;"
+f1+="padding:4px 10px;border-radius:20px;float:right'>VERIFIED</span>"
+f1+="<b>Horlance Auto Cooling Ltd</b>"
+f1+="<p>🔧 Car AC Repair</p>"
+f1+="<p>📍 Osun & Oyo State</p>"
+f1+="<p>💬 WhatsApp 09046044472</p>"
+f1+="<p style='font-size:50px;text-align:center'>🚗❄️</p>"
+f1+="<a href='https://wa.me/2349046044472' "
+f1+="style='display:block;background:#00A651;"
+f1+="color:white;text-align:center;"
+f1+="padding:12px;border-radius:12px;"
+f1+="text-decoration:none'><b>Chat on WhatsApp</b></a></div>"
+st.markdown(f1, unsafe_allow_html=True)
+m1="<div style='display:flex;gap:8px;margin-top:12px'>"
+m1+="<div style='text-align:center'>👩🏾<br>"
+m1+="<span style='font-size:10px'>Mama Oloja AI</span></div>"
+m1+="<div style='background:#D1FAE5;"
+m1+="padding:12px;border-radius:18px;flex:1'>"
+m1+="Welcome my dear, I can help you find "
+m1+="the best price in the market. "
+m1+="<span style='float:right;font-size:11px'>🕐 now</span></div></div>"
 st.markdown(m1, unsafe_allow_html=True)
-st.markdown("### Horlance Auto Cooling Ltd")
-c1="<div style='background:white;"
-c1+="padding:16px;border-radius:20px;"
-c1+="box-shadow:0 4px 16px #EDEDED'>"
-c1+="<span style='background:#00A651;color:white;"
-c1+="padding:4px 10px;border-radius:20px;float:right'>VERIFIED</span>"
-c1+="<b>Horlance Auto Cooling Ltd</b>"
-c1+="<p>Car AC Repair - <b>N25000</b></p>"
-c1+="<p>Osun & Oyo - 09046044472</p>"
-c1+="<p>Pay: <b>Pay on Delivery</b></p>"
-c1+="<p>Delivery: <b>Delivery Available</b></p></div>"
-st.markdown(c1, unsafe_allow_html=True)
-st.link_button("Chat Horlance", "https://wa.me/2349046044472")
 st.markdown("### Mama T")
 c2="<div style='background:white;"
 c2+="padding:16px;border-radius:20px;"
@@ -69,7 +75,6 @@ c2+="<p>Pay: <b>Transfer Before Delivery</b></p>"
 c2+="<p>Delivery: <b>Pickup Only</b></p></div>"
 st.markdown(c2, unsafe_allow_html=True)
 st.link_button("Chat Mama T", "https://wa.me/2349046044472")
-st.markdown("### New Goods")
 for g in st.session_state.goods:
     st.success(g)
 st.markdown("### Sell - FREE")
@@ -83,10 +88,12 @@ if st.button("POST MY GOODS FOR FREE"):
     st.session_state.goods.append(txt)
     st.success("Posted! "+txt)
     st.balloons()
-b1="<div style='background:#00A651;"
-b1+="padding:14px;border-radius:20px 20px 0 0;"
-b1+="color:white;text-align:center'>"
-b1+="<b>Home</b> &nbsp; | &nbsp; "
-b1+="<b>Shop</b> &nbsp; | &nbsp; "
-b1+="<b>Orders</b> &nbsp; | &nbsp; <b>Profile</b></div>"
+b1="<div style='background:white;"
+b1+="padding:12px;border-radius:20px 20px 0 0;"
+b1+="box-shadow:0 -2px 10px #EDEDED;"
+b1+="display:flex;text-align:center'>"
+b1+="<div style='flex:1;color:#00A651'>🏠<br><b>Home</b></div>"
+b1+="<div style='flex:1;color:grey'>🏪<br>Shop</div>"
+b1+="<div style='flex:1;color:grey'>📋<br>Orders</div>"
+b1+="<div style='flex:1;color:grey'>👤<br>Profile</div></div>"
 st.markdown(b1, unsafe_allow_html=True)
