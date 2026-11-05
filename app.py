@@ -1,13 +1,16 @@
-import streamlit as st, urllib.parse as u, requests, json
+import streamlit as st
+import urllib.parse as u
+import requests, json
 st.set_page_config(page_title="Row Economy", layout="wide")
-st.markdown("<style>header{visibility:hidden} .block-container{padding:0!important} .stApp{background:white}</style>", unsafe_allow_html=True)
 BUCKET="SzHmbyQQ1X1ns5LY4Qi8u9"
 KV="https://kvdb.io/"+BUCKET+"/goods"
-DEFAULT=["Horlance Auto Cooling Ltd|Car AC Repair|25000|Osun & Oyo State|09046044472|Car Mart|YES","Mama T|Bag of Rice|45000|Abuja|09046044472|Food|YES"]
+DEFAULT=[]
+DEFAULT.append("Horlance Auto Cooling Ltd|Car AC Repair|25000|Osun & Oyo State|09046044472|Car Mart|YES")
+DEFAULT.append("Mama T|Bag of Rice|45000|Abuja|09046044472|Food|YES")
 def load_goods():
     try:
         r=requests.get(KV, timeout=5)
-        if r.status_code==200 and r.text and len(r.text)>2:
+        if r.status_code==200 and len(r.text)>2:
             d=json.loads(r.text)
             if isinstance(d, list) and len(d)>0:
                 return d
@@ -25,8 +28,8 @@ if "orders" not in st.session_state:
     st.session_state.orders=[]
 page=st.query_params.get("page","Home")
 cat_now=st.query_params.get("cat","All")
-st.markdown("<div style='background:#00A651;padding:16px 14px 28px;border-radius:0 0 28px 28px;color:white;display:flex;justify-content:space-between;align-items:center'><span>☰</span><b style='font-size:25px'>ROW ECONOMY</b><span style='background:#FF8A00;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center'>👤</span></div>", unsafe_allow_html=True)
-st.markdown("<p style='text-align:center;color:#00A651;font-weight:bold'>Nigeria Sweetest Market - "+page+" - SAVED FOREVER</p>", unsafe_allow_html=True)
+st.success("ROW ECONOMY - Nigeria Sweetest Market")
+st.write("Page: "+page+" - SAVED FOREVER")
 def show_card(line):
     p=line.split("|")
     seller=p[0]
@@ -34,46 +37,115 @@ def show_card(line):
     price=p[2]
     loc=p[3]
     wa=p[4]
-    msg=u.quote("Hello "+seller+", I want to order your "+name+" for N"+price)
+    st.write("---")
+    st.write("**"+seller+"** - VERIFIED")
+    st.write("Product: "+name+" - **N"+price+"**")
+    st.write("Location: "+loc+" | WhatsApp: "+wa)
+    msg=u.quote("Hello "+seller+", I want "+name+" for N"+price)
     link="https://wa.me/234"+wa[1:]+"?text="+msg
-    img="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=400"
-    if "AC" not in name:
-        img="https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400"
-    card="<div style='background:white;margin:0 14px 16px;padding:16px;border-radius:20px;box-shadow:0 4px 16px #EDEDED'>"
-    card+="<div style='text-align:right'><span style='background:#00A651;color:white;padding:5px 12px;border-radius:20px;font-size:12px'>VERIFIED</span></div>"
-    card+="<div style='display:flex;gap:12px'><div style='flex:1'><b>"+seller+"</b><p>Product: "+name+" - <b style='color:#00A651'>N"+price+"</b></p><p>Location: "+loc+"</p><p>WhatsApp: "+wa+"</p></div>"
-    card+="<img src='"+img+"' style='width:140px;height:130px;object-fit:cover;border-radius:14px'></div>"
-    card+="<a href='"+link+"' style='display:block;background:#00A651;color:white;text-align:center;padding:12px;border-radius:14px;text-decoration:none;font-weight:bold;margin-top:12px'>Chat on WhatsApp</a></div>"
-    st.markdown(card, unsafe_allow_html=True)
+    st.link_button("Chat on WhatsApp", link)
 if page=="Shop":
-    st.markdown("<div style='padding:10px 14px'><b>Shop - All Goods</b><p>Tap Chat on WhatsApp to buy direct from seller.</p></div>", unsafe_allow_html=True)
-    search2=st.text_input("Search Shop", placeholder="Search shop - Rice, AC...", label_visibility="collapsed")
+    st.subheader("Shop - All Goods")
+    s2=st.text_input("Search Shop", placeholder="Rice, AC...")
     for line in st.session_state.g:
-        if search2=="" or search2.lower() in line.lower():
+        if s2=="" or s2.lower() in line.lower():
             show_card(line)
 elif page=="Orders":
-    st.markdown("<div style='padding:10px 14px'><b>My Orders</b><p>Your orders are tracked on WhatsApp with the seller. No wahala.</p></div>", unsafe_allow_html=True)
+    st.subheader("My Orders")
+    st.info("Orders are tracked on WhatsApp with seller.")
     if len(st.session_state.orders)==0:
-        st.info("You have no orders yet. Go to Shop, tap Chat on WhatsApp, and order. Your seller will confirm.")
+        st.write("No orders yet. Go to Shop and order.")
     for o in st.session_state.orders:
         st.success(o)
-    st.markdown("<div style='padding:10px 14px'><b>How Orders Work:</b><br>1. Find goods in Shop<br>2. Tap Chat on WhatsApp<br>3. Seller confirms price + delivery<br>4. You pay seller direct</div>", unsafe_allow_html=True)
-    if st.button("I Made An Order - Add To My Orders"):
-        st.session_state.orders.append("Order - Chat on WhatsApp to confirm")
+    if st.button("I Made An Order"):
+        st.session_state.orders.append("Order - Chat on WhatsApp")
         st.rerun()
 elif page=="Profile":
-    st.markdown("<div style='padding:10px 14px'><b>My Profile</b></div>", unsafe_allow_html=True)
+    st.subheader("My Profile")
     pname=st.text_input("Your Name", value="Text seller")
     pwa=st.text_input("Your WhatsApp", value="09046044472")
     ploc=st.selectbox("Your Location", ["Abuja","Osun & Oyo State","Ogbomoso","Ilorin","Lagos"])
     if st.button("Save My Profile"):
-        st.success("Profile saved! "+pname+" - "+ploc)
-    st.markdown("<div style='padding:10px 14px'><b>My Listings:</b></div>", unsafe_allow_html=True)
+        st.success("Saved! "+pname+" - "+ploc)
+    st.write("My Listings:")
     for line in st.session_state.g:
         if pname.lower() in line.lower():
             show_card(line)
-    st.markdown("<div style='padding:10px 14px'><b>Admin Help:</b><br>Need help? WhatsApp Admin: 09046044472<br>ROW ECONOMY - Nigeria Sweetest Market</div>", unsafe_allow_html=True)
+    st.write("Admin Help: WhatsApp 09046044472")
 else:
-    search=st.text_input("S", placeholder="Ask Mama Oloja - What are you looking for?", label_visibility="collapsed")
-    st.markdown("<div style='display:flex;justify-content:space-between;padding:10px 14px'><b>Categories</b><a href='?page=Shop' style='color:#00A651;text-decoration:none'>See all ></a></div>", unsafe_allow_html=True)
-    st.markdown("<div style='display:grid;grid-template-columns:1fr 1
+    search=st.text_input("Search", placeholder="Ask Mama Oloja - What are you looking for?")
+    st.subheader("Categories - Showing: "+cat_now)
+    c1,c2,c3,c4=st.columns(4)
+    with c1:
+        st.link_button("Perfume", "?cat=Perfume&page=Home")
+    with c2:
+        st.link_button("Clothes", "?cat=Clothes&page=Home")
+    with c3:
+        st.link_button("Phones", "?cat=Phones&page=Home")
+    with c4:
+        st.link_button("Food", "?cat=Food&page=Home")
+    d1,d2,d3,d4=st.columns(4)
+    with d1:
+        st.link_button("Car Mart", "?cat=Car Mart&page=Home")
+    with d2:
+        st.link_button("Services", "?cat=Services&page=Home")
+    with d3:
+        st.link_button("Tickets", "?cat=Tickets&page=Home")
+    with d4:
+        st.link_button("Chat Rooms", "?cat=Chat Rooms&page=Home")
+    st.subheader("Featured Listing")
+    shown=[]
+    for line in st.session_state.g:
+        p=line.split("|")
+        ok_cat=(cat_now=="All" or p[5]==cat_now)
+        ok_s=(search=="" or search.lower() in line.lower())
+        if ok_cat and ok_s:
+            shown.append(line)
+    if len(shown)==0:
+        st.info("No goods in "+cat_now+" yet. Be first to post!")
+    for line in shown:
+        show_card(line)
+    st.subheader("Mama Oloja AI")
+    st.write("Welcome my dear, I help you find best price.")
+    q=st.text_input("Ask Mama", placeholder="Ask Mama... e.g. Rice, AC")
+    if q:
+        found=[l for l in st.session_state.g if q.lower() in l.lower()]
+        if len(found)>0:
+            f=found[0].split("|")
+            st.success("Mama: Yes! "+f[1]+" is N"+f[2]+" from "+f[0]+" in "+f[3])
+        else:
+            st.warning("Mama: Sorry, no "+q+" yet. Post it!")
+    st.subheader("Sell - FREE for First 10")
+    with st.form("f"):
+        n1=st.text_input("1. Your Name")
+        n2=st.text_input("2. WhatsApp")
+        n3=st.selectbox("3. Location", ["Abuja","Osun & Oyo State","Ogbomoso","Ilorin","Lagos"])
+        n4=st.selectbox("Category", ["Food","Phones","Clothes","Perfume","Car Mart","Services","Tickets","Chat Rooms"])
+        n5=st.text_input("5. Product Name")
+        n6=st.text_input("5. Price - e.g. 25000")
+        pic=st.file_uploader("4. Upload Picture", type=["jpg","png"])
+        if pic:
+            st.image(pic)
+        go=st.form_submit_button("POST MY GOODS FOR FREE")
+        if go:
+            if n1=="" or n2=="":
+                st.error("Fill Name and WhatsApp")
+            elif n5=="":
+                st.error("Fill Product Name")
+            else:
+                new=n1+"|"+n5+"|"+n6+"|"+n3+"|"+n2+"|"+n4+"|NO"
+                st.session_state.g.append(new)
+                save_goods(st.session_state.g)
+                st.success("Done! LIVE and SAVED FOREVER!")
+                st.balloons()
+                st.rerun()
+st.write("---")
+b1,b2,b3,b4=st.columns(4)
+with b1:
+    st.link_button("Home", "?page=Home")
+with b2:
+    st.link_button("Shop", "?page=Shop")
+with b3:
+    st.link_button("Orders", "?page=Orders")
+with b4:
+    st.link_button("Profile", "?page=Profile")
