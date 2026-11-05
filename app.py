@@ -1,8 +1,12 @@
 import streamlit as st
 import urllib.parse as u
 st.set_page_config(page_title="Row Economy")
-st.markdown("## ROW ECONOMY")
-st.markdown("Nigeria Sweetest Market")
+h1="<div style='background:#00A651;"
+h1+="padding:16px;border-radius:0 0 20px 20px;"
+h1+="color:white;text-align:center'>"
+h1+="<b style='font-size:25px'>ROW ECONOMY</b>"
+h1+="<p>Nigeria Sweetest Market</p></div>"
+st.markdown(h1, unsafe_allow_html=True)
 st.markdown("### Mama Oloja")
 q=st.text_input("Ask Mama", placeholder="Rice, AC...")
 st.markdown("### Featured")
