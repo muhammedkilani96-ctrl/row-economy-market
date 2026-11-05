@@ -57,7 +57,7 @@ div[data-testid="stSegmentedControl"] button[data-testid="stSegmentedControlButt
 st.markdown("""
 <div style="background:#16a34a;padding:14px 12px 10px 12px;border-radius:0 0 20px 20px;text-align:center">
 <h1 style="color:white;margin:0;font-size:26px">Row Market</h1>
-<p style="color:#dcfce7;margin:2px 0 8px 0;font-size:12px">Abuja • FREE • Seller Notifications ON • V9</p>
+<p style="color:#dcfce7;margin:2px 0 8px 0;font-size:12px">Abuja • FREE • Seller Notifications ON • V9.1 FIXED</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -67,12 +67,12 @@ if pending_count>0:
 
 st.success("✅ Connected to Row Market Database - Listings are permanent!")
 
-s = st.text_input("🔍 Ask Mama Oloja - What are you looking for today?", key="search_v9")
+s = st.text_input("🔍 Ask Mama Oloja - What are you looking for today?", key="search_v91")
 q = s
-loc_filter = st.selectbox("📍 Location", ["All Locations","Wuse 2, Abuja","Garki, Abuja","Gwarinpa, Abuja","Osun & Oyo","Abuja","Online"], key="locv9")
-price_filter = st.selectbox("💰 Price", ["All Prices","Under N20,000","N20,000 - N100,000","Over N100,000"], key="pricev9")
+loc_filter = st.selectbox("📍 Filter Location", ["All Locations","Wuse 2, Abuja","Garki, Abuja","Gwarinpa, Abuja","Osun & Oyo","Abuja","Online"], key="filter_loc_v91")
+price_filter = st.selectbox("💰 Filter Price", ["All Prices","Under N20,000","N20,000 - N100,000","Over N100,000"], key="filter_price_v91")
 
-mama_q = st.segmented_control("Mama", ["🍚 Rice price?","📱 Cheapest phone?","🚗 Car AC?","🧴 Perfume?"], selection_mode="single", label_visibility="collapsed", key="mamaqv9")
+mama_q = st.segmented_control("Mama", ["🍚 Rice price?","📱 Cheapest phone?","🚗 Car AC?","🧴 Perfume?"], selection_mode="single", label_visibility="collapsed", key="mama_v91")
 if mama_q: st.markdown(f"<div style='background:#dcfce7;margin:8px 12px;padding:12px;border-radius:12px'>🧕 Mama: I found it for you, check Shop below.</div>", unsafe_allow_html=True)
 
 st.markdown("<h3 style='padding:0 12px'>Categories</h3>", unsafe_allow_html=True)
@@ -88,12 +88,12 @@ st.markdown("""
 <div class="card" style="background:#a7f3d0">💬<p>Chat Rooms</p></div>
 </div>
 """, unsafe_allow_html=True)
-picked = st.segmented_control("Cat", ["All","Perfume","Clothes","Phones","Food","Car","Services","Tickets","Chat"], selection_mode="single", default=st.session_state.cat, label_visibility="collapsed", key="catv9")
+picked = st.segmented_control("Cat", ["All","Perfume","Clothes","Phones","Food","Car","Services","Tickets","Chat"], selection_mode="single", default=st.session_state.cat, label_visibility="collapsed", key="cat_v91")
 if picked: st.session_state.cat = picked
 
 st.markdown("<h3 style='padding:0 12px'>👤 Your Details (for seller to reply)</h3>", unsafe_allow_html=True)
-buyer_name = st.text_input("Your Name (buyer)", key="buyernv9", placeholder="e.g. Tunde")
-buyer_phone = st.text_input("Your WhatsApp Number", key="buyerphv9", placeholder="e.g. 2348031234567")
+buyer_name = st.text_input("Your Name (buyer)", key="buyer_name_v91", placeholder="e.g. Tunde")
+buyer_phone = st.text_input("Your WhatsApp Number", key="buyer_phone_v91", placeholder="e.g. 2348031234567")
 
 all_goods = get_goods()
 shown=[]
@@ -110,7 +110,7 @@ st.subheader(f"🛍️ Shop - {len(shown)} goods")
 for idx, g in enumerate(shown):
     badge = '<span class="badge">✅ VERIFIED</span>' if g["verified"] else '<span class="badge2">New Seller</span>'
     st.markdown(f"""<div class="prod"><img src="{g['img']}"><div class="prod-body"><div style="display:flex;justify-content:space-between"><b>{g['name']}</b> {badge}</div><p style="margin:6px 0">{g['item']}</p><p>📍 {g['loc']} • 📞 {g['phone']}</p><p class="price">N{g['price']:,}</p></div></div>""", unsafe_allow_html=True)
-    if st.button(f"🛒 Order This - {g['item'][:25]}", key=f"orderv9_{idx}_{g['item'][:10]}"):
+    if st.button(f"🛒 Order This - {g['item'][:25]}", key=f"order_v91_{idx}_{g['item'][:10]}"):
         if not buyer_name or not buyer_phone:
             st.error("⚠️ Enter Your Name + WhatsApp Number above first, so seller can reply.")
         else:
@@ -133,7 +133,7 @@ for i, o in enumerate(st.session_state.my_orders):
     st.markdown(f"<div class='notif'><b>{o['item']}</b> - N{o['price']:,}<br>Seller: {o['seller']}<br>Status: {color}<br>Time: {o['time']}</div>", unsafe_allow_html=True)
 
 st.subheader("🔔 Seller Inbox - Orders For You")
-seller_check_phone = st.text_input("Your Seller WhatsApp Number (e.g. 2349046044472)", key="sellercheckv9")
+seller_check_phone = st.text_input("Your Seller WhatsApp Number (e.g. 2349046044472)", key="seller_check_v91")
 if seller_check_phone:
     my_inbox = [o for o in st.session_state.seller_inbox if seller_check_phone in o["seller_phone"]]
     if len(my_inbox)==0:
@@ -142,14 +142,14 @@ if seller_check_phone:
         st.markdown(f"<div class='notif'><b>🔔 NEW ORDER!</b><br>Buyer: {o['buyer']} - {o['buyer_phone']}<br>Wants: <b>{o['item']} - N{o['price']:,}</b><br>Time: {o['time']}<br>Status: {o['status']}</div>", unsafe_allow_html=True)
         colA, colB = st.columns(2)
         with colA:
-            if st.button(f"✅ YES, I Have It", key=f"yes_{j}_{o['item'][:8]}"):
+            if st.button(f"✅ YES, I Have It", key=f"yes_v91_{j}_{o['item'][:8]}"):
                 o["status"]="Available"
                 for mo in st.session_state.my_orders:
                     if mo["item"]==o["item"] and mo["buyer"]==o["buyer"]: mo["status"]="Available"
                 st.success("You said YES! Buyer will see Available.")
                 st.rerun()
         with colB:
-            if st.button(f"❌ NO, Sold Out", key=f"no_{j}_{o['item'][:8]}"):
+            if st.button(f"❌ NO, Sold Out", key=f"no_v91_{j}_{o['item'][:8]}"):
                 o["status"]="Sold Out"
                 for mo in st.session_state.my_orders:
                     if mo["item"]==o["item"] and mo["buyer"]==o["buyer"]: mo["status"]="Sold Out"
@@ -160,29 +160,29 @@ if seller_check_phone:
             st.link_button(f"💬 Reply to Buyer on WhatsApp - {o['buyer']}", f"https://wa.me/{o['buyer_phone']}?text=" + urllib.parse.quote(reply_text))
 
 st.subheader("📸 Sell FREE")
-nm = st.text_input("Your Name", key="nmv9")
-pd = st.text_input("Product Name", key="pdv9")
-pr = st.number_input("Price (Naira)", min_value=0, key="prv9")
-ct = st.selectbox("Category", ["Perfume","Clothes","Phones","Food","Car","Services","Tickets","Chat"], key="ctv9")
-loc = st.text_input("Location", key="locv9")
-ph = st.text_input("Your WhatsApp Number (seller)", key="phv9")
-img_url = st.text_input("Photo Link (optional)", key="imgv9")
-if st.button("✅ Post Good FREE", key="postv9"):
+nm = st.text_input("Your Name", key="sell_name_v91")
+pd = st.text_input("Product Name", key="sell_product_v91")
+pr = st.number_input("Price (Naira)", min_value=0, key="sell_price_v91")
+ct = st.selectbox("Category", ["Perfume","Clothes","Phones","Food","Car","Services","Tickets","Chat"], key="sell_cat_v91")
+loc_sell = st.text_input("Location", key="sell_loc_v91")
+ph = st.text_input("Your WhatsApp Number (seller)", key="sell_phone_v91")
+img_url = st.text_input("Photo Link (optional)", key="sell_img_v91")
+if st.button("✅ Post Good FREE", key="sell_post_v91"):
     if nm and pd and pr>0:
-        new = {"name":nm,"item":pd,"price":int(pr),"cat":ct,"loc":loc or "Abuja","phone":ph or "2349046044472","img":img_url or "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600","verified":False}
+        new = {"name":nm,"item":pd,"price":int(pr),"cat":ct,"loc":loc_sell or "Abuja","phone":ph or "2349046044472","img":img_url or "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600","verified":False}
         st.session_state.local_goods.insert(0, new)
         st.success("Posted! Now if anyone orders, you get WhatsApp + In-App notification! Also add this row to your Sheet to make it permanent.")
     else: st.error("Fill Name, Product, Price")
 
 st.subheader("💬 Chat Rooms")
-rm = st.selectbox("Chat Room", ["Perfume","Clothes","Phones","Food","Car","Services","Tickets","Chat"], key="rmv9")
-cm = st.text_input("Chat Message", key="cmv9")
-if st.button("Send Chat", key="sendv9"):
+rm = st.selectbox("Chat Room", ["Perfume","Clothes","Phones","Food","Car","Services","Tickets","Chat"], key="chat_room_v91")
+cm = st.text_input("Chat Message", key="chat_msg_v91")
+if st.button("Send Chat", key="chat_send_v91"):
     if cm: st.session_state.msgs.append(f"{rm} : {cm}")
 for m in st.session_state.msgs:
     if rm.lower() in m.lower(): st.write(m)
 
 st.subheader("📤 Share")
 st.link_button("Share on WhatsApp", "https://wa.me/?text=Check%20Row%20Market%20Abuja%20-%20Post%20goods%20FREE")
-nav = st.segmented_control("Nav", ["🏠 Home","🛍️ Shop","🧾 Orders","🔔 Inbox"], selection_mode="single", default=st.session_state.page, label_visibility="collapsed", key="navv9")
+nav = st.segmented_control("Nav", ["🏠 Home","🛍️ Shop","🧾 Orders","🔔 Inbox"], selection_mode="single", default=st.session_state.page, label_visibility="collapsed", key="nav_v91")
 if nav: st.session_state.page = nav
