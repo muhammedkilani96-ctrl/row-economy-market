@@ -4,9 +4,9 @@ import requests, json
 st.set_page_config(page_title="Row Economy", layout="wide")
 BUCKET="SzHmbyQQ1X1ns5LY4Qi8u9"
 KV="https://kvdb.io/"+BUCKET+"/goods"
-DEFAULT=[]
-DEFAULT.append("Horlance Auto Cooling Ltd|Car AC Repair|25000|Osun & Oyo State|09046044472|Car Mart|YES|Pay on Delivery|Delivery Available")
-DEFAULT.append("Mama T|Bag of Rice|45000|Abuja|09046044472|Food|YES|Transfer Before Delivery|Pickup Only")
+D1="Horlance Auto Cooling Ltd|Car AC Repair|25000|Osun & Oyo State|09046044472|Car Mart|YES|Pay on Delivery|Delivery Available"
+D2="Mama T|Bag of Rice|45000|Abuja|09046044472|Food|YES|Transfer Before Delivery|Pickup Only"
+DEFAULT=[D1,D2]
 def load_goods():
     try:
         r=requests.get(KV, timeout=5)
@@ -57,38 +57,11 @@ def show_card(line):
         pay=p[7]
     if len(p)>8:
         deli=p[8]
-    msg=u.quote("Hello "+seller+", I want "+name+" for N"+price)
+    msg=u.quote("Hello "+seller+", I want "+name)
     link="https://wa.me/234"+wa[1:]+"?text="+msg
     img="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=400"
     if "AC" not in name:
         img="https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400"
     c1="<div style='background:white;margin:0 14px 16px;"
     c1+="padding:16px;border-radius:20px;"
-    c1+="box-shadow:0 4px 16px #EDEDED'>"
-    c1+="<div style='text-align:right'>"
-    c1+="<span style='background:#00A651;color:white;"
-    c1+="padding:5px 12px;border-radius:20px;"
-    c1+="font-size:12px'>VERIFIED</span></div>"
-    c1+="<div style='display:flex;gap:12px'>"
-    c1+="<div style='flex:1'><b>"+seller+"</b>"
-    c1+="<p>Product: "+name+" - <b style='color:#00A651'>N"+price+"</b></p>"
-    c1+="<p>Location: "+loc+"</p>"
-    c1+="<p>WhatsApp: "+wa+"</p>"
-    c1+="<p>💳 Payment: <b>"+pay+"</b></p>"
-    c1+="<p>🚚 Delivery: <b>"+deli+"</b></p></div>"
-    c1+="<img src='"+img+"' style='width:140px;"
-    c1+="height:130px;object-fit:cover;"
-    c1+="border-radius:14px'></div>"
-    c1+="<a href='"+link+"' style='display:block;"
-    c1+="background:#00A651;color:white;text-align:center;"
-    c1+="padding:12px;border-radius:14px;"
-    c1+="text-decoration:none;font-weight:bold;"
-    c1+="margin-top:12px'>Chat on WhatsApp</a>"
-    c1+="<a href='?page=Orders' style='display:block;"
-    c1+="background:#FF8A00;color:white;text-align:center;"
-    c1+="padding:10px;border-radius:14px;"
-    c1+="text-decoration:none;font-weight:bold;"
-    c1+="margin-top:8px'>Order + Pay / Delivery</a></div>"
-    st.markdown(c1, unsafe_allow_html=True)
-if page=="Shop":
-    st.markdown("<div style='padding:10
+    c1+="box-shadow:0 4px 16px #EDEDED'>
