@@ -11,11 +11,6 @@ if "msgs" not in st.session_state:
     st.session_state.msgs=[]
 if "page" not in st.session_state:
     st.session_state.page="Home"
-css="<style>"
-css+="[data-testid='stHorizontalBlock']"
-css+="{flex-wrap:nowrap !important}"
-css+="</style>"
-st.markdown(css,unsafe_allow_html=True)
 head="<div style='background:#16a34a;"
 head+="padding:20px 10px;"
 head+="text-align:center'>"
@@ -27,25 +22,21 @@ st.markdown(head,unsafe_allow_html=True)
 s=st.text_input("Ask Mama Oloja")
 q=s
 st.markdown('<h3>Categories</h3>',unsafe_allow_html=True)
-a,b=st.columns(2)
-if a.button("Perfume",key="c1"):
+if st.button("Perfume",key="c1"):
     st.session_state.cat="Perfume"
-if b.button("Clothes",key="c2"):
+if st.button("Clothes",key="c2"):
     st.session_state.cat="Clothes"
-c,d=st.columns(2)
-if c.button("Phones",key="c3"):
+if st.button("Phones",key="c3"):
     st.session_state.cat="Phones"
-if d.button("Food",key="c4"):
+if st.button("Food",key="c4"):
     st.session_state.cat="Food"
-e,f=st.columns(2)
-if e.button("Car Mart",key="c5"):
+if st.button("Car Mart",key="c5"):
     st.session_state.cat="Car"
-if f.button("Services",key="c6"):
+if st.button("Services",key="c6"):
     st.session_state.cat="Services"
-g,h=st.columns(2)
-if g.button("Tickets",key="c7"):
+if st.button("Tickets",key="c7"):
     st.session_state.cat="Tickets"
-if h.button("Chat Rooms",key="c8"):
+if st.button("Chat Rooms",key="c8"):
     st.session_state.cat="Chat"
 st.write("Category:")
 st.write(st.session_state.cat)
@@ -84,4 +75,77 @@ if st.button("Post Good",key="post1"):
     st.write("Posted! Thank you")
 st.subheader("Shop")
 st.write(len(st.session_state.goods))
-for idx,g
+for idx,g in enumerate(st.session_state.goods):
+    gl=g.lower()
+    sl=s.lower()
+    ok=True
+    if sl not in gl:
+        ok=False
+    if st.session_state.cat!="All":
+        cl=st.session_state.cat.lower()
+        if cl not in gl:
+            ok=False
+    if ok:
+        st.write(g)
+        ph=st.session_state.photos[idx]
+        if ph is not None:
+            st.image(ph)
+        k="ord"+str(idx)
+        if st.button("Order This",key=k):
+            st.session_state.orders.append(g)
+            st.write("Order Added!")
+        st.write("---")
+st.subheader("My Orders")
+st.write(len(st.session_state.orders))
+for o in st.session_state.orders:
+    st.write(o)
+if len(st.session_state.orders)>0:
+    st.link_button("Order on WhatsApp",u)
+st.subheader("Chat Rooms")
+rm=st.selectbox(
+"Chat Room",
+ct3,
+key="rm1"
+)
+cm=st.text_input("Chat Message",key="cm1")
+if st.button("Send Chat",key="send1"):
+    m=rm+" : "+cm
+    st.session_state.msgs.append(m)
+    st.write("Sent!")
+for m in st.session_state.msgs:
+    ml=m.lower()
+    rl=rm.lower()
+    if rl in ml:
+        st.write(m)
+st.subheader("Mama Answers")
+ql=q.lower()
+if "rice" in ql:
+    st.write("Rice N80000 Abuja")
+if "perfume" in ql:
+    st.write("Perfume N15000")
+if "car" in ql:
+    st.write("Car go Horlance")
+if "phone" in ql:
+    st.write("Phone test first")
+if "food" in ql:
+    st.write("Food fresh daily")
+if "clothes" in ql:
+    st.write("Clothes new stock")
+if "hello" in ql:
+    st.write("Mama Welcome dear")
+if "hi" in ql:
+    st.write("Mama Welcome dear")
+st.subheader("My Profile")
+pn=st.text_input("Profile Name",key="pn1")
+if st.button("Save Profile",key="save1"):
+    st.write("Profile Saved:")
+    st.write(pn)
+st.subheader("Share Row Market")
+w="https://wa.me/?text=RowMarketAbuja"
+st.link_button("Share on WhatsApp",w)
+st.write("Row Market Abuja FREE")
+st.write("Post goods FREE")
+st.write("Chat FREE")
+if st.button("Home",key="n1"):
+    st.session_state.page="Home"
+if st.button("
