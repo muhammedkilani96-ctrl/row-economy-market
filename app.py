@@ -1,7 +1,7 @@
 for line in st.session_state.goods:
     p = line.split("|")
     seller = p[0]
-    name = p[1]
+    name = p[1
     price = p[2]
     loc = p[3]
     wa = p[4]
