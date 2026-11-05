@@ -1,4 +1,5 @@
 import streamlit as st
+st.set_page_config(page_title='Row Economy Market')
 if 'goods' not in st.session_state:
     st.session_state.goods=[]
 if 'page' not in st.session_state:
@@ -14,49 +15,33 @@ def to_wa(n):
         r='234'+r
     return r
 h1='<div style="background:#00A651">'
-h2='<div style="padding:18px">'
-h3='<h1 style="color:white">K&K Market</h1>'
-h4='</div></div>'
-st.markdown(h1+h2+h3+h4, unsafe_allow_html=True)
+h2='<div style="padding:20px;border-radius:25px">'
+h3='<h1 style="color:white">Row Economy Market</h1>'
+h4='<p style="color:white">Buy Cheap. Sell Fast. Chat on WhatsApp.</p>'
+h5='</div></div>'
+st.markdown(h1+h2+h3+h4+h5, unsafe_allow_html=True)
 q=st.text_input('Ask Mama Oloja - What are you looking for?')
 if st.session_state.page=='Home':
-    t1='<div style="display:flex">'
-    t2='<b>Categories</b><span> See all ></span>'
-    t3='</div>'
-    st.markdown(t1+t2+t3, unsafe_allow_html=True)
-    c1='<div style="background:#FFD6E8">'
-    c2='🧴 Perfume</div>'
-    st.markdown(c1+c2, unsafe_allow_html=True)
-    c3='<div style="background:#CDE7FF">'
-    c4='👕 Clothes</div>'
-    st.markdown(c3+c4, unsafe_allow_html=True)
-    c5='<div style="background:#CDE7FF">'
-    c6='📱 Phones</div>'
-    st.markdown(c5+c6, unsafe_allow_html=True)
-    c7='<div style="background:#FFE0B8">'
-    c8='🍲 Food</div>'
-    st.markdown(c7+c8, unsafe_allow_html=True)
-    c9='<div style="background:#FFE0B8">'
-    c10='🚗 Car Mart</div>'
-    st.markdown(c9+c10, unsafe_allow_html=True)
-    c11='<div style="background:#C8FFC8">'
-    c12='💼 Services</div>'
-    st.markdown(c11+c12, unsafe_allow_html=True)
-    c13='<div style="background:#FFC8C8">'
-    c14='🎟️ Tickets</div>'
-    st.markdown(c13+c14, unsafe_allow_html=True)
-    c15='<div style="background:#B8F0E8">'
-    c16='💬 Chat Rooms</div>'
-    st.markdown(c15+c16, unsafe_allow_html=True)
-    cat=st.selectbox('Filter', ['All','Food','Clothes','Phones'])
+    st.markdown('<b>Categories - See all ></b>', unsafe_allow_html=True)
+    r1='<table><tr><td style="background:#FFD6E8">'
+    r2='🧴<br>Perfume</td>'
+    r3='<td style="background:#CDE7FF">👕<br>Clothes</td>'
+    r4='<td style="background:#CDE7FF">📱<br>Phones</td>'
+    r5='<td style="background:#FFE0B8">🍲<br>Food</td></tr>'
+    r6='<tr><td style="background:#FFE0B8">🚗<br>Car Mart</td>'
+    r7='<td style="background:#C8FFC8">💼<br>Services</td>'
+    r8='<td style="background:#FFC8C8">🎟️<br>Tickets</td>'
+    r9='<td style="background:#B8F0E8">💬<br>Chat Rooms</td>'
+    r10='</tr></table>'
+    st.markdown(r1+r2+r3+r4+r5+r6+r7+r8+r9+r10, unsafe_allow_html=True)
+    cat=st.selectbox('Filter', ['All','Food','Clothes','Phones','Car Mart'])
     st.subheader('Featured Listing')
     f1='<div style="background:white">'
     f2='<b>Horlance Auto Cooling Ltd</b>'
     f3='<span> ✅ VERIFIED</span>'
     f4='</div>'
     st.markdown(f1+f2+f3+f4, unsafe_allow_html=True)
-    st.write('Car AC Repair')
-    st.write('Osun & Oyo State')
+    st.write('Car AC Repair - Osun & Oyo State')
     st.write('WhatsApp 09046044472')
     st.link_button('Chat on WhatsApp', 'https://wa.me/2349046044472')
     st.subheader('New Goods')
@@ -68,6 +53,7 @@ if st.session_state.page=='Home':
     m3='</div>'
     st.markdown(m1+m2+m3, unsafe_allow_html=True)
     st.subheader('Sell - FREE')
+    st.write('Post in 30 seconds. Buyer chats you on WhatsApp.')
     nm=st.text_input('Your Name')
     pd=st.text_input('Product Name')
     pr=st.text_input('Price')
@@ -76,22 +62,28 @@ if st.session_state.page=='Home':
     if go:
         t=nm+' - '+pd+' - N'+pr
         st.session_state.goods.append((t,to_wa(wa)))
-        st.success('Posted!')
+        st.success('Posted! People can now chat you.')
         st.balloons()
         st.rerun()
 if st.session_state.page=='Shop':
-    st.subheader('Shop')
+    st.subheader('Shop - Row Economy Market')
     st.info('Horlance - Car AC - N25000')
     st.link_button('Chat', 'https://wa.me/2349046044472')
     for x in st.session_state.goods:
         st.info(x[0])
+        st.link_button('Chat Seller', 'https://wa.me/'+x[1])
 if st.session_state.page=='Orders':
     st.subheader('Orders')
+    st.write('When buyer taps Chat, you get message on WhatsApp.')
     for x in st.session_state.goods:
         st.info(x[0])
 if st.session_state.page=='Profile':
     st.subheader('Profile')
+    st.write('Total goods:')
     st.write(len(st.session_state.goods))
+    st.write('Row Economy Market - Abuja, Nigeria')
+    for x in st.session_state.goods:
+        st.info(x[0])
 st.markdown('---')
 nav=st.segmented_control('Menu', ['Home','Shop','Orders','Profile'])
 if nav=='Home':
