@@ -20,7 +20,7 @@ h3='<h1 style="color:white">Row Economy Market</h1>'
 h4='<p style="color:white">Buy Cheap. Sell Fast. Chat on WhatsApp.</p>'
 h5='</div></div>'
 st.markdown(h1+h2+h3+h4+h5, unsafe_allow_html=True)
-q=st.text_input('Ask Mama Oloja - What are you looking for?')
+q=st.text_input('Ask Mama Oloja - What are you looking for today?')
 if st.session_state.page=='Home':
     st.markdown('<b>Categories - See all ></b>', unsafe_allow_html=True)
     r1='<table><tr><td style="background:#FFD6E8">'
@@ -34,8 +34,8 @@ if st.session_state.page=='Home':
     r9='<td style="background:#B8F0E8">💬<br>Chat Rooms</td>'
     r10='</tr></table>'
     st.markdown(r1+r2+r3+r4+r5+r6+r7+r8+r9+r10, unsafe_allow_html=True)
-    cat=st.selectbox('Filter', ['All','Food','Clothes','Phones','Car Mart'])
-    st.subheader('Featured Listing')
+    cat=st.selectbox('Filter by Category', ['All','Perfume','Clothes','Phones','Food','Car Mart','Services','Tickets','Chat Rooms'])
+    st.subheader('Featured Listing - See all >')
     f1='<div style="background:white">'
     f2='<b>Horlance Auto Cooling Ltd</b>'
     f3='<span> ✅ VERIFIED</span>'
@@ -45,6 +45,7 @@ if st.session_state.page=='Home':
     st.write('WhatsApp 09046044472')
     st.link_button('Chat on WhatsApp', 'https://wa.me/2349046044472')
     st.subheader('New Goods')
+    st.write('Tap Chat Seller to buy on WhatsApp')
     for x in st.session_state.goods:
         st.info(x[0])
         st.link_button('Chat Seller', 'https://wa.me/'+x[1])
@@ -53,48 +54,4 @@ if st.session_state.page=='Home':
     m3='</div>'
     st.markdown(m1+m2+m3, unsafe_allow_html=True)
     st.subheader('Sell - FREE')
-    st.write('Post in 30 seconds. Buyer chats you on WhatsApp.')
-    nm=st.text_input('Your Name')
-    pd=st.text_input('Product Name')
-    pr=st.text_input('Price')
-    wa=st.text_input('Your WhatsApp Number')
-    go=st.button('POST MY GOODS FOR FREE')
-    if go:
-        t=nm+' - '+pd+' - N'+pr
-        st.session_state.goods.append((t,to_wa(wa)))
-        st.success('Posted! People can now chat you.')
-        st.balloons()
-        st.rerun()
-if st.session_state.page=='Shop':
-    st.subheader('Shop - Row Economy Market')
-    st.info('Horlance - Car AC - N25000')
-    st.link_button('Chat', 'https://wa.me/2349046044472')
-    for x in st.session_state.goods:
-        st.info(x[0])
-        st.link_button('Chat Seller', 'https://wa.me/'+x[1])
-if st.session_state.page=='Orders':
-    st.subheader('Orders')
-    st.write('When buyer taps Chat, you get message on WhatsApp.')
-    for x in st.session_state.goods:
-        st.info(x[0])
-if st.session_state.page=='Profile':
-    st.subheader('Profile')
-    st.write('Total goods:')
-    st.write(len(st.session_state.goods))
-    st.write('Row Economy Market - Abuja, Nigeria')
-    for x in st.session_state.goods:
-        st.info(x[0])
-st.markdown('---')
-nav=st.segmented_control('Menu', ['Home','Shop','Orders','Profile'])
-if nav=='Home':
-    st.session_state.page='Home'
-    st.rerun()
-if nav=='Shop':
-    st.session_state.page='Shop'
-    st.rerun()
-if nav=='Orders':
-    st.session_state.page='Orders'
-    st.rerun()
-if nav=='Profile':
-    st.session_state.page='Profile'
-    st.rerun()
+    st.write('Post in 30 seconds.
