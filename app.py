@@ -21,11 +21,15 @@ c1+="<p>Delivery: <b>Delivery Available</b></p></div>"
 st.markdown(c1, unsafe_allow_html=True)
 link="https://wa.me/2349046044472"
 st.link_button("Chat on WhatsApp", link)
-st.markdown("**Mama T**")
-st.markdown("Bag of Rice - N45000")
-st.markdown("Abuja - 09046044472")
-st.markdown("Payment: Transfer Before Delivery")
-st.markdown("Delivery: Pickup Only")
+c2="<div style='background:white;"
+c2+="padding:16px;border-radius:20px;"
+c2+="box-shadow:0 4px 16px #EDEDED'>"
+c2+="<b>Mama T</b>"
+c2+="<p>Bag of Rice - <b>N45000</b></p>"
+c2+="<p>Abuja - 09046044472</p>"
+c2+="<p>Payment: <b>Transfer Before Delivery</b></p>"
+c2+="<p>Delivery: <b>Pickup Only</b></p></div>"
+st.markdown(c2, unsafe_allow_html=True)
 st.link_button("Chat Mama T", link)
 st.markdown("### Sell - FREE for First 10")
 n1=st.text_input("Your Name")
