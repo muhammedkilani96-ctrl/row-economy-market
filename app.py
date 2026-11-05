@@ -25,24 +25,4 @@ if st.session_state.p=='Home':
     c6='📱<br>Phones</div>'
     c.markdown(c5+c6, unsafe_allow_html=True)
     c7='<div style="background:#FFE0B8">'
-    c8='🍲<br>Food</div>'
-    d.markdown(c7+c8, unsafe_allow_html=True)
-    e,f,g,h=st.columns(4)
-    c9='<div style="background:#FFE0B8">'
-    c10='🚗<br>Car Mart</div>'
-    e.markdown(c9+c10, unsafe_allow_html=True)
-    c11='<div style="background:#C8FFC8">'
-    c12='💼<br>Services</div>'
-    f.markdown(c11+c12, unsafe_allow_html=True)
-    c13='<div style="background:#FFC8C8">'
-    c14='🎟️<br>Tickets</div>'
-    g.markdown(c13+c14, unsafe_allow_html=True)
-    c15='<div style="background:#B8F0E8">'
-    c16='💬<br>Chat Rooms</div>'
-    h.markdown(c15+c16, unsafe_allow_html=True)
-    st.subheader('Featured Listing - See all >')
-    if s=='' or 'horlance' in s or 'car' in s or 'ac' in s:
-        f1='<div style="background:white">'
-        f2='<b>Horlance Auto Cooling Ltd</b>'
-        f3=' ✅ VERIFIED</div>'
-        st
+    c8='🍲<br>Food</div
