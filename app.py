@@ -103,3 +103,11 @@ f2=[x for x in f2 if gp(x)<=hi]
 st.write("Filtered Goods")
 st.write(f2)
 st.write("Use Min Max above")
+import os
+o5=im and open("pic.jpg","wb")
+o5 and o5.write(im.getbuffer())
+o5 and o5.close()
+ex=os.path.exists("pic.jpg")
+st.write("Saved Photo")
+ex and st.image("pic.jpg")
+st.write("Last photo stays")
