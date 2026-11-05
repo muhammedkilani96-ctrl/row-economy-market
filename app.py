@@ -11,7 +11,8 @@ if "my_orders" not in st.session_state: st.session_state.my_orders = []
 if "seller_inbox" not in st.session_state: st.session_state.seller_inbox = []
 if "local_goods" not in st.session_state: st.session_state.local_goods = []
 if "ratings" not in st.session_state: st.session_state.ratings = {}
-if "page" not in st.session_state: st.session_state.page = "🛍️ Feed"
+if "page" not in st.session_state: st.session_state.page = "Home"
+if "cat" not in st.session_state: st.session_state.cat = "All"
 if "my_name" not in st.session_state: st.session_state.my_name = ""
 if "chat_msgs" not in st.session_state:
     st.session_state.chat_msgs = [
@@ -41,7 +42,10 @@ def get_goods():
         except: pass
     goods = st.session_state.local_goods + goods
     if len(goods)==0:
-        goods = [{"name":"Mama Ada","item":"Bag of Rice 50kg","price":85000,"cat":"Food","loc":"Wuse 2, Abuja","img":"https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600","phone":"2349046044472","verified":True}]
+        goods = [
+            {"name":"Horlance Auto Cooling Ltd","item":"Car AC Repair","price":25000,"cat":"Car","loc":"Osun & Oyo State","img":"https://images.unsplash.com/photo-1625047509168-a7026f36de04?w=600","phone":"2349046044472","verified":True},
+            {"name":"Mama Ada","item":"Bag of Rice 50kg","price":85000,"cat":"Food","loc":"Wuse 2, Abuja","img":"https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600","phone":"2349046044472","verified":True},
+        ]
     return goods
 
 def delivery_fee(loc):
@@ -54,205 +58,249 @@ def delivery_fee(loc):
 st.markdown("""
 <style>
 header {visibility:hidden !important}
-.block-container {padding-top:0px !important; padding-left:0px !important; padding-right:0px !important; padding-bottom:110px !important; max-width:100% !important}
-div.stButton > button { width:100% !important; background:#FF6B00 !important; color:white !important; border-radius:14px !important; padding:14px !important; border:none !important; font-weight:700 !important; font-size:15px !important; }
-div.stLinkButton > a { width:100% !important; background:#16a34a !important; color:white !important; border-radius:14px !important; text-align:center !important; font-weight:700 !important; }
-/* SWIPE CAROUSEL - horizontal scroll */
-.swipe-row { display:flex; overflow-x:auto; scroll-snap-type:x mandatory; gap:12px; padding:12px; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+.block-container {padding-top:0px !important; padding-left:0px !important; padding-right:0px !important; padding-bottom:100px !important; max-width:100% !important}
+div.stButton > button { width:100% !important; background:#22C55E !important; color:white !important; border-radius:12px !important; padding:12px !important; border:none !important; font-weight:700 !important; }
+div.stLinkButton > a { width:100% !important; background:#22C55E !important; color:white !important; border-radius:12px !important; text-align:center !important; font-weight:700 !important; }
+/* K&K STYLE */
+.kk-header { background:#22C55E; border-radius:0 0 24px 24px; padding:14px 16px 20px 16px; display:flex; justify-content:space-between; align-items:center; }
+.kk-header h1 { color:white; margin:0; font-size:26px; font-weight:800; letter-spacing:-0.5px; }
+.kk-search { background:#F1F5F9; border-radius:16px; margin:-10px 16px 0 16px; padding:12px 14px; display:flex; align-items:center; gap:8px; box-shadow:0 2px 10px #ddd; position:relative; z-index:10; }
+.kk-search input { border:none; background:transparent; outline:none; width:100%; font-size:14px; }
+.cat-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px; padding:0 16px; }
+.cat-item { text-align:center; }
+.cat-box { border-radius:18px; padding:16px 6px; font-size:32px; }
+.cat-item p { font-size:12px; margin:6px 0 0 0; color:#111; font-weight:500; }
+.section-head { display:flex; justify-content:space-between; align-items:center; padding:0 16px; margin:18px 0 10px 0; }
+.section-head h2 { margin:0; font-size:20px; font-weight:800; }
+.section-head span { color:#22C55E; font-size:13px; font-weight:600; }
+.featured { background:white; border-radius:20px; box-shadow:0 4px 20px #eee; margin:0 16px 16px 16px; padding:16px; border:1px solid #f0f0f0; }
+.featured-img { width:130px; height:110px; object-fit:cover; border-radius:12px; float:right; }
+.mama-bubble { background:#DCFCE7; border-radius:18px; border-bottom-left-radius:4px; padding:12px 14px; margin:0 16px 0 60px; font-size:14px; line-height:1.4; }
+.mama-avatar { width:44px; height:44px; border-radius:50%; object-fit:cover; position:absolute; left:16px; }
+.swipe-row { display:flex; overflow-x:auto; scroll-snap-type:x mandatory; gap:12px; padding:8px 16px; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
 .swipe-row::-webkit-scrollbar { display:none; }
-.swipe-card { min-width:78vw; max-width:78vw; scroll-snap-align:center; background:white; border-radius:20px; overflow:hidden; box-shadow:0 4px 20px #ddd; flex-shrink:0; }
-.swipe-card img { width:100%; height:260px; object-fit:cover; }
-.swipe-card-body { padding:14px; }
-/* LONG FEED CARD - full width, tall */
-.feed-card { background:white; border-radius:20px; overflow:hidden; box-shadow:0 4px 20px #eee; margin:0 12px 20px 12px; border:1px solid #f0f0f0; }
-.feed-card img { width:100%; height:340px; object-fit:cover; }
-.feed-body { padding:16px; }
-.price { color:#FF6B00; font-weight:800; font-size:22px; margin:4px 0; }
-.badge { background:#16a34a; color:white; padding:3px 8px; border-radius:20px; font-size:11px; }
-.badge2 { background:#fef3c7; color:#92400e; padding:3px 8px; border-radius:20px; font-size:11px; }
-.notif { background:#fef9c3; border-left:4px solid #eab308; padding:12px; border-radius:12px; margin:8px 12px; }
-.paybox { background:#f0fdf4; border:1px solid #16a34a; border-radius:12px; padding:12px; margin:8px 12px; }
-.chatbox { background:#f8fafc; border-radius:12px; padding:10px; margin:6px 12px; border:1px solid #e2e8f0; }
-.chat-me { background:#dcfce7; border-radius:12px; padding:10px; margin:6px 12px; text-align:right; }
-.post-box { background:linear-gradient(135deg,#FFF7ED,#FFEDD5); border:2px dashed #FF6B00; border-radius:20px; padding:16px; margin:12px; }
+.swipe-card { min-width:76vw; max-width:76vw; scroll-snap-align:center; background:white; border-radius:20px; overflow:hidden; box-shadow:0 4px 20px #ddd; flex-shrink:0; }
+.swipe-card img { width:100%; height:220px; object-fit:cover; }
+.swipe-body { padding:14px; }
+.feed-card { background:white; border-radius:20px; overflow:hidden; box-shadow:0 4px 20px #eee; margin:0 16px 16px 16px; border:1px solid #f0f0f0; }
+.feed-card img { width:100%; height:300px; object-fit:cover; }
+.feed-body { padding:14px; }
+.price { color:#16A34A; font-weight:800; font-size:20px; margin:4px 0; }
+.badge { background:#22C55E; color:white; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; }
+.badge2 { background:#FEF3C7; color:#92400E; padding:4px 10px; border-radius:20px; font-size:11px; }
+.notif { background:#FEF9C3; border-left:4px solid #EAB308; padding:12px; border-radius:12px; margin:8px 16px; }
+.paybox { background:#F0FDF4; border:1px solid #16A34A; border-radius:12px; padding:12px; margin:8px 16px; }
+.chatbox { background:#F8FAFC; border-radius:12px; padding:10px; margin:6px 16px; border:1px solid #E2E8F0; }
+.chat-me { background:#DCFCE7; border-radius:12px; padding:10px; margin:6px 16px; text-align:right; }
+.post-box { background:#FFF7ED; border:2px dashed #22C55E; border-radius:20px; padding:16px; margin:12px 16px; }
+.bottom-bar { position:fixed; bottom:0; left:0; right:0; background:white; border-top:1px solid #eee; padding:10px 0 14px 0; display:flex; justify-content:space-around; z-index:999; }
+.bottom-bar div { text-align:center; font-size:11px; color:#94A3B8; }
+.bottom-bar .active { color:#22C55E; font-weight:700; }
 div[data-testid="stSegmentedControl"] button { border-radius:20px !important; padding:8px 12px !important; font-size:12px !important; }
-div[data-testid="stSegmentedControl"] button[data-testid="stSegmentedControlButton-selected"] { background:#FF6B00 !important; color:white !important; }
+div[data-testid="stSegmentedControl"] button[data-testid="stSegmentedControlButton-selected"] { background:#22C55E !important; color:white !important; }
 </style>
 """, unsafe_allow_html=True)
 
+# ===== K&K HEADER - EXACT LIKE PHOTO =====
 st.markdown("""
-<div style="background:linear-gradient(90deg,#FF6B00,#FF8A00);padding:16px 12px 12px 12px;border-radius:0 0 20px 20px;text-align:center;position:sticky;top:0;z-index:999">
-<div style="font-size:32px">🛒</div>
-<h1 style="color:white;margin:0;font-size:26px">Row Market</h1>
-<p style="color:white;margin:2px 0 0 0;font-size:12px">Swipe ➡️ • Scroll Down ⬇️ • Post FREE • V12</p>
+<div class="kk-header">
+<div style="font-size:28px;color:white">☰</div>
+<h1>K&K Market</h1>
+<div style="background:#FB923C;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px">👤</div>
 </div>
 """, unsafe_allow_html=True)
 
-pending = len([o for o in st.session_state.seller_inbox if o["status"]=="Pending"])
-if pending>0:
-    st.markdown(f"<div class='notif'>🔔 <b>You have {pending} new order(s)!</b> Tap Inbox below.</div>", unsafe_allow_html=True)
+# Search bar - Ask Mama Oloja
+search_q = st.text_input("🔍 Ask Mama Oloja - What are you looking for today? 🎤", key="kk_search_v13", placeholder="Ask Mama Oloja - What are you looking for today?")
+q = search_q
 
-my_name_input = st.text_input("👤 Your Name (for Chat, Orders & Posting)", value=st.session_state.my_name, key="my_name_v12", placeholder="e.g. Tunde")
-if my_name_input and my_name_input != st.session_state.my_name:
-    st.session_state.my_name = my_name_input
-    if my_name_input not in st.session_state.online_users: st.session_state.online_users.append(my_name_input)
+# Your details - hidden but needed
+with st.expander("👤 Your Details - Tap to set Name & WhatsApp", expanded=False):
+    my_name_input = st.text_input("Your Name", value=st.session_state.my_name, key="my_name_v13")
+    if my_name_input and my_name_input != st.session_state.my_name:
+        st.session_state.my_name = my_name_input
+        if my_name_input not in st.session_state.online_users: st.session_state.online_users.append(my_name_input)
+    buyer_phone = st.text_input("Your WhatsApp Number", key="buyer_phone_v13", placeholder="e.g. 2348031234567")
+    st.session_state.buyer_phone_temp = buyer_phone
 buyer_name = st.session_state.my_name
-buyer_phone = st.text_input("📱 Your WhatsApp Number", key="buyer_phone_v12", placeholder="e.g. 2348031234567")
+buyer_phone = st.session_state.get("buyer_phone_temp","")
 
 page = st.session_state.page
 
-# ================= FEED PAGE - SWIPE + LONG SCROLL + POST =================
-if page == "🛍️ Feed":
-    # --- 1. POST YOUR PRODUCT - TOP, BIG, ALWAYS VISIBLE ---
+# ===== HOME PAGE - LIKE PHOTO =====
+if page == "Home":
+    # Categories - EXACT LIKE PHOTO 4x2
     st.markdown("""
-    <div class="post-box">
-    <h3 style="margin:0">📸 POST YOUR PRODUCT - FREE</h3>
-    <p style="margin:4px 0 0 0;font-size:13px;color:#666">Post in 10 secs. It appears instantly in Swipe + Feed below. 👇 Fill below.</p>
+    <div class="section-head"><h2>Categories</h2><span>See all ›</span></div>
+    <div class="cat-grid">
+    <div class="cat-item"><div class="cat-box" style="background:#FBCFE8">🧴</div><p>Perfume</p></div>
+    <div class="cat-item"><div class="cat-box" style="background:#BFDBFE">👕</div><p>Clothes</p></div>
+    <div class="cat-item"><div class="cat-box" style="background:#BFDBFE">📱</div><p>Phones</p></div>
+    <div class="cat-item"><div class="cat-box" style="background:#FED7AA">🍲</div><p>Food</p></div>
+    <div class="cat-item"><div class="cat-box" style="background:#FED7AA">🚗</div><p>Car Mart</p></div>
+    <div class="cat-item"><div class="cat-box" style="background:#BBF7D0">💼</div><p>Services</p></div>
+    <div class="cat-item"><div class="cat-box" style="background:#FBCFE8">🎟️</div><p>Tickets</p></div>
+    <div class="cat-item"><div class="cat-box" style="background:#A7F3D0">💬</div><p>Chat Rooms</p></div>
     </div>
     """, unsafe_allow_html=True)
-    with st.expander("➕ TAP HERE TO POST YOUR PRODUCT - FREE", expanded=False):
-        p_name = st.text_input("Your Name", value=buyer_name, key="post_name_v12")
-        p_item = st.text_input("What are you selling? e.g. Bag of Rice 50kg", key="post_item_v12")
-        p_price = st.number_input("Price (Naira)", min_value=0, key="post_price_v12")
-        p_cat = st.selectbox("Category", ["Food","Phones","Perfume","Clothes","Car","Services","Tickets","Chat"], key="post_cat_v12")
-        p_loc = st.text_input("Location e.g. Wuse 2, Abuja", key="post_loc_v12")
-        p_phone = st.text_input("Your WhatsApp Number (seller)", value=buyer_phone, key="post_phone_v12")
-        p_img = st.text_input("Photo Link (paste Unsplash / any image link, or leave empty)", key="post_img_v12", placeholder="https://...")
-        st.caption("No photo? Leave empty - we use a default shop photo.")
-        if st.button("🚀 POST NOW - Show in Feed Instantly", key="post_now_v12"):
-            if p_name and p_item and p_price>0:
-                new = {"name":p_name,"item":p_item,"price":int(p_price),"cat":p_cat,"loc":p_loc or "Abuja","phone":p_phone or "2349046044472","img":p_img or "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600","verified":False}
-                st.session_state.local_goods.insert(0, new)
-                st.success(f"✅ Posted! '{p_item}' is now LIVE at top of Swipe + Feed! Scroll down to see it.")
-                st.balloons()
-            else: st.error("Fill Name, Product, Price")
-        st.info("💡 To make it PERMANENT, also add same row to your Google Sheet. Temporary posts disappear on reboot, Sheet posts stay forever.")
+    cat_pick = st.segmented_control("Cat", ["All","Perfume","Clothes","Phones","Food","Car","Services","Tickets","Chat"], selection_mode="single", default=st.session_state.cat, label_visibility="collapsed", key="cat_v13")
+    if cat_pick: st.session_state.cat = cat_pick
 
-    # --- 2. SEARCH + FILTERS ---
-    s = st.text_input("🔍 Search - Rice, Phone, Perfume...", key="search_v12")
-    q = s
-    col1, col2 = st.columns(2)
-    with col1: loc_filter = st.selectbox("📍 Location", ["All Locations","Wuse 2, Abuja","Garki, Abuja","Gwarinpa, Abuja","Osun & Oyo","Abuja","Online"], key="filter_loc_v12")
-    with col2: sort_by = st.selectbox("↕️ Sort", ["Newest First","Lowest Price","Highest Price"], key="sort_v12")
-    max_price = st.slider("💰 Max Price", 0, 500000, 500000, step=5000, key="price_slider_v12")
-    delivery_loc = st.selectbox("🚚 Your Delivery Area", ["Wuse 2, Abuja","Garki, Abuja","Gwarinpa, Abuja","Osun & Oyo","Abuja","Pickup Only"], key="delivery_loc_v12")
-    payment = st.selectbox("💳 Pay with", ["Pay on Delivery (Cash)","Bank Transfer","Paystack (Card)"], key="payment_v12")
+    # POST - Big button like in photo style
+    st.markdown("""<div class="post-box"><h3 style="margin:0">📸 POST YOUR PRODUCT - FREE</h3><p style="margin:4px 0 0 0;font-size:13px;color:#666">Tap below, post in 10 secs, appear in Featured + Swipe + Feed</p></div>""", unsafe_allow_html=True)
+    with st.expander("➕ TAP TO POST YOUR PRODUCT", expanded=False):
+        p_name = st.text_input("Your Name", value=buyer_name, key="post_name_v13")
+        p_item = st.text_input("What are you selling?", key="post_item_v13", placeholder="e.g. Bag of Rice 50kg")
+        p_price = st.number_input("Price (Naira)", min_value=0, key="post_price_v13")
+        p_cat = st.selectbox("Category", ["Food","Phones","Perfume","Clothes","Car","Services","Tickets","Chat"], key="post_cat_v13")
+        p_loc = st.text_input("Location", key="post_loc_v13", placeholder="Wuse 2, Abuja")
+        p_phone = st.text_input("Your WhatsApp", value=buyer_phone, key="post_phone_v13")
+        p_img = st.text_input("Photo Link (optional)", key="post_img_v13")
+        if st.button("🚀 POST NOW", key="post_now_v13"):
+            if p_name and p_item and p_price>0:
+                st.session_state.local_goods.insert(0, {"name":p_name,"item":p_item,"price":int(p_price),"cat":p_cat,"loc":p_loc or "Abuja","phone":p_phone or "2349046044472","img":p_img or "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600","verified":False})
+                st.success(f"✅ Posted! '{p_item}' is LIVE!"); st.balloons()
+            else: st.error("Fill Name, Product, Price")
+
+    # Featured Listing - EXACT LIKE PHOTO
+    st.markdown("""<div class="section-head"><h2>Featured Listing</h2><span>See all ›</span></div>""", unsafe_allow_html=True)
+    all_goods = get_goods()
+    # Filter by cat + search
+    filtered=[]
+    for g in all_goods:
+        if st.session_state.cat!="All" and st.session_state.cat.lower() not in g["cat"].lower(): continue
+        if q and q.lower() not in (g["item"]+g["cat"]+g["loc"]+g["name"]).lower(): continue
+        filtered.append(g)
+    # Show first as Featured like photo - Horlance style
+    if len(filtered)>0:
+        feat = filtered[0]
+        badge = '<span class="badge">✅ VERIFIED</span>' if feat["verified"] else '<span class="badge2">New Seller</span>'
+        st.markdown(f"""
+        <div class="featured">
+        <div style="display:flex;justify-content:space-between;align-items:start"><div><b style="font-size:16px">{feat['name']}</b><br><span style="font-size:14px;color:#333">🔧 {feat['item']}</span><br><br><span style="font-size:13px;color:#555">📍 {feat['loc']}</span><br><span style="font-size:13px;color:#555">🟢 WhatsApp {feat['phone']}</span><br><span class="price">N{feat['price']:,}</span></div><img src="{feat['img']}" class="featured-img"></div>
+        <div style="text-align:right">{badge}</div>
+        </div>
+        """, unsafe_allow_html=True)
+        st.link_button(f"💬 Chat on WhatsApp - {feat['name']}", f"https://wa.me/{feat['phone']}?text=" + urllib.parse.quote(f"Hello {feat['name']}, I saw your {feat['item']} on K&K Market. Is it available?"))
+        # Mama Oloja AI Bubble - EXACT LIKE PHOTO
+        st.markdown("""
+        <div style="position:relative;margin:16px 0">
+        <img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=100" style="width:44px;height:44px;border-radius:50%;object-fit:cover;position:absolute;left:16px;top:0">
+        <div class="mama-bubble">Welcome my dear, I can help you find the best price in the market. <span style="float:right;font-size:11px;color:#666">🕐 now</span></div>
+        <p style="font-size:10px;color:#22C55E;margin:2px 0 0 60px;font-weight:600">Mama Oloja AI</p>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("🧕 Ask Mama Oloja - Find Best Price", key="ask_mama_v13"):
+            if q: st.success(f"🧕 Mama: Best price for '{q}' is N{filtered[0]['price']:,} from {filtered[0]['name']} in {filtered[0]['loc']}. Check Featured above!")
+            else: st.info("🧕 Mama: Type what you want in search above, e.g. Rice, Phone, Car AC - I will find best price!")
+
+    # SWIPE + LONG SCROLL - Keep our V12 feature but in K&K style
+    st.markdown("""<div class="section-head"><h2>👉 Swipe ➡️</h2><span>Swipe to see all</span></div>""", unsafe_allow_html=True)
+    if len(filtered)>0:
+        cards=""
+        for g in filtered:
+            cards+=f"""<div class="swipe-card"><img src="{g['img']}"><div class="swipe-body"><b>{g['name']}</b><p style="margin:4px 0">{g['item']}</p><p style="font-size:12px;color:#666">📍 {g['loc']}</p><p class="price">N{g['price']:,}</p></div></div>"""
+        st.markdown(f"<div class='swipe-row'>{cards}</div>", unsafe_allow_html=True)
+
+    st.markdown("""<div class="section-head"><h2>⬇️ All Products - Scroll Down</h2><span>Long Scroll</span></div>""", unsafe_allow_html=True)
+    delivery_loc = st.selectbox("🚚 Your Delivery Area", ["Wuse 2, Abuja","Garki, Abuja","Gwarinpa, Abuja","Osun & Oyo","Abuja","Pickup Only"], key="delivery_loc_v13")
+    payment = st.selectbox("💳 Pay with", ["Pay on Delivery (Cash)","Bank Transfer","Paystack (Card)"], key="payment_v13")
     if payment=="Bank Transfer": st.markdown(f"<div class='paybox'><b>Transfer:</b> {BANK_NAME} - {ACCOUNT_NAME} - <b>{ACCOUNT_NUMBER}</b></div>", unsafe_allow_html=True)
     if payment=="Paystack (Card)": st.link_button("💳 Pay with Paystack", PAYSTACK_LINK)
-    cat_pick = st.segmented_control("Cat", ["All","Food","Phones","Perfume","Clothes","Car","Services","Tickets"], selection_mode="single", default="All", label_visibility="collapsed", key="cat_v12")
-
-    all_goods = get_goods()
-    shown=[]
-    for g in all_goods:
-        if cat_pick!="All" and cat_pick.lower() not in g["cat"].lower(): continue
-        if q and q.lower() not in (g["item"]+g["cat"]+g["loc"]).lower(): continue
-        if loc_filter!="All Locations" and loc_filter.lower() not in g["loc"].lower(): continue
-        if g["price"]>max_price: continue
-        shown.append(g)
-    if sort_by=="Lowest Price": shown = sorted(shown, key=lambda x: x["price"])
-    if sort_by=="Highest Price": shown = sorted(shown, key=lambda x: x["price"], reverse=True)
-
-    # --- 3. SWIPE CAROUSEL - SWIPE LEFT/RIGHT ---
-    st.markdown(f"<h3 style='padding:0 12px'>👉 SWIPE ➡️ - {len(shown)} Products - Swipe to see all</h3>", unsafe_allow_html=True)
-    st.markdown("<p style='padding:0 12px;font-size:12px;color:#666;margin-top:-8px'>👆 Put finger on card, drag left / right like Instagram</p>", unsafe_allow_html=True)
-    if len(shown)>0:
-        cards_html = ""
-        for g in shown:
-            badge = '<span class="badge">✅ VERIFIED</span>' if g["verified"] else '<span class="badge2">New</span>'
-            fee = delivery_fee(delivery_loc)
-            total = g["price"] + (0 if g["price"]>=100000 else fee)
-            cards_html += f"""<div class="swipe-card"><img src="{g['img']}"><div class="swipe-card-body"><div style="display:flex;justify-content:space-between"><b>{g['name']}</b> {badge}</div><p style="margin:6px 0;font-weight:600">{g['item']}</p><p style="font-size:12px;color:#666">📍 {g['loc']}</p><p class="price">N{g['price']:,} • Total N{total:,}</p><p style="font-size:12px;color:#16a34a">⬇️ Scroll down to Order This</p></div></div>"""
-        st.markdown(f"<div class='swipe-row'>{cards_html}</div>", unsafe_allow_html=True)
-    else:
-        st.write("No products in this filter. Try All.")
-
-    # --- 4. LONG SCROLL FEED - SCROLL DOWN FOREVER ---
-    st.markdown("<h3 style='padding:0 12px'>⬇️ LONG SCROLL FEED - Scroll Down, Order Any</h3>", unsafe_allow_html=True)
-    st.markdown("<p style='padding:0 12px;font-size:12px;color:#666;margin-top:-8px'>Like TikTok - Keep scrolling, each product is big & full</p>", unsafe_allow_html=True)
-    for idx, g in enumerate(shown):
-        badge = '<span class="badge">✅ VERIFIED</span>' if g["verified"] else '<span class="badge2">New Seller</span>'
+    for idx, g in enumerate(filtered):
+        badge = '<span class="badge">✅ VERIFIED</span>' if g["verified"] else '<span class="badge2">New</span>'
         fee = delivery_fee(delivery_loc)
         total = g["price"] + (0 if g["price"]>=100000 else fee)
-        st.markdown(f"""<div class="feed-card"><img src="{g['img']}"><div class="feed-body"><div style="display:flex;justify-content:space-between"><b style="font-size:16px">{g['name']}</b> {badge}</div><p style="margin:8px 0;font-size:16px">{g['item']}</p><p style="font-size:13px;color:#666">📍 {g['loc']} • 📞 {g['phone']} • ⭐ 4.8 (12)</p><p class="price">N{g['price']:,} <span style="font-size:13px;color:#999;text-decoration:line-through">N{int(g['price']*1.15):,}</span></p><p style="font-size:13px;color:#16a34a;font-weight:700">🚚 Delivery N{fee:,} • TOTAL N{total:,} • {payment}</p></div></div>""", unsafe_allow_html=True)
-        c1, c2 = st.columns(2)
+        st.markdown(f"""<div class="feed-card"><img src="{g['img']}"><div class="feed-body"><div style="display:flex;justify-content:space-between"><b>{g['name']}</b> {badge}</div><p style="margin:6px 0">{g['item']}</p><p style="font-size:12px;color:#666">📍 {g['loc']} • ⭐ 4.8</p><p class="price">N{g['price']:,} • Total N{total:,}</p></div></div>""", unsafe_allow_html=True)
+        c1,c2 = st.columns(2)
         with c1:
-            if st.button(f"💬 Chat {g['name'][:10]}", key=f"feed_chat_v12_{idx}"):
-                st.session_state.page="💬 Chat"; st.rerun()
+            if st.button(f"💬 Chat {g['name'][:10]}", key=f"home_chat_v13_{idx}"):
+                st.session_state.page="Shop"; st.rerun()
         with c2:
-            if st.button(f"⭐ Rate 5", key=f"feed_rate_v12_{idx}"):
-                st.session_state.ratings[g["name"]] = (5.0, 13); st.success("Thanks for 5 stars!")
-        if st.button(f"🛒 ORDER THIS - N{total:,} total", key=f"feed_order_v12_{idx}_{g['item'][:10]}"):
-            if not buyer_name or not buyer_phone: st.error("⚠️ Enter Your Name + WhatsApp at top first.")
+            if st.button(f"⭐ Rate 5", key=f"home_rate_v13_{idx}"):
+                st.session_state.ratings[g["name"]] = (5.0, 13); st.success("Thanks!")
+        if st.button(f"🛒 ORDER - N{total:,}", key=f"home_order_v13_{idx}_{g['item'][:8]}"):
+            if not buyer_name or not buyer_phone: st.error("⚠️ Set Your Name + WhatsApp in 'Your Details' at top first.")
             else:
                 order = {"buyer":buyer_name,"buyer_phone":buyer_phone,"seller":g["name"],"seller_phone":g["phone"],"item":g["item"],"price":g["price"],"total":total,"delivery":delivery_loc,"payment":payment,"status":"Pending","time":datetime.now().strftime("%H:%M %d %b")}
                 st.session_state.my_orders.append(order); st.session_state.seller_inbox.append(order)
-                st.success(f"✅ Ordered! Total N{total:,} ({payment})"); st.balloons()
-        notify_text = f"Hello {g['name']}, Row Market V12 👋\n\nNEW ORDER:\n• {g['item']} - N{g['price']:,}\n• Delivery: {delivery_loc} (N{fee:,}) TOTAL N{total:,}\n• Payment: {payment}\n• Buyer: {buyer_name or '[Name]'} - {buyer_phone or '[Number]'}\n\nReply YES / NO.\nRow Market"
-        st.link_button(f"🔔 Notify Seller on WhatsApp - {g['name']}", f"https://wa.me/{g['phone']}?text=" + urllib.parse.quote(notify_text))
-        st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
-    st.markdown("<div style='text-align:center;padding:20px;color:#999'>🎉 You've seen all products<br>Post yours above to appear here!</div>", unsafe_allow_html=True)
+                st.success(f"✅ Ordered! Total N{total:,}"); st.balloons()
+        st.link_button(f"🔔 Notify Seller - {g['name']}", f"https://wa.me/{g['phone']}?text=" + urllib.parse.quote(f"Hello {g['name']}, Row Market 👋 NEW ORDER: {g['item']} N{g['price']:,} Total N{total:,} Delivery {delivery_loc} Payment {payment} Buyer {buyer_name} - {buyer_phone}. Reply YES/NO."))
 
-if page == "🧾 Orders":
-    st.subheader("🧾 My Orders")
-    if len(st.session_state.my_orders)==0: st.write("No orders yet. Go to Feed and order.")
+if page == "Shop":
+    st.markdown("""<div class="section-head"><h2>🛍️ Shop - All Products</h2><span>See all ›</span></div>""", unsafe_allow_html=True)
+    # Reuse same feed but simpler - jump to Home feed
+    st.info("Shop = Same as Home feed. Use Search + Categories on Home to filter. Tap Home below to shop.")
+    if st.button("🏠 Go to Home Shop", key="shop_to_home_v13"):
+        st.session_state.page="Home"; st.rerun()
+    # Show orders count
+    st.write(f"You have {len(st.session_state.my_orders)} orders. Check Orders tab.")
+
+if page == "Orders":
+    st.markdown("""<div class="section-head"><h2>🧾 My Orders</h2><span>Track</span></div>""", unsafe_allow_html=True)
+    if len(st.session_state.my_orders)==0: st.write("No orders yet.")
     for o in st.session_state.my_orders:
         color = "🟡 Pending" if o["status"]=="Pending" else "🟢 Available" if o["status"]=="Available" else "🔴 Sold Out"
         st.markdown(f"<div class='notif'><b>{o['item']}</b> - N{o.get('total',o['price']):,}<br>Seller: {o['seller']}<br>Payment: {o.get('payment','')} | Delivery: {o.get('delivery','')}<br>Status: {color}<br>Time: {o['time']}</div>", unsafe_allow_html=True)
-
-if page == "🔔 Inbox":
-    st.subheader("🔔 Seller Inbox")
-    seller_check_phone = st.text_input("Your Seller WhatsApp Number", key="seller_check_v12", placeholder="2349046044472")
-    if seller_check_phone:
-        my_inbox = [o for o in st.session_state.seller_inbox if seller_check_phone in o["seller_phone"]]
-        if len(my_inbox)==0: st.write("No new orders for this number yet.")
-        for j, o in enumerate(my_inbox):
-            st.markdown(f"<div class='notif'><b>🔔 NEW ORDER!</b><br>Buyer: {o['buyer']} - {o['buyer_phone']}<br>Wants: <b>{o['item']} - N{o.get('total',o['price']):,}</b><br>Payment: {o.get('payment','')} | Delivery: {o.get('delivery','')}<br>Time: {o['time']} | Status: {o['status']}</div>", unsafe_allow_html=True)
-            colA, colB = st.columns(2)
+    st.markdown("""<div class="section-head"><h2>🔔 Seller Inbox</h2><span>For Sellers</span></div>""", unsafe_allow_html=True)
+    seller_check = st.text_input("Your Seller WhatsApp", key="seller_check_v13", placeholder="2349046044472")
+    if seller_check:
+        inbox = [o for o in st.session_state.seller_inbox if seller_check in o["seller_phone"]]
+        if len(inbox)==0: st.write("No orders yet.")
+        for j,o in enumerate(inbox):
+            st.markdown(f"<div class='notif'><b>🔔 NEW ORDER!</b><br>Buyer: {o['buyer']} - {o['buyer_phone']}<br>Wants: {o['item']} - N{o.get('total',o['price']):,}<br>Status: {o['status']}</div>", unsafe_allow_html=True)
+            colA,colB = st.columns(2)
             with colA:
-                if st.button(f"✅ YES, I Have It", key=f"yes_v12_{j}_{o['item'][:8]}"):
+                if st.button("✅ YES", key=f"yes_v13_{j}"):
                     o["status"]="Available"
                     for mo in st.session_state.my_orders:
                         if mo["item"]==o["item"] and mo["buyer"]==o["buyer"]: mo["status"]="Available"
-                    st.success("You said YES!"); st.rerun()
+                    st.rerun()
             with colB:
-                if st.button(f"❌ NO, Sold Out", key=f"no_v12_{j}_{o['item'][:8]}"):
+                if st.button("❌ NO", key=f"no_v13_{j}"):
                     o["status"]="Sold Out"
                     for mo in st.session_state.my_orders:
                         if mo["item"]==o["item"] and mo["buyer"]==o["buyer"]: mo["status"]="Sold Out"
-                    st.error("You said NO."); st.rerun()
+                    st.rerun()
 
-if page == "💬 Chat":
-    st.subheader("💬 Live Chat - Talk to Anyone Online")
-    st.markdown(f"<div style='background:#dcfce7;padding:10px;border-radius:12px;margin:0 12px'>🟢 <b>{len(st.session_state.online_users)} Online:</b> {', '.join(st.session_state.online_users)}<br>You are: <b>{buyer_name or 'Guest'}</b></div>", unsafe_allow_html=True)
-    if st.checkbox("🔄 Auto-refresh chat", value=True, key="autorefresh_v12"):
+if page == "Profile":
+    st.markdown("""<div class="section-head"><h2>👤 Profile</h2><span>Edit</span></div>""", unsafe_allow_html=True)
+    st.markdown(f"<div style='text-align:center;padding:20px'><div style='font-size:64px'>👤</div><h3>{buyer_name or 'Guest'}</h3><p style='color:#666'>{buyer_phone or 'No number yet'}</p><p>🟢 Online • {len(st.session_state.my_orders)} Orders • {len(st.session_state.local_goods)} Products Posted</p></div>", unsafe_allow_html=True)
+    st.markdown("""<div class="section-head"><h2>💬 Chat Rooms - Talk to Anyone</h2><span>Live</span></div>""", unsafe_allow_html=True)
+    st.markdown(f"<div style='background:#DCFCE7;padding:10px;border-radius:12px;margin:0 16px'>🟢 <b>{len(st.session_state.online_users)} Online:</b> {', '.join(st.session_state.online_users)}</div>", unsafe_allow_html=True)
+    if st.checkbox("🔄 Auto-refresh chat", value=True, key="autorefresh_v13"):
         time.sleep(8); st.rerun()
-    tab1, tab2 = st.tabs(["🌍 General Chat", "👤 DM Private"])
+    tab1, tab2 = st.tabs(["🌍 General", "👤 DM"])
     with tab1:
         for m in st.session_state.chat_msgs:
             if m["room"]=="General":
                 cls = "chat-me" if m["user"]==buyer_name else "chatbox"
-                st.markdown(f"<div class='{cls}'><b>{m['user']}</b> <span style='font-size:11px'>{m['time']}</span><br>{m['msg']}</div>", unsafe_allow_html=True)
-        msg = st.text_input("Type message...", key="chat_general_v12")
-        if st.button("📤 Send to General", key="send_general_v12"):
-            if not buyer_name: st.error("Enter Your Name at top first.")
+                st.markdown(f"<div class='{cls}'><b>{m['user']}</b> {m['time']}<br>{m['msg']}</div>", unsafe_allow_html=True)
+        msg = st.text_input("Type message...", key="chat_general_v13")
+        if st.button("📤 Send", key="send_general_v13"):
+            if not buyer_name: st.error("Set Your Name in Your Details first.")
             elif msg:
                 st.session_state.chat_msgs.append({"room":"General","user":buyer_name,"msg":msg,"time":datetime.now().strftime("%H:%M")}); st.rerun()
     with tab2:
-        dm_with = st.selectbox("Chat with:", st.session_state.online_users, key="dm_select_v12")
+        dm_with = st.selectbox("Chat with:", st.session_state.online_users, key="dm_select_v13")
         dm_room = f"DM_{dm_with}"
         for m in st.session_state.chat_msgs:
             if m["room"]==dm_room:
                 cls = "chat-me" if m["user"]==buyer_name else "chatbox"
-                st.markdown(f"<div class='{cls}'><b>{m['user']}</b> <span style='font-size:11px'>{m['time']}</span><br>{m['msg']}</div>", unsafe_allow_html=True)
-        dm_msg = st.text_input(f"DM to {dm_with}...", key="dm_msg_v12")
-        if st.button(f"📤 Send DM to {dm_with}", key="send_dm_v12"):
-            if not buyer_name: st.error("Enter Your Name at top first.")
+                st.markdown(f"<div class='{cls}'><b>{m['user']}</b><br>{m['msg']}</div>", unsafe_allow_html=True)
+        dm_msg = st.text_input(f"DM to {dm_with}...", key="dm_msg_v13")
+        if st.button(f"📤 Send DM to {dm_with}", key="send_dm_v13"):
+            if not buyer_name: st.error("Set Your Name first.")
             elif dm_msg:
                 st.session_state.chat_msgs.append({"room":dm_room,"user":buyer_name,"msg":dm_msg,"time":datetime.now().strftime("%H:%M")}); st.rerun()
+    st.link_button("💚 Join WhatsApp Group", "https://wa.me/?text=I%20want%20to%20join%20K%26K%20Market%20Chat")
 
-# ===== BOTTOM NAV - WORKS =====
+# ===== BOTTOM NAV - EXACT LIKE PHOTO =====
 st.markdown("---")
-nav = st.segmented_control("Nav", ["🛍️ Feed","🧾 Orders","🔔 Inbox","💬 Chat"], selection_mode="single", default=st.session_state.page, label_visibility="collapsed", key="nav_v12")
+nav = st.segmented_control("Nav", ["Home","Shop","Orders","Profile"], selection_mode="single", default=st.session_state.page, label_visibility="collapsed", key="nav_v13")
 if nav and nav != st.session_state.page:
     st.session_state.page = nav; st.rerun()
-st.link_button("📤 Share Row Market on WhatsApp", "https://wa.me/?text=Check%20Row%20Market%20Abuja%20-%20Swipe%2C%20Post%20FREE%2C%20Chat%20Live")
+st.markdown("""
+<div style="text-align:center;font-size:11px;color:#94A3B8;margin-top:6px">🏠 Home &nbsp;•&nbsp; 🛍️ Shop &nbsp;•&nbsp; 🧾 Orders &nbsp;•&nbsp; 👤 Profile</div>
+""", unsafe_allow_html=True)
+st.link_button("📤 Share K&K Market on WhatsApp", "https://wa.me/?text=Check%20K%26K%20Market%20-%20Post%20FREE%2C%20Chat%20Live%2C%20Swipe%20%26%20Shop")
