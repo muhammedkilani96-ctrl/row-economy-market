@@ -94,3 +94,12 @@ st.write(len(c))
 w2=open("c.txt","w")
 w2.write("\n".join(c))
 w2.close()
+def gp(x):
+ a=x.split(" - N")
+ b=a[1].split(" - ")
+ return int(b[0])
+f2=[x for x in f if lo<=gp(x)]
+f2=[x for x in f2 if gp(x)<=hi]
+st.write("Filtered Goods")
+st.write(f2)
+st.write("Use Min Max above")
