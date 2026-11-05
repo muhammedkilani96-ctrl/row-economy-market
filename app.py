@@ -11,11 +11,13 @@ st.markdown("<div style='display:flex;justify-content:space-between;padding:10px
 st.markdown("<div style='display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;padding:0 14px'><a href='?cat=Perfume' style='text-decoration:none'><div style='background:#FFE4F1;border-radius:16px;padding:14px;text-align:center;font-size:28px'>🧴</div><p style='text-align:center;color:#111;font-size:13px'>Perfume</p></a><a href='?cat=Clothes' style='text-decoration:none'><div style='background:#D6EAF8;border-radius:16px;padding:14px;text-align:center;font-size:28px'>👕</div><p style='text-align:center;color:#111;font-size:13px'>Clothes</p></a><a href='?cat=Phones' style='text-decoration:none'><div style='background:#D6EAF8;border-radius:16px;padding:14px;text-align:center;font-size:28px'>📱</div><p style='text-align:center;color:#111;font-size:13px'>Phones</p></a><a href='?cat=Food' style='text-decoration:none'><div style='background:#FFE8CC;border-radius:16px;padding:14px;text-align:center;font-size:28px'>🍲</div><p style='text-align:center;color:#111;font-size:13px'>Food</p></a></div>", unsafe_allow_html=True)
 st.markdown("<div style='display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;padding:10px 14px'><a href='?cat=Car Mart' style='text-decoration:none'><div style='background:#FFE8CC;border-radius:16px;padding:14px;text-align:center;font-size:28px'>🚗</div><p style='text-align:center;color:#111;font-size:13px'>Car Mart</p></a><a href='?cat=Services' style='text-decoration:none'><div style='background:#D5F5E3;border-radius:16px;padding:14px;text-align:center;font-size:28px'>💼</div><p style='text-align:center;color:#111;font-size:13px'>Services</p></a><a href='?cat=Tickets' style='text-decoration:none'><div style='background:#FADBD8;border-radius:16px;padding:14px;text-align:center;font-size:28px'>🎟️</div><p style='text-align:center;color:#111;font-size:13px'>Tickets</p></a><a href='?cat=Chat Rooms' style='text-decoration:none'><div style='background:#D5F5E3;border-radius:16px;padding:14px;text-align:center;font-size:28px'>💬</div><p style='text-align:center;color:#111;font-size:13px'>Chat Rooms</p></a></div>", unsafe_allow_html=True)
 st.markdown("<div style='display:flex;justify-content:space-between;padding:8px 14px'><b>Featured Listing</b><span style='color:#00A651'>See all ></span></div>", unsafe_allow_html=True)
-all_goods=st.session_state.g
-for line in all_goods:    st.write("Goods count:", len(all_goods))
+for line in st.session_state.g:
     p=line.split("|")
-    seller,name,price,loc,wa,cat,ver=p[0],p[1],p[2],p[3],p[4],p[5],p[6]
-    skip=False
+    seller=p[0]
+    name=p[1]
+    price=p[2]
+    loc=p[3]
+    wa=p[4]
     msg=u.quote("Hello "+seller+", I saw your "+name)
     link="https://wa.me/234"+wa[1:]+"?text="+msg
     img="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=400"
@@ -35,23 +37,3 @@ st.markdown("<div style='padding:16px'><b>Sell - FREE for First 10</b><br>1 Name
 with st.form("f"):
     n1=st.text_input("1. Your Name")
     n2=st.text_input("2. WhatsApp")
-    n3=st.selectbox("3. Location", ["Abuja","Osun & Oyo State","Ogbomoso","Ilorin","Lagos"])
-    n4=st.selectbox("Category", ["Food","Phones","Clothes","Perfume","Car Mart","Services","Tickets","Chat Rooms"])
-    n5=st.text_input("5. Product Name")
-    n6=st.text_input("5. Price - e.g. 25000")
-    pic=st.file_uploader("4. Upload Picture", type=["jpg","png"])
-    if pic:
-        st.image(pic)
-    go=st.form_submit_button("POST MY GOODS FOR FREE")
-    if go:
-        if n1=="" or n2=="":
-            st.error("Fill Name and WhatsApp")
-        elif n5=="":
-            st.error("Fill Product Name")
-        else:
-            new=n1+"|"+n5+"|"+n6+"|"+n3+"|"+n2+"|"+n4+"|NO"
-            st.session_state.g.append(new)
-            st.success("Done! Your goods are LIVE!")
-            st.balloons()
-            st.rerun()
-st.markdown("<div style='background:white;display:flex;justify-content:space-around;padding:12px;border-top:1px solid #eee'><span>Home</span><span>Shop</span><span>Orders</span><span>Profile</span></div>", unsafe_allow_html=True)
