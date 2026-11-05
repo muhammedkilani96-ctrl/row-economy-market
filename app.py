@@ -3,11 +3,11 @@ import urllib.parse
 
 st.set_page_config(page_title="Row Economy", layout="wide")
 
-# DATA - short lines only
-if "items" not in st.session_state:
-    st.session_state.items = []
-    st.session_state.items.append("Horlance|Car AC Repair|25000|Osun & Oyo|09046044472|Car Mart")
-    st.session_state.items.append("Mama T|Bag of Rice|45000|Abuja|09046044472|Food")
+# DATA - renamed to goods, NOT items
+if "goods" not in st.session_state:
+    st.session_state.goods = []
+    st.session_state.goods.append("Horlance|Car AC Repair|25000|Osun & Oyo|09046044472|Car Mart")
+    st.session_state.goods.append("Mama T|Bag of Rice|45000|Abuja|09046044472|Food")
 
 if "cat" not in st.session_state:
     st.session_state.cat = "All"
@@ -48,7 +48,7 @@ if st.button("Show All"):
 
 # LISTINGS
 st.write("### Featured Listing")
-for line in st.session_state.items:
+for line in st.session_state.goods:
     parts = line.split("|")
     seller = parts[0]
     name = parts[1]
@@ -84,4 +84,21 @@ st.write("### Sell - FREE for First 10")
 st.write("1 Name  2 WhatsApp  3 Location  4 Pictures  5 Price")
 with st.form("f"):
     n1 = st.text_input("1. Your Name")
-    n
+    n2 = st.text_input("2. WhatsApp")
+    n3 = st.selectbox("3. Location", ["Abuja", "Osun & Oyo", "Ogbomoso", "Ilorin", "Lagos"])
+    n4 = st.selectbox("Category", ["Food", "Phones", "Clothes", "Perfume", "Car Mart", "Services", "Tickets", "Chat Rooms"])
+    n5 = st.text_input("5. Product Name")
+    n6 = st.text_input("5. Price - numbers only e.g. 25000")
+    pic = st.file_uploader("4. Upload Picture", type=["jpg", "png"])
+    go = st.form_submit_button("POST MY GOODS FOR FREE")
+    if go:
+        if n1 == "" or n2 == "":
+            st.error("Fill Name and WhatsApp")
+        elif n5 == "":
+            st.error("Fill Product Name")
+        else:
+            new = n1 + "|" + n5 + "|" + n6 + "|" + n3 + "|" + n2 + "|" + n4
+            st.session_state.goods.append(new)
+            st.success("Done! Your goods are LIVE!")
+            st.balloons()
+            st.rerun()
