@@ -39,3 +39,28 @@ st.link_button("Chat on WhatsApp",u)
 st.write("Mama Oloja AI:")
 st.write("Welcome my dear, I can help")
 st.write("you find best price.")
+st.subheader("Sell FREE")
+nm=st.text_input("Your Name")
+pd=st.text_input("Product Name")
+pr=st.text_input("Price")
+ct=st.selectbox("Category", ["Perfume","Clothes","Phones","Food","Car","Services","Tickets","Chat"])
+if st.button("Post Good"):
+    item=nm+" - "+pd+" - N"+pr+" - "+ct
+    st.session_state.goods.append(item)
+    st.write("Posted! Thank you")
+st.subheader("Shop")
+st.write("Total Goods:")
+st.write(len(st.session_state.goods))
+for g in st.session_state.goods:
+    gl=g.lower()
+    sl=s.lower()
+    ok=True
+    if sl not in gl:
+        ok=False
+    if st.session_state.cat!="All":
+        cl=st.session_state.cat.lower()
+        if cl not in gl:
+            ok=False
+    if ok:
+        st.write(g)
+        st.write("---")
