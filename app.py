@@ -73,7 +73,7 @@ def open_cat(cat_name):
     st.session_state.cat = cat_name
     st.session_state.page = 'Category'
     st.rerun()
-st.markdown('<style>header{visibility:hidden !important}.block-container{padding-top:0px !important;padding-left:0px !important;padding-right:0px !important;padding-bottom:120px !important;max-width:100% !important}div.stButton > button{width:100% !important;background:#22C55E !important;color:white !important;border-radius:16px !important;padding:14px 6px !important;border:none !important;font-weight:700 !important;font-size:15px !important}div.stLinkButton > a{width:100% !important;background:#22C55E !important;color:white !important;border-radius:12px !important;text-align:center !important;font-weight:700 !important}</style>', unsafe_allow_html=True)
+st.markdown('<style>header{visibility:hidden !important}.block-container{padding-top:0px !important;padding-left:12px !important;padding-right:12px !important;padding-bottom:120px !important;max-width:100% !important}div.stButton > button{width:100% !important;background:#22C55E !important;color:white !important;border-radius:16px !important;padding:18px 6px !important;border:none !important;font-weight:700 !important;font-size:16px !important;min-height:64px !important}div.stLinkButton > a{width:100% !important;background:#22C55E !important;color:white !important;border-radius:12px !important;text-align:center !important;font-weight:700 !important}</style>', unsafe_allow_html=True)
 st.markdown('<div style="background:#22C55E;border-radius:0 0 24px 24px;padding:14px 16px 20px 16px;display:flex;justify-content:space-between;align-items:center"><div style="font-size:28px;color:white">☰</div><h1 style="color:white;margin:0;font-size:24px">Row Economy Market</h1><div style="background:#FB923C;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px">👤</div></div>', unsafe_allow_html=True)
 buyer_name = st.session_state.my_name
 buyer_phone = st.session_state.buyer_phone_temp
@@ -147,7 +147,7 @@ def show_category_page(cat_name):
         comm = int(total * COMMISSION)
         seller_gets = int(total * (1 - COMMISSION))
         avatar = seller_avatar(g['name'])
-        st.markdown('<div style="background:white;border-radius:20px;overflow:hidden;box-shadow:0 4px 20px #eee;margin:0 16px 16px 16px"><img src="' + g['img'] + '" style="width:100%;height:280px;object-fit:cover"><div style="padding:14px"><div style="display:flex;gap:10px;align-items:center"><img src="' + avatar + '" style="width:48px;height:48px;border-radius:50%;object-fit:cover"><div><b>' + g['name'] + '</b> - ' + badge_txt + '<br><span style="font-size:12px;color:#666">Seller in ' + g['cat'] + ' - ' + g['loc'] + '</span></div></div><p style="margin:10px 0 4px 0;font-size:16px">' + g['item'] + '</p><p style="color:#16A34A;font-weight:800;font-size:20px">N' + str(base) + ' Total N' + str(total) + '</p><p style="font-size:11px;color:#3B82F6">Escrow: N' + str(comm) + ' to Market, Seller gets N' + str(seller_gets) + '</p></div></div>', unsafe_allow_html=True)
+        st.markdown('<div style="background:white;border-radius:20px;overflow:hidden;box-shadow:0 4px 20px #eee;margin:0 0 16px 0"><img src="' + g['img'] + '" style="width:100%;height:280px;object-fit:cover"><div style="padding:14px"><div style="display:flex;gap:10px;align-items:center"><img src="' + avatar + '" style="width:48px;height:48px;border-radius:50%;object-fit:cover"><div><b>' + g['name'] + '</b> - ' + badge_txt + '<br><span style="font-size:12px;color:#666">Seller in ' + g['cat'] + ' - ' + g['loc'] + '</span></div></div><p style="margin:10px 0 4px 0;font-size:16px">' + g['item'] + '</p><p style="color:#16A34A;font-weight:800;font-size:20px">N' + str(base) + ' Total N' + str(total) + '</p><p style="font-size:11px;color:#3B82F6">Escrow: N' + str(comm) + ' to Market, Seller gets N' + str(seller_gets) + '</p></div></div>', unsafe_allow_html=True)
         if st.button('Chat Seller', key='chat_' + cat_name + '_' + str(idx)):
             st.session_state.page = 'Profile'
             st.rerun()
@@ -164,69 +164,63 @@ def show_category_page(cat_name):
         notify_link = 'https://wa.me/' + g['phone'] + '?text=' + urllib.parse.quote(notify_msg)
         st.link_button('Notify Seller on WhatsApp', notify_link)
 if page == 'Home':
-    st.markdown('<div style="background:linear-gradient(90deg,#EF4444,#F97316);color:white;border-radius:16px;padding:14px;margin:0 16px;text-align:center"><b>DEAL OF THE DAY - 12% OFF - Ends 4h 23m</b><br>Use code ROW12</div>', unsafe_allow_html=True)
+    st.markdown('<div style="background:linear-gradient(90deg,#EF4444,#F97316);color:white;border-radius:16px;padding:14px;margin:12px 0;text-align:center"><b>DEAL OF THE DAY - 12% OFF - Ends 4h 23m</b><br>Use code ROW12</div>', unsafe_allow_html=True)
     with st.expander('Your Details - Tap to set Name and WhatsApp', expanded=False):
-        my_name_input = st.text_input('Your Name', value=st.session_state.my_name, key='my_name_v19')
+        my_name_input = st.text_input('Your Name', value=st.session_state.my_name, key='my_name_v20')
         if my_name_input and my_name_input != st.session_state.my_name:
             st.session_state.my_name = my_name_input
             if my_name_input not in st.session_state.online_users: st.session_state.online_users.append(my_name_input)
             st.rerun()
-        buyer_phone_input = st.text_input('Your WhatsApp Number', value=st.session_state.buyer_phone_temp, key='buyer_phone_v19')
+        buyer_phone_input = st.text_input('Your WhatsApp Number', value=st.session_state.buyer_phone_temp, key='buyer_phone_v20')
         st.session_state.buyer_phone_temp = buyer_phone_input
         st.write('Referral invites:')
         st.write(st.session_state.referral_count)
-        if st.button('I Invited a Friend +1', key='invite_v19'):
+        if st.button('I Invited a Friend +1', key='invite_v20'):
             st.session_state.referral_count += 1
             st.rerun()
         st.write('You are: ' + (st.session_state.my_name or 'Guest'))
-    search_q = st.text_input('Search - Ask Mama Oloja', key='search_home_v19')
+    search_q = st.text_input('Search - Ask Mama Oloja', key='search_home_v20')
     st.subheader('Categories - Tap a Box to Open Its Page')
-    st.write('Tap any box - it opens its OWN page with ONLY that category + seller pics:')
-    r1c1, r1c2, r1c3, r1c4 = st.columns(4)
-    with r1c1:
-        st.markdown('<div style="text-align:center;font-size:40px">🧴</div>', unsafe_allow_html=True)
-        if st.button('Perfume', key='home_perfume_v19'): open_cat('Perfume')
-    with r1c2:
-        st.markdown('<div style="text-align:center;font-size:40px">👕</div>', unsafe_allow_html=True)
-        if st.button('Clothes', key='home_clothes_v19'): open_cat('Clothes')
-    with r1c3:
-        st.markdown('<div style="text-align:center;font-size:40px">📱</div>', unsafe_allow_html=True)
-        if st.button('Phones', key='home_phones_v19'): open_cat('Phones')
-    with r1c4:
-        st.markdown('<div style="text-align:center;font-size:40px">🍲</div>', unsafe_allow_html=True)
-        if st.button('Food', key='home_food_v19'): open_cat('Food')
-    r2c1, r2c2, r2c3, r2c4 = st.columns(4)
-    with r2c1:
-        st.markdown('<div style="text-align:center;font-size:40px">🚗</div>', unsafe_allow_html=True)
-        if st.button('Car Mart', key='home_car_v19'): open_cat('Car')
-    with r2c2:
-        st.markdown('<div style="text-align:center;font-size:40px">💼</div>', unsafe_allow_html=True)
-        if st.button('Services', key='home_services_v19'): open_cat('Services')
-    with r2c3:
-        st.markdown('<div style="text-align:center;font-size:40px">🎟️</div>', unsafe_allow_html=True)
-        if st.button('Tickets', key='home_tickets_v19'): open_cat('Tickets')
-    with r2c4:
-        st.markdown('<div style="text-align:center;font-size:40px">💬</div>', unsafe_allow_html=True)
-        if st.button('Chat Rooms', key='home_chat_v19'): open_cat('Chat')
+    st.write('Tap any box - it opens its OWN page with ONLY that category:')
+    cA1, cA2 = st.columns(2)
+    with cA1:
+        if st.button('🧴 Perfume', key='home_perfume_v20'): open_cat('Perfume')
+    with cA2:
+        if st.button('👕 Clothes', key='home_clothes_v20'): open_cat('Clothes')
+    cB1, cB2 = st.columns(2)
+    with cB1:
+        if st.button('📱 Phones', key='home_phones_v20'): open_cat('Phones')
+    with cB2:
+        if st.button('🍲 Food', key='home_food_v20'): open_cat('Food')
+    cC1, cC2 = st.columns(2)
+    with cC1:
+        if st.button('🚗 Car Mart', key='home_car_v20'): open_cat('Car')
+    with cC2:
+        if st.button('💼 Services', key='home_services_v20'): open_cat('Services')
+    cD1, cD2 = st.columns(2)
+    with cD1:
+        if st.button('🎟️ Tickets', key='home_tickets_v20'): open_cat('Tickets')
+    with cD2:
+        if st.button('💬 Chat Rooms', key='home_chat_v20'): open_cat('Chat')
     st.subheader('Preview - Tap to Open Category Page')
     all_goods = get_goods()
     for g in all_goods[:3]:
-        st.markdown('<div style="background:white;border-radius:20px;overflow:hidden;margin:0 16px 16px 16px"><img src="' + g['img'] + '" style="width:100%;height:200px;object-fit:cover"><div style="padding:14px"><b>' + g['name'] + '</b><p>' + g['item'] + ' - ' + g['cat'] + '</p><p style="color:#16A34A;font-weight:800">N' + str(deal_price(g['price'])) + '</p></div></div>', unsafe_allow_html=True)
+        st.markdown('<div style="background:white;border-radius:20px;overflow:hidden;margin:0 0 16px 0"><img src="' + g['img'] + '" style="width:100%;height:200px;object-fit:cover"><div style="padding:14px"><b>' + g['name'] + '</b><p>' + g['item'] + ' - ' + g['cat'] + '</p><p style="color:#16A34A;font-weight:800">N' + str(deal_price(g['price'])) + '</p></div></div>', unsafe_allow_html=True)
         if st.button('Open ' + g['cat'] + ' Page', key='open_cat_' + g['cat'] + '_' + g['item'][:4]): open_cat(g['cat'])
 if page == 'Category': show_category_page(current_cat)
 if page == 'Shop':
     st.subheader('Shop')
     st.info('Tap Home, then tap a category box to open its page.')
-    if st.button('Go Home', key='shop_home_v19'):
+    if st.button('Go Home', key='shop_home_v20'):
         st.session_state.page = 'Home'
         st.rerun()
 if page == 'Orders':
     st.subheader('My Orders + Tracking')
     if len(st.session_state.my_orders) == 0: st.write('No orders yet.')
     for oi, o in enumerate(st.session_state.my_orders):
-        st.markdown('<div style="background:#F8FAFC;border-radius:12px;padding:12px;margin:8px 16px"><b>' + o['item'] + '</b> - N' + str(o.get('total', o['price'])) + '<br>Seller: ' + o['seller'] + '<br>Tracking: ' + o.get('tracking','') + '<br>Status: ' + o['status'] + '</div>', unsafe_allow_html=True)
+        st.markdown('<div style="background:#F8FAFC;border-radius:12px;padding:12px;margin:8px 0"><b>' + o['item'] + '</b> - N' + str(o.get('total', o['price'])) + '<br>Seller: ' + o['seller'] + '<br>Tracking: ' + o.get('tracking','') + '<br>Status: ' + o['status'] + '</div>', unsafe_allow_html=True)
         if o['status'] == 'Available':
-            if st.button('Confirm Delivery - Release Escrow', key='confirm_v19_' + str(oi)):
+            if st.button('Confirm Delivery - Release Escrow', key='confirm_v20_' + str(oi)):
                 st.session_state.escrow_balance -= o.get('total',0)
                 st.session_state.my_earnings += o.get('commission',0)
                 o['status'] = 'Delivered'
@@ -234,34 +228,34 @@ if page == 'Orders':
                 st.success('Delivered! Escrow released.')
                 st.rerun()
     st.subheader('Seller Inbox')
-    seller_check = st.text_input('Your Seller WhatsApp', key='seller_check_v19')
+    seller_check = st.text_input('Your Seller WhatsApp', key='seller_check_v20')
     if seller_check:
         inbox = [o for o in st.session_state.seller_inbox if seller_check in o['seller_phone']]
         if len(inbox) == 0: st.write('No orders yet.')
         for j, o in enumerate(inbox):
-            st.markdown('<div style="background:#FEF9C3;padding:12px;border-radius:12px;margin:8px 16px">NEW ORDER Buyer: ' + o['buyer'] + ' Wants: ' + o['item'] + ' N' + str(o.get('total', o['price'])) + ' Tracking: ' + o.get('tracking','') + '</div>', unsafe_allow_html=True)
+            st.markdown('<div style="background:#FEF9C3;padding:12px;border-radius:12px;margin:8px 0">NEW ORDER Buyer: ' + o['buyer'] + ' Wants: ' + o['item'] + ' N' + str(o.get('total', o['price'])) + ' Tracking: ' + o.get('tracking','') + '</div>', unsafe_allow_html=True)
             colA, colB = st.columns(2)
             with colA:
-                if st.button('YES I Have It', key='yes_v19_' + str(j)):
+                if st.button('YES I Have It', key='yes_v20_' + str(j)):
                     o['status'] = 'Available'
                     o['tracking'] = 'Packed - Waiting Rider'
                     for mo in st.session_state.my_orders:
                         if mo['item'] == o['item'] and mo['buyer'] == o['buyer']: mo['status'] = 'Available'; mo['tracking'] = 'Packed - Waiting Rider'
                     st.rerun()
             with colB:
-                if st.button('NO Sold Out', key='no_v19_' + str(j)):
+                if st.button('NO Sold Out', key='no_v20_' + str(j)):
                     o['status'] = 'Sold Out'
                     o['tracking'] = 'Sold Out'
                     for mo in st.session_state.my_orders:
                         if mo['item'] == o['item'] and mo['buyer'] == o['buyer']: mo['status'] = 'Sold Out'; mo['tracking'] = 'Sold Out'
                     st.rerun()
             if o['status'] == 'Available':
-                if st.button('Rider Picked Up', key='rider_v19_' + str(j)):
+                if st.button('Rider Picked Up', key='rider_v20_' + str(j)):
                     o['tracking'] = 'On The Way - Rider Picked Up'
                     for mo in st.session_state.my_orders:
                         if mo['item'] == o['item'] and mo['buyer'] == o['buyer']: mo['tracking'] = 'On The Way - Rider Picked Up'
                     st.rerun()
-                if st.button('Mark Delivered', key='deliv_v19_' + str(j)):
+                if st.button('Mark Delivered', key='deliv_v20_' + str(j)):
                     o['tracking'] = 'Delivered - Waiting Buyer Confirmation'
                     for mo in st.session_state.my_orders:
                         if mo['item'] == o['item'] and mo['buyer'] == o['buyer']: mo['tracking'] = 'Delivered - Waiting Buyer Confirmation'
@@ -273,38 +267,36 @@ if page == 'Profile':
     st.write('Escrow Held: N' + str(st.session_state.escrow_balance))
     st.write('Your Earnings: N' + str(st.session_state.my_earnings))
     st.write('Online users: ' + ', '.join(st.session_state.online_users))
-    if st.button('Go to Home to Set Name', key='profile_to_home_v19'):
+    if st.button('Go to Home to Set Name', key='profile_to_home_v20'):
         st.session_state.page = 'Home'
         st.rerun()
-    if st.checkbox('Auto-refresh chat', value=True, key='autorefresh_v19'):
+    if st.checkbox('Auto-refresh chat', value=True, key='autorefresh_v20'):
         time.sleep(8)
         st.rerun()
     tab1, tab2 = st.tabs(['General', 'DM'])
     with tab1:
         for m in st.session_state.chat_msgs:
-            if m['room'] == 'General':
-                cls = 'chat-me' if m['user'] == buyer_name else 'chatbox'
-                st.markdown('<div>' + m['user'] + ': ' + m['msg'] + '</div>', unsafe_allow_html=True)
-        msg = st.text_input('Type message', key='chat_general_v19')
-        if st.button('Send', key='send_general_v19'):
+            if m['room'] == 'General': st.markdown('<div>' + m['user'] + ': ' + m['msg'] + '</div>', unsafe_allow_html=True)
+        msg = st.text_input('Type message', key='chat_general_v20')
+        if st.button('Send', key='send_general_v20'):
             if not buyer_name: st.error('Go to Home, set Name in Your Details first.')
             elif msg:
                 st.session_state.chat_msgs.append({'room':'General','user':buyer_name,'msg':msg,'time':datetime.now().strftime('%H:%M')})
                 st.rerun()
     with tab2:
-        dm_with = st.selectbox('Chat with', st.session_state.online_users, key='dm_select_v19')
+        dm_with = st.selectbox('Chat with', st.session_state.online_users, key='dm_select_v20')
         dm_room = 'DM_' + dm_with
         for m in st.session_state.chat_msgs:
             if m['room'] == dm_room: st.markdown('<div>' + m['user'] + ': ' + m['msg'] + '</div>', unsafe_allow_html=True)
-        dm_msg = st.text_input('DM message', key='dm_msg_v19')
-        if st.button('Send DM', key='send_dm_v19'):
+        dm_msg = st.text_input('DM message', key='dm_msg_v20')
+        if st.button('Send DM', key='send_dm_v20'):
             if not buyer_name: st.error('Go to Home, set Name first.')
             elif dm_msg:
                 st.session_state.chat_msgs.append({'room':dm_room,'user':buyer_name,'msg':dm_msg,'time':datetime.now().strftime('%H:%M')})
                 st.rerun()
 st.markdown('---')
 st.write('You are on: ' + page + ' - Tap below to move:')
-nav = st.segmented_control('Nav', ['Home','Shop','Orders','Profile'], selection_mode='single', default='Home' if page=='Category' else page, label_visibility='collapsed', key='nav_v19')
+nav = st.segmented_control('Nav', ['Home','Shop','Orders','Profile'], selection_mode='single', default='Home' if page=='Category' else page, label_visibility='collapsed', key='nav_v20')
 if nav and nav != st.session_state.page:
     st.session_state.page = nav
     st.rerun()
