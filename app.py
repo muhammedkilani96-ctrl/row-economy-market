@@ -71,16 +71,19 @@ st.markdown(c2, unsafe_allow_html=True)
 st.link_button("Chat Mama T", "https://wa.me/2349046044472")
 st.markdown("### New Goods")
 for g in st.session_state.goods:
-    st.success(g)
-st.markdown("### Sell - FREE for First 10")
+    st.success(st.markdown("### Sell - FREE")
+s1="<div style='background:white;"
+s1+="padding:16px;border-radius:20px;"
+s1+="box-shadow:0 4px 16px #EDEDED'>"
+s1+="<b>Post Your Goods</b></div>"
+st.markdown(s1, unsafe_allow_html=True)
 n1=st.text_input("Your Name")
 n5=st.text_input("Product Name")
 n6=st.text_input("Price")
-n7=st.selectbox("Payment", ["Pay on Delivery","Transfer Before Delivery","Cash on Pickup"])
-n8=st.selectbox("Delivery", ["Pickup Only","Delivery Available","Delivery + Pickup"])
+n7=st.selectbox("Payment", ["Pay on Delivery","Transfer Before Delivery"])
+n8=st.selectbox("Delivery", ["Pickup Only","Delivery Available"])
 if st.button("POST MY GOODS FOR FREE"):
     txt=n1+" - "+n5+" - N"+n6
-    txt+=" - Pay: "+n7+" - "+n8
     st.session_state.goods.append(txt)
     st.success("Posted! "+txt)
     st.balloons()
