@@ -17,4 +17,12 @@ def to_wa(num):
     return n
 
 def wa_link(seller_wa, product):
-    msg="Hello, I want to buy:
+    t1="Hello, I want to buy: "
+    t2=" from ROW ECONOMY"
+    msg=t1+product+t2
+    q=urllib.parse.quote(msg)
+    link="https://wa.me/"
+    link=link+seller_wa
+    link=link+"?text="
+    link=link+q
+    return link
