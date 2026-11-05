@@ -12,16 +12,10 @@ st.markdown("<div style='display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:
 st.markdown("<div style='display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;padding:10px 14px'><a href='?cat=Car Mart' style='text-decoration:none'><div style='background:#FFE8CC;border-radius:16px;padding:14px;text-align:center;font-size:28px'>🚗</div><p style='text-align:center;color:#111;font-size:13px'>Car Mart</p></a><a href='?cat=Services' style='text-decoration:none'><div style='background:#D5F5E3;border-radius:16px;padding:14px;text-align:center;font-size:28px'>💼</div><p style='text-align:center;color:#111;font-size:13px'>Services</p></a><a href='?cat=Tickets' style='text-decoration:none'><div style='background:#FADBD8;border-radius:16px;padding:14px;text-align:center;font-size:28px'>🎟️</div><p style='text-align:center;color:#111;font-size:13px'>Tickets</p></a><a href='?cat=Chat Rooms' style='text-decoration:none'><div style='background:#D5F5E3;border-radius:16px;padding:14px;text-align:center;font-size:28px'>💬</div><p style='text-align:center;color:#111;font-size:13px'>Chat Rooms</p></a></div>", unsafe_allow_html=True)
 st.markdown("<div style='display:flex;justify-content:space-between;padding:8px 14px'><b>Featured Listing</b><span style='color:#00A651'>See all ></span></div>", unsafe_allow_html=True)
 all_goods=st.session_state.g
-for line in all_goods:
+for line in all_goods:    st.write("Goods count:", len(all_goods))
     p=line.split("|")
     seller,name,price,loc,wa,cat,ver=p[0],p[1],p[2],p[3],p[4],p[5],p[6]
     skip=False
-    if cat_now!="All" and cat!=cat_now:
-        skip=True
-    if search and search.lower() not in name.lower():
-        skip=True
-    if skip:
-        continue
     msg=u.quote("Hello "+seller+", I saw your "+name)
     link="https://wa.me/234"+wa[1:]+"?text="+msg
     img="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=400"
