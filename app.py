@@ -18,9 +18,8 @@ css+="</style>"
 st.markdown(css,unsafe_allow_html=True)
 head="<div style='background:#16a34a;"
 head+="padding:20px 10px;"
-head+="border-radius:0 0 20px 20px;"
 head+="text-align:center'>"
-head+="<h1 style='color:white;margin:0'>"
+head+="<h1 style='color:white'>"
 head+="Row Market</h1>"
 head+="<p style='color:white'>"
 head+="Row Market Abuja - FREE</p></div>"
@@ -50,23 +49,39 @@ if h.button("Chat Rooms",key="c8"):
     st.session_state.cat="Chat"
 st.write("Category:")
 st.write(st.session_state.cat)
-card="<div style='background:white;"
-card+="padding:14px;border-radius:16px'>"
-card+="<h4>Horlance Auto Cooling Ltd</h4>"
-card+="<p>Car AC Repair</p>"
-card+="<p>Osun & Oyo State</p>"
-card+="<p>WhatsApp 09046044472</p></div>"
-st.markdown(card,unsafe_allow_html=True)
+st.write("Horlance Auto Cooling Ltd")
+st.write("Car AC Repair")
+st.write("Osun & Oyo State")
+st.write("WhatsApp 09046044472")
 u="https://wa.me/2349046044472"
 st.link_button("Chat on WhatsApp",u)
-mama="<div style='background:#dcfce7;"
-mama+="padding:12px;border-radius:16px'>"
-mama+="Mama Oloja AI: Welcome my dear"
-mama+="</div>"
-st.markdown(mama,unsafe_allow_html=True)
+st.write("Mama Oloja AI: Welcome my dear")
 st.subheader("Sell FREE")
 nm=st.text_input("Your Name",key="nm1")
 pd=st.text_input("Product Name",key="pd1")
 pr=st.text_input("Price",key="pr1")
-ct1=["Perfume","Clothes","Phones","Food"]
-ct2=["Car
+ct3=[]
+ct3.append("Perfume")
+ct3.append("Clothes")
+ct3.append("Phones")
+ct3.append("Food")
+ct3.append("Car")
+ct3.append("Services")
+ct3.append("Tickets")
+ct3.append("Chat")
+ct=st.selectbox(
+"Category",
+ct3,
+key="ct1"
+)
+pic=st.file_uploader("Add Photo",key="pic1")
+if pic is not None:
+    st.image(pic)
+if st.button("Post Good",key="post1"):
+    item=nm+" - "+pd+" - N"+pr+" - "+ct
+    st.session_state.goods.append(item)
+    st.session_state.photos.append(pic)
+    st.write("Posted! Thank you")
+st.subheader("Shop")
+st.write(len(st.session_state.goods))
+for idx,g
