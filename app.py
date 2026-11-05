@@ -2,6 +2,7 @@ import streamlit as st
 st.set_page_config(page_title='Row Market')
 if 'g' not in st.session_state: st.session_state.g=[]
 if 'p' not in st.session_state: st.session_state.p='Home'
+if 'chat' not in st.session_state: st.session_state.chat=[]
 st.title('Row Market')
 st.write('Row Economy Market')
 st.write('Buy Cheap. Sell Fast.')
@@ -49,6 +50,18 @@ if go: st.session_state.g.append((t,w,im))
 if go: st.success('Posted with photo!')
 if go: st.balloons()
 if go: st.rerun()
+st.subheader('Chat Rooms - Talk Inside Row Market')
+st.write('Pick a room, drop a message, buyers will see you.')
+cr=st.selectbox('Pick Room', ['General','Abuja Market','Food','Car Mart','Perfume','Clothes'])
+cn=st.text_input('Your Chat Name')
+cm=st.text_input('Type your message here')
+cb=st.button('SEND MESSAGE')
+ct=cn+' in '+cr+' : '+cm
+if cb: st.session_state.chat.append(ct)
+if cb: st.success('Message sent!')
+if cb: st.rerun()
+st.write('Live Messages:')
+for m in st.session_state.chat: st.info(m)
 st.subheader('Shop - Row Market')
 for x in flt: st.info(x[0])
 st.subheader('Orders')
