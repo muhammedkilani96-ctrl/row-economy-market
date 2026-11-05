@@ -15,10 +15,12 @@ if "page" not in st.session_state:
 
 st.markdown("""
 <style>
-[data-testid="stHorizontalBlock"] { flex-wrap: nowrap !important; gap: 6px !important; }
-[data-testid="column"] { min-width: 0 !important; flex: 1 !important; }
-div.stButton > button { width: 100% !important; border-radius: 16px !important; padding: 12px 2px !important; font-size: 13px !important; }
-.cat-box { text-align:center; padding:10px 2px; border-radius:16px; margin-bottom:2px; }
+/* FIX: Allow wrap, no sideways scroll */
+[data-testid="stHorizontalBlock"] { flex-wrap: wrap !important; gap: 8px !important; }
+[data-testid="column"] { min-width: calc(50% - 8px) !important; flex: 1 1 calc(50% - 8px) !important; }
+div.stButton > button { width: 100% !important; border-radius: 14px !important; padding: 10px 2px !important; font-size: 14px !important; }
+div.stLinkButton > a { width: 100% !important; background: #16a34a !important; color: white !important; border-radius: 14px !important; }
+.cat-box { text-align:center; padding:14px 2px; border-radius:16px; margin-bottom:2px; font-size:32px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -33,39 +35,44 @@ q = s
 
 st.markdown("<h3 style='margin:10px 0 5px 0'>Categories <span style='float:right;color:#16a34a;font-size:14px'>See all ></span></h3>", unsafe_allow_html=True)
 
-r1c1, r1c2, r1c3, r1c4 = st.columns(4)
-with r1c1:
-    st.markdown("<div class='cat-box' style='background:#fbcfe8;font-size:32px'>🧴</div><p style='text-align:center;font-size:12px'>Perfume</p>", unsafe_allow_html=True)
+# 2 PER ROW - FITS PHONE, NO SCROLL
+a1, a2 = st.columns(2)
+with a1:
+    st.markdown("<div class='cat-box' style='background:#fbcfe8'>🧴</div><p style='text-align:center;font-size:13px;margin:0'>Perfume</p>", unsafe_allow_html=True)
     if st.button("Perfume", key="c1"):
         st.session_state.cat = "Perfume"
-with r1c2:
-    st.markdown("<div class='cat-box' style='background:#bfdbfe;font-size:32px'>👕</div><p style='text-align:center;font-size:12px'>Clothes</p>", unsafe_allow_html=True)
+with a2:
+    st.markdown("<div class='cat-box' style='background:#bfdbfe'>👕</div><p style='text-align:center;font-size:13px;margin:0'>Clothes</p>", unsafe_allow_html=True)
     if st.button("Clothes", key="c2"):
         st.session_state.cat = "Clothes"
-with r1c3:
-    st.markdown("<div class='cat-box' style='background:#bfdbfe;font-size:32px'>📱</div><p style='text-align:center;font-size:12px'>Phones</p>", unsafe_allow_html=True)
+
+b1, b2 = st.columns(2)
+with b1:
+    st.markdown("<div class='cat-box' style='background:#bfdbfe'>📱</div><p style='text-align:center;font-size:13px;margin:0'>Phones</p>", unsafe_allow_html=True)
     if st.button("Phones", key="c3"):
         st.session_state.cat = "Phones"
-with r1c4:
-    st.markdown("<div class='cat-box' style='background:#fed7aa;font-size:32px'>🍲</div><p style='text-align:center;font-size:12px'>Food</p>", unsafe_allow_html=True)
+with b2:
+    st.markdown("<div class='cat-box' style='background:#fed7aa'>🍲</div><p style='text-align:center;font-size:13px;margin:0'>Food</p>", unsafe_allow_html=True)
     if st.button("Food", key="c4"):
         st.session_state.cat = "Food"
 
-r2c1, r2c2, r2c3, r2c4 = st.columns(4)
-with r2c1:
-    st.markdown("<div class='cat-box' style='background:#fed7aa;font-size:32px'>🚗</div><p style='text-align:center;font-size:12px'>Car Mart</p>", unsafe_allow_html=True)
+d1, d2 = st.columns(2)
+with d1:
+    st.markdown("<div class='cat-box' style='background:#fed7aa'>🚗</div><p style='text-align:center;font-size:13px;margin:0'>Car Mart</p>", unsafe_allow_html=True)
     if st.button("Car Mart", key="c5"):
         st.session_state.cat = "Car"
-with r2c2:
-    st.markdown("<div class='cat-box' style='background:#bbf7d0;font-size:32px'>💼</div><p style='text-align:center;font-size:12px'>Services</p>", unsafe_allow_html=True)
+with d2:
+    st.markdown("<div class='cat-box' style='background:#bbf7d0'>💼</div><p style='text-align:center;font-size:13px;margin:0'>Services</p>", unsafe_allow_html=True)
     if st.button("Services", key="c6"):
         st.session_state.cat = "Services"
-with r2c3:
-    st.markdown("<div class='cat-box' style='background:#fbcfe8;font-size:32px'>🎟️</div><p style='text-align:center;font-size:12px'>Tickets</p>", unsafe_allow_html=True)
+
+e1, e2 = st.columns(2)
+with e1:
+    st.markdown("<div class='cat-box' style='background:#fbcfe8'>🎟️</div><p style='text-align:center;font-size:13px;margin:0'>Tickets</p>", unsafe_allow_html=True)
     if st.button("Tickets", key="c7"):
         st.session_state.cat = "Tickets"
-with r2c4:
-    st.markdown("<div class='cat-box' style='background:#a7f3d0;font-size:32px'>💬</div><p style='text-align:center;font-size:12px'>Chat Rooms</p>", unsafe_allow_html=True)
+with e2:
+    st.markdown("<div class='cat-box' style='background:#a7f3d0'>💬</div><p style='text-align:center;font-size:13px;margin:0'>Chat Rooms</p>", unsafe_allow_html=True)
     if st.button("Chat Rooms", key="c8"):
         st.session_state.cat = "Chat"
 
@@ -172,11 +179,12 @@ st.link_button("Share on WhatsApp", w)
 st.write("Row Market Abuja FREE - Post goods FREE - Chat FREE")
 st.markdown("<hr>", unsafe_allow_html=True)
 
-n1, n2, n3, n4 = st.columns(4)
+n1, n2 = st.columns(2)
 if n1.button("🏠 Home", key="n1"):
     st.session_state.page = "Home"
 if n2.button("🛍️ Shop", key="n2"):
     st.session_state.page = "Shop"
+n3, n4 = st.columns(2)
 if n3.button("🧾 Orders", key="n3"):
     st.session_state.page = "Orders"
 if n4.button("👤 Profile", key="n4"):
