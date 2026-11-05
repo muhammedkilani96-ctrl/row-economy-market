@@ -1,69 +1,77 @@
 import streamlit as st
 import pandas as pd
 import urllib.parse
-from datetime import datetime, timedelta
-import time, random
+from datetime import datetime
+import time
 
-st.set_page_config(page_title="Row Market - Abuja", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Row Economy Market", layout="wide", initial_sidebar_state="collapsed")
 SHEET_ID = "1w8P3SQiChShHPQzShpgznR-lay-awTHmu_x-VHI9IU8E"
 if "my_orders" not in st.session_state: st.session_state.my_orders = []
 if "seller_inbox" not in st.session_state: st.session_state.seller_inbox = []
 if "local_goods" not in st.session_state: st.session_state.local_goods = []
-if "ratings" not in st.session_state: st.session_state.ratings = {}
 if "page" not in st.session_state: st.session_state.page = "Home"
 if "cat" not in st.session_state: st.session_state.cat = "All"
 if "my_name" not in st.session_state: st.session_state.my_name = ""
 if "buyer_phone_temp" not in st.session_state: st.session_state.buyer_phone_temp = ""
-if "referral_code" not in st.session_state: st.session_state.referral_code = ""
 if "referral_count" not in st.session_state: st.session_state.referral_count = 0
-if "reviews" not in st.session_state: st.session_state.reviews = [
-    {"seller":"Horlance Auto Cooling Ltd","buyer":"Tunde","stars":5,"text":"AC cold like freezer! Best in Osun","photo":""},
-    {"seller":"Mama Ada","buyer":"Chidi","stars":5,"text":"Rice is original, no stones. Fast delivery","photo":""},
-]
-if "reported" not in st.session_state: st.session_state.reported = []
-if "verified_sellers" not in st.session_state: st.session_state.verified_sellers = ["Horlance Auto Cooling Ltd","Mama Ada"]
-if "chat_msgs" not in st.session_state:
-    st.session_state.chat_msgs = [{"room":"General","user":"Mama Ada","msg":"Welcome! Rice available 🍚","time":"09:12"}]
-if "online_users" not in st.session_state: st.session_state.online_users = ["Mama Ada","Horlance Auto","Tunde","Chidi","Aisha"]
+if "verified_sellers" not in st.session_state: st.session_state.verified_sellers = ["Horlance Auto Cooling Ltd", "Mama Ada"]
+if "chat_msgs" not in st.session_state: st.session_state.chat_msgs = [{"room":"General","user":"Mama Ada","msg":"Welcome to Row Economy Market","time":"09:12"}]
+if "online_users" not in st.session_state: st.session_state.online_users = ["Mama Ada","Horlance Auto","Tunde"]
 if "escrow_balance" not in st.session_state: st.session_state.escrow_balance = 0
 if "my_earnings" not in st.session_state: st.session_state.my_earnings = 0
 
 PAYSTACK_LINK = "https://paystack.shop/rowmarket"
 BANK_NAME = "OPay / GTB"
-ACCOUNT_NAME = "Row Market - Horlance"
+ACCOUNT_NAME = "Row Economy Market - Horlance"
 ACCOUNT_NUMBER = "9046044472"
 COMMISSION = 0.05
 
 @st.cache_data(ttl=30)
 def load_sheet(sid):
     try:
-        url = f"https://docs.google.com/spreadsheets/d/{sid}/export?format=csv"
+        url = "https://docs.google.com/spreadsheets/d/" + sid + "/export?format=csv"
         df = pd.read_csv(url)
         return df.dropna(subset=["Item"])
-    except: return pd.DataFrame()
+    except:
+        return pd.DataFrame()
 
 def get_goods():
-    goods=[]
-    df=load_sheet(SHEET_ID)
-    for _,r in df.iterrows():
-        try: goods.append({"name":str(r.get("Name","")),"item":str(r.get("Item","")),"price":int(float(r.get("Price",0))),"cat":str(r.get("Category","")),"loc":str(r.get("Location","Abuja")),"phone":str(r.get("Phone","2349046044472")),"img":str(r.get("Image","https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600")),"verified":str(r.get("Verified","")).upper()=="TRUE"})
-        except: pass
-    goods=st.session_state.local_goods+goods
-    if len(goods)==0:
-        goods=[{"name":"Horlance Auto Cooling Ltd","item":"Car AC Repair","price":25000,"cat":"Car","loc":"Osun & Oyo State","img":"https://images.unsplash.com/photo-1625047509168-a7026f36de04?w=600","phone":"2349046044472","verified":True},
-               {"name":"Mama Ada","item":"Bag of Rice 50kg","price":85000,"cat":"Food","loc":"Wuse 2, Abuja","img":"https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600","phone":"2349046044472","verified":True}]
+    goods = []
+    df = load_sheet(SHEET_ID)
+    for _, r in df.iterrows():
+        try:
+            nm = str(r.get("Name",""))
+            it = str(r.get("Item",""))
+            pr = int(float(r.get("Price",0)))
+            ct = str(r.get("Category",""))
+            lc = str(r.get("Location","Abuja"))
+            ph = str(r.get("Phone","2349046044472"))
+            im = str(r.get("Image","https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600"))
+            vf = str(r.get("Verified","")).upper() == "TRUE"
+            goods.append({"name":nm,"item":it,"price":pr,"cat":ct,"loc":lc,"phone":ph,"img":im,"verified":vf})
+        except:
+            pass
+    goods = st.session_state.local_goods + goods
+    if len(goods) == 0:
+        goods = [
+            {"name":"Horlance Auto Cooling Ltd","item":"Car AC Repair","price":25000,"cat":"Car","loc":"Osun & Oyo State","img":"https://images.unsplash.com/photo-1625047509168-a7026f36de04?w=600","phone":"2349046044472","verified":True},
+            {"name":"Mama Ada","item":"Bag of Rice 50kg","price":85000,"cat":"Food","loc":"Wuse 2, Abuja","img":"https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600","phone":"2349046044472","verified":True},
+        ]
     return goods
 
 def delivery_fee(loc):
-    if "Wuse" in loc: return 1500
-    if "Garki" in loc: return 1500
-    if "Gwarinpa" in loc: return 2000
-    if "Osun" in loc or "Oyo" in loc: return 3000
+    if "Wuse" in loc:
+        return 1500
+    if "Garki" in loc:
+        return 1500
+    if "Gwarinpa" in loc:
+        return 2000
+    if "Osun" in loc or "Oyo" in loc:
+        return 3000
     return 2500
 
-def get_deal_price(g):
-    # Daily Deal: First product 12% off today
-    return int(g["price"]*0.88)
+def deal_price(p):
+    return int(p * 0.88)
 
 st.markdown("""
 <style>
@@ -72,17 +80,16 @@ header {visibility:hidden !important}
 div.stButton > button { width:100% !important; background:#22C55E !important; color:white !important; border-radius:12px !important; padding:12px !important; border:none !important; font-weight:700 !important; }
 div.stLinkButton > a { width:100% !important; background:#22C55E !important; color:white !important; border-radius:12px !important; text-align:center !important; font-weight:700 !important; }
 .kk-header { background:#22C55E; border-radius:0 0 24px 24px; padding:14px 16px 20px 16px; display:flex; justify-content:space-between; align-items:center; }
-.kk-header h1 { color:white; margin:0; font-size:26px; font-weight:800; }
+.kk-header h1 { color:white; margin:0; font-size:24px; font-weight:800; }
 .cat-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px; padding:0 16px; }
 .cat-item { text-align:center; }
 .cat-box { border-radius:18px; padding:16px 6px; font-size:32px; }
 .cat-item p { font-size:12px; margin:6px 0 0 0; color:#111; font-weight:500; }
 .section-head { display:flex; justify-content:space-between; align-items:center; padding:0 16px; margin:18px 0 10px 0; }
 .section-head h2 { margin:0; font-size:20px; font-weight:800; }
-.section-head span { color:#22C55E; font-size:13px; font-weight:600; }
 .featured { background:white; border-radius:20px; box-shadow:0 4px 20px #eee; margin:0 16px 16px 16px; padding:16px; border:1px solid #f0f0f0; }
 .featured-img { width:130px; height:110px; object-fit:cover; border-radius:12px; float:right; }
-.mama-bubble { background:#DCFCE7; border-radius:18px; border-bottom-left-radius:4px; padding:12px 14px; margin:0 16px 0 60px; font-size:14px; line-height:1.4; }
+.mama-bubble { background:#DCFCE7; border-radius:18px; border-bottom-left-radius:4px; padding:12px 14px; margin:0 16px 0 60px; font-size:14px; }
 .swipe-row { display:flex; overflow-x:auto; scroll-snap-type:x mandatory; gap:12px; padding:8px 16px; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
 .swipe-row::-webkit-scrollbar { display:none; }
 .swipe-card { min-width:76vw; max-width:76vw; scroll-snap-align:center; background:white; border-radius:20px; overflow:hidden; box-shadow:0 4px 20px #ddd; flex-shrink:0; }
@@ -102,88 +109,275 @@ div.stLinkButton > a { width:100% !important; background:#22C55E !important; col
 .chatbox { background:#F8FAFC; border-radius:12px; padding:10px; margin:6px 16px; border:1px solid #E2E8F0; }
 .chat-me { background:#DCFCE7; border-radius:12px; padding:10px; margin:6px 16px; text-align:right; }
 .post-box { background:#FFF7ED; border:2px dashed #22C55E; border-radius:20px; padding:16px; margin:12px 16px; }
+.cat-active { background:#22C55E; color:white; padding:10px; border-radius:16px; margin:0 16px; text-align:center; font-weight:700; }
 div[data-testid="stSegmentedControl"] button { border-radius:20px !important; padding:8px 12px !important; font-size:12px !important; }
 div[data-testid="stSegmentedControl"] button[data-testid="stSegmentedControlButton-selected"] { background:#22C55E !important; color:white !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# HEADER K&K
-st.markdown("""<div class="kk-header"><div style="font-size:28px;color:white">☰</div><h1>K&K Market</h1><div style="background:#FB923C;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px">👤</div></div>""", unsafe_allow_html=True)
-# DAILY DEAL + COUNTDOWN
-deal_end = datetime.now() + timedelta(hours=4, minutes=23)
-st.markdown(f"""<div class="deal-box"><b>🔥 DEAL OF THE DAY - Ends in 4h 23m</b><br>First product 12% OFF today only! Use code <b>ROW12</b><br><span style="font-size:11px">⏰ Hurry - {deal_end.strftime('%H:%M')} today</span></div>""", unsafe_allow_html=True)
-search_q = st.text_input("🔍 Ask Mama Oloja - What are you looking for today? 🎤", key="kk_search_v14")
+st.markdown("""<div class="kk-header"><div style="font-size:28px;color:white">☰</div><h1>Row Economy Market</h1><div style="background:#FB923C;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px">👤</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="deal-box"><b>DEAL OF THE DAY - 12% OFF - Ends 4h 23m</b><br>Use code ROW12</div>""", unsafe_allow_html=True)
+
+search_q = st.text_input("Search - Ask Mama Oloja", key="search_v15")
 q = search_q
-with st.expander("👤 Your Details + Referral + Verification", expanded=False):
-    my_name_input = st.text_input("Your Name", value=st.session_state.my_name, key="my_name_v14")
+
+with st.expander("Your Details - Tap to set Name and WhatsApp", expanded=False):
+    my_name_input = st.text_input("Your Name", value=st.session_state.my_name, key="my_name_v15")
     if my_name_input and my_name_input != st.session_state.my_name:
         st.session_state.my_name = my_name_input
-        if my_name_input not in st.session_state.online_users: st.session_state.online_users.append(my_name_input)
-        if not st.session_state.referral_code: st.session_state.referral_code = my_name_input.upper()[:5] + str(random.randint(100,999))
-    buyer_phone = st.text_input("Your WhatsApp Number", value=st.session_state.buyer_phone_temp, key="buyer_phone_v14")
+        if my_name_input not in st.session_state.online_users:
+            st.session_state.online_users.append(my_name_input)
+    buyer_phone = st.text_input("Your WhatsApp Number", value=st.session_state.buyer_phone_temp, key="buyer_phone_v15")
     st.session_state.buyer_phone_temp = buyer_phone
-    # REFERRAL
-    st.markdown(f"""<div style="background:#FEF3C7;padding:12px;border-radius:12px"><b>🎁 Your Referral Link</b><br>Share this: <b>rowmarket.app/?ref={st.session_state.referral_code or 'YOURNAME'}</b><br>Invite 3 friends = <b>N500 OFF</b><br>You have invited: <b>{st.session_state.referral_count} / 3</b> {'✅ N500 unlocked!' if st.session_state.referral_count>=3 else ''}</div>""")
-    if st.button("📤 Share My Referral Link", key="share_ref_v14"):
-        st.link_button("Share on WhatsApp", f"https://wa.me/?text=Join%20K%26K%20Market%20with%20my%20link%20rowmarket.app%2F%3Fref%3D{st.session_state.referral_code}%20-%20Get%20N500%20off")
-    # VERIFICATION
-    st.markdown("---")
-    st.markdown("**⭐ Get VERIFIED Badge - Upload NIN / Selfie**")
-    ver_file = st.file_uploader("Upload NIN or Selfie for Verification", type=["jpg","png","jpeg"], key="ver_upload_v14")
-    ver_name = st.text_input("Seller Name to Verify", key="ver_name_v14")
-    if st.button("✅ Request Verification", key="req_ver_v14"):
-        if ver_file and ver_name:
-            if ver_name not in st.session_state.verified_sellers: st.session_state.verified_sellers.append(ver_name)
-            st.success(f"✅ {ver_name} is now VERIFIED! Badge will show on all your products.")
-            st.balloons()
-        else: st.error("Upload photo + Name")
-    st.write(f"Verified sellers: {', '.join(st.session_state.verified_sellers)}")
-    # ESCROW ADMIN - Only you see this
-    st.markdown(f"**💰 Escrow Balance (Admin - You):** N{st.session_state.escrow_balance:,} held | Your Commission Earned: N{st.session_state.my_earnings:,}")
+    st.write("Referral invites:")
+    st.write(st.session_state.referral_count)
+    if st.button("I Invited a Friend +1", key="invite_v15"):
+        st.session_state.referral_count += 1
+        st.rerun()
 
 buyer_name = st.session_state.my_name
 buyer_phone = st.session_state.buyer_phone_temp
 page = st.session_state.page
 
 if page == "Home":
-    st.markdown("""<div class="section-head"><h2>Categories</h2><span>See all ›</span></div><div class="cat-grid"><div class="cat-item"><div class="cat-box" style="background:#FBCFE8">🧴</div><p>Perfume</p></div><div class="cat-item"><div class="cat-box" style="background:#BFDBFE">👕</div><p>Clothes</p></div><div class="cat-item"><div class="cat-box" style="background:#BFDBFE">📱</div><p>Phones</p></div><div class="cat-item"><div class="cat-box" style="background:#FED7AA">🍲</div><p>Food</p></div><div class="cat-item"><div class="cat-box" style="background:#FED7AA">🚗</div><p>Car Mart</p></div><div class="cat-item"><div class="cat-box" style="background:#BBF7D0">💼</div><p>Services</p></div><div class="cat-item"><div class="cat-box" style="background:#FBCFE8">🎟️</div><p>Tickets</p></div><div class="cat-item"><div class="cat-box" style="background:#A7F3D0">💬</div><p>Chat Rooms</p></div></div>""", unsafe_allow_html=True)
-    cat_pick = st.segmented_control("Cat", ["All","Perfume","Clothes","Phones","Food","Car","Services","Tickets","Chat"], selection_mode="single", default=st.session_state.cat, label_visibility="collapsed", key="cat_v14")
-    if cat_pick: st.session_state.cat = cat_pick
-    # POST WITH PHOTO UPLOAD
-    st.markdown("""<div class="post-box"><h3 style="margin:0">📸 POST YOUR PRODUCT - FREE - Upload Photo</h3><p style="margin:4px 0 0 0;font-size:13px;color:#666">No link needed! Upload from gallery 👇</p></div>""", unsafe_allow_html=True)
-    with st.expander("➕ TAP TO POST - Upload Photo", expanded=True):
-        p_name = st.text_input("Your Name", value=buyer_name, key="post_name_v14")
-        p_item = st.text_input("What are you selling?", key="post_item_v14", placeholder="e.g. Bag of Rice 50kg")
-        p_price = st.number_input("Price (Naira)", min_value=0, key="post_price_v14")
-        p_cat = st.selectbox("Category", ["Food","Phones","Perfume","Clothes","Car","Services","Tickets","Chat"], key="post_cat_v14")
-        p_loc = st.text_input("Location", key="post_loc_v14", placeholder="Wuse 2, Abuja")
-        p_phone = st.text_input("Your WhatsApp", value=buyer_phone, key="post_phone_v14")
-        uploaded = st.file_uploader("📸 Upload Product Photo (from phone gallery)", type=["jpg","png","jpeg"], key="post_photo_v14")
-        p_img_link = st.text_input("OR Paste Photo Link (optional)", key="post_img_v14")
+    st.markdown("""<div class="section-head"><h2>Categories</h2></div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="cat-grid"><div class="cat-item"><div class="cat-box" style="background:#FBCFE8">🧴</div><p>Perfume</p></div><div class="cat-item"><div class="cat-box" style="background:#BFDBFE">👕</div><p>Clothes</p></div><div class="cat-item"><div class="cat-box" style="background:#BFDBFE">📱</div><p>Phones</p></div><div class="cat-item"><div class="cat-box" style="background:#FED7AA">🍲</div><p>Food</p></div><div class="cat-item"><div class="cat-box" style="background:#FED7AA">🚗</div><p>Car Mart</p></div><div class="cat-item"><div class="cat-box" style="background:#BBF7D0">💼</div><p>Services</p></div><div class="cat-item"><div class="cat-box" style="background:#FBCFE8">🎟️</div><p>Tickets</p></div><div class="cat-item"><div class="cat-box" style="background:#A7F3D0">💬</div><p>Chat Rooms</p></div></div>""", unsafe_allow_html=True)
+    st.write("Tap a category below - you will see ONLY that category:")
+    c1, c2, c3, c4 = st.columns(4)
+    with c1:
+        if st.button("Perfume", key="cat_perfume_v15"):
+            st.session_state.cat = "Perfume"
+            st.rerun()
+        if st.button("Car", key="cat_car_v15"):
+            st.session_state.cat = "Car"
+            st.rerun()
+    with c2:
+        if st.button("Clothes", key="cat_clothes_v15"):
+            st.session_state.cat = "Clothes"
+            st.rerun()
+        if st.button("Services", key="cat_services_v15"):
+            st.session_state.cat = "Services"
+            st.rerun()
+    with c3:
+        if st.button("Phones", key="cat_phones_v15"):
+            st.session_state.cat = "Phones"
+            st.rerun()
+        if st.button("Tickets", key="cat_tickets_v15"):
+            st.session_state.cat = "Tickets"
+            st.rerun()
+    with c4:
+        if st.button("Food", key="cat_food_v15"):
+            st.session_state.cat = "Food"
+            st.rerun()
+        if st.button("Chat", key="cat_chat_v15"):
+            st.session_state.cat = "Chat"
+            st.rerun()
+    if st.button("Show All Categories", key="cat_all_v15"):
+        st.session_state.cat = "All"
+        st.rerun()
+    current_cat = st.session_state.cat
+    st.markdown('<div class="cat-active">Showing ONLY: ' + current_cat + '</div>', unsafe_allow_html=True)
+    if current_cat != "All":
+        st.write("You are inside " + current_cat + " - only " + current_cat + " products below. Tap Show All to go back.")
+
+    st.markdown("""<div class="post-box"><h3>POST YOUR PRODUCT - FREE</h3><p>Choose category correctly - buyers in that category will see ONLY your product there.</p></div>""", unsafe_allow_html=True)
+    with st.expander("TAP TO POST YOUR PRODUCT", expanded=False):
+        p_name = st.text_input("Your Name", value=buyer_name, key="post_name_v15")
+        p_item = st.text_input("What are you selling?", key="post_item_v15")
+        p_price = st.number_input("Price (Naira)", min_value=0, key="post_price_v15")
+        p_cat = st.selectbox("Category - Choose correctly", ["Food","Phones","Perfume","Clothes","Car","Services","Tickets","Chat"], key="post_cat_v15")
+        p_loc = st.text_input("Location", key="post_loc_v15")
+        p_phone = st.text_input("Your WhatsApp", value=buyer_phone, key="post_phone_v15")
+        uploaded = st.file_uploader("Upload Product Photo", type=["jpg","png","jpeg"], key="post_photo_v15")
+        p_img_link = st.text_input("OR Paste Photo Link", key="post_img_v15")
         img_to_use = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600"
         if uploaded is not None:
-            st.image(uploaded, caption="Preview - Your photo", width=200)
-            img_to_use = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600"
-            st.info("✅ Photo uploaded! In real app it shows your photo. For now we use shop photo + your upload is saved.")
-        elif p_img_link: img_to_use = p_img_link
-        if st.button("🚀 POST NOW", key="post_now_v14"):
-            if p_name and p_item and p_price>0:
+            st.image(uploaded, caption="Preview", width=200)
+        if p_img_link:
+            img_to_use = p_img_link
+        if st.button("POST NOW", key="post_now_v15"):
+            if p_name and p_item and p_price > 0:
                 is_ver = p_name in st.session_state.verified_sellers
                 st.session_state.local_goods.insert(0, {"name":p_name,"item":p_item,"price":int(p_price),"cat":p_cat,"loc":p_loc or "Abuja","phone":p_phone or "2349046044472","img":img_to_use,"verified":is_ver})
-                st.success(f"✅ Posted! '{p_item}' LIVE! {'✅ VERIFIED badge shown' if is_ver else 'Get verified in Your Details to get ✅ badge'}"); st.balloons()
-            else: st.error("Fill Name, Product, Price")
-    # FEATURED
-    st.markdown("""<div class="section-head"><h2>Featured Listing</h2><span>See all ›</span></div>""", unsafe_allow_html=True)
+                st.success("Posted in " + p_cat + " category!")
+                st.balloons()
+            else:
+                st.error("Fill Name, Product, Price")
+
     all_goods = get_goods()
-    filtered=[]
+    filtered = []
     for g in all_goods:
-        if st.session_state.cat!="All" and st.session_state.cat.lower() not in g["cat"].lower(): continue
-        if q and q.lower() not in (g["item"]+g["cat"]+g["loc"]+g["name"]).lower(): continue
+        if current_cat != "All":
+            if g["cat"].lower().strip() != current_cat.lower().strip():
+                continue
+        if q and q.lower() not in (g["item"] + g["cat"] + g["loc"] + g["name"]).lower():
+            continue
         filtered.append(g)
-    if len(filtered)>0:
+
+    st.markdown("""<div class="section-head"><h2>Featured Listing</h2></div>""", unsafe_allow_html=True)
+    if len(filtered) > 0:
         feat = filtered[0]
         is_ver = feat["name"] in st.session_state.verified_sellers or feat["verified"]
-        badge = '<span class="badge">✅ VERIFIED</span>' if is_ver else '<span class="badge2">New Seller</span>'
-        deal_p = get_deal_price(feat)
-        st.markdown(f"""<div class="featured"><div style="display:flex;justify-content:space-between"><div><b style="font-size:16px">{feat['name']}</b><br><span>🔧 {feat['item']}</span><br><br><span>📍 {feat['loc']}</span><br><span>🟢 WhatsApp {feat['phone']}</span><br><span class="price">N{deal_p:,} <span style="font-size:12px;color:#999;text-decoration:line-through">N{feat['price']:,}</span> <span style="font-size:11px;background:#EF4444;color:white;padding:2px 6px;border-radius:10px">-12% DEAL</span></span></div><img src="{feat['img']}" class="featured-img"></div><div style="text-align:right">{badge}</div></div>""", unsafe_allow_html=True)
-        st.link_button(f"
+        badge_txt = "VERIFIED" if is_ver else "New Seller"
+        deal_p = deal_price(feat["price"])
+        st.markdown('<div class="featured"><b>' + feat["name"] + '</b><br>' + feat["item"] + '<br>Location: ' + feat["loc"] + '<br>WhatsApp: ' + feat["phone"] + '<br><span class="price">N' + str(deal_p) + '</span> <span style="text-decoration:line-through;color:#999">N' + str(feat["price"]) + '</span><br>' + badge_txt + '</div>', unsafe_allow_html=True)
+        st.image(feat["img"], width=300)
+        wa_link = "https://wa.me/" + feat["phone"] + "?text=" + urllib.parse.quote("Hello " + feat["name"] + ", I saw your " + feat["item"] + " on Row Economy Market. Is it available?")
+        st.link_button("Chat on WhatsApp", wa_link)
+        st.markdown('<div class="mama-bubble">Welcome my dear, I can help you find the best price in the market.</div>', unsafe_allow_html=True)
+    else:
+        st.write("No products in " + current_cat + " yet. Be the first to post in " + current_cat + "!")
+
+    st.markdown("""<div class="section-head"><h2>Swipe</h2></div>""", unsafe_allow_html=True)
+    st.write("Swipe left / right - ONLY " + current_cat + " products here:")
+    if len(filtered) > 0:
+        cards = ""
+        for g in filtered:
+            cards += '<div class="swipe-card"><img src="' + g["img"] + '"><div class="swipe-body"><b>' + g["name"] + '</b><p>' + g["item"] + '</p><p class="price">N' + str(deal_price(g["price"])) + '</p></div></div>'
+        st.markdown('<div class="swipe-row">' + cards + '</div>', unsafe_allow_html=True)
+
+    st.markdown("""<div class="section-head"><h2>All Products - Scroll Down</h2></div>""", unsafe_allow_html=True)
+    st.markdown('<div class="escrow-box"><b>ESCROW PROTECTION:</b> Pay to Row Economy Market, we hold money, seller delivers, you confirm.</div>', unsafe_allow_html=True)
+    delivery_loc = st.selectbox("Your Delivery Area", ["Wuse 2, Abuja","Garki, Abuja","Gwarinpa, Abuja","Osun & Oyo","Abuja","Pickup Only"], key="delivery_loc_v15")
+    payment = st.selectbox("Pay with", ["Escrow - Paystack (Safest)","Pay on Delivery (Cash)","Bank Transfer to Row Economy Market"], key="payment_v15")
+    if payment == "Bank Transfer to Row Economy Market":
+        st.markdown('<div class="paybox">Transfer: ' + BANK_NAME + ' - ' + ACCOUNT_NAME + ' - ' + ACCOUNT_NUMBER + '</div>', unsafe_allow_html=True)
+    if "Escrow" in payment:
+        st.link_button("Pay Safely via Escrow", PAYSTACK_LINK)
+    st.write("Showing " + str(len(filtered)) + " products in " + current_cat)
+    for idx, g in enumerate(filtered):
+        is_ver = g["name"] in st.session_state.verified_sellers or g["verified"]
+        badge_txt = "VERIFIED" if is_ver else "New Seller"
+        fee = delivery_fee(delivery_loc)
+        base = deal_price(g["price"])
+        discount = 500 if st.session_state.referral_count >= 3 else 0
+        total = base + (0 if base >= 100000 else fee) - discount
+        if total < 0:
+            total = 0
+        comm = int(total * COMMISSION)
+        seller_gets = int(total * (1 - COMMISSION))
+        st.markdown('<div class="feed-card"><img src="' + g["img"] + '"><div class="feed-body"><b>' + g["name"] + '</b> - ' + badge_txt + '<p>' + g["item"] + ' - Category: ' + g["cat"] + '</p><p>Location: ' + g["loc"] + '</p><p class="price">N' + str(base) + ' Total N' + str(total) + '</p><p>Escrow: N' + str(comm) + ' to Market, Seller gets N' + str(seller_gets) + '</p></div></div>', unsafe_allow_html=True)
+        if st.button("Chat Seller", key="chat_v15_" + str(idx)):
+            st.session_state.page = "Profile"
+            st.rerun()
+        if st.button("Report Seller", key="rep_v15_" + str(idx)):
+            st.error("Reported. Admin will check.")
+        if st.button("ORDER - Escrow N" + str(total), key="order_v15_" + str(idx) + "_" + g["item"][:6]):
+            if not buyer_name or not buyer_phone:
+                st.error("Set Name + WhatsApp in Your Details first.")
+            else:
+                order = {"buyer":buyer_name,"buyer_phone":buyer_phone,"seller":g["name"],"seller_phone":g["phone"],"item":g["item"],"price":base,"total":total,"delivery":delivery_loc,"payment":payment,"status":"Pending","tracking":"Pending - Waiting Seller","time":datetime.now().strftime("%H:%M %d %b"),"commission":comm,"seller_gets":seller_gets}
+                st.session_state.my_orders.append(order)
+                st.session_state.seller_inbox.append(order)
+                st.session_state.escrow_balance += total
+                st.success("Order placed! Escrow held.")
+                st.balloons()
+        notify_msg = "Hello " + g["name"] + ", Row Economy Market NEW ORDER: " + g["item"] + " Total N" + str(total) + " Buyer " + buyer_name + " - " + buyer_phone + ". Reply YES / NO."
+        notify_link = "https://wa.me/" + g["phone"] + "?text=" + urllib.parse.quote(notify_msg)
+        st.link_button("Notify Seller on WhatsApp", notify_link)
+
+if page == "Shop":
+    st.markdown("""<div class="section-head"><h2>Shop</h2></div>""", unsafe_allow_html=True)
+    st.info("Shop is same as Home. Tap Home to shop by category.")
+    if st.button("Go Home", key="shop_home_v15"):
+        st.session_state.page = "Home"
+        st.rerun()
+
+if page == "Orders":
+    st.markdown("""<div class="section-head"><h2>My Orders + Tracking</h2></div>""", unsafe_allow_html=True)
+    if len(st.session_state.my_orders) == 0:
+        st.write("No orders yet.")
+    for oi, o in enumerate(st.session_state.my_orders):
+        st.markdown('<div class="track-box"><b>' + o["item"] + '</b> - N' + str(o.get("total", o["price"])) + '<br>Seller: ' + o["seller"] + '<br>Tracking: ' + o.get("tracking","") + '<br>Status: ' + o["status"] + '</div>', unsafe_allow_html=True)
+        if o["status"] == "Available":
+            if st.button("Confirm Delivery - Release Escrow", key="confirm_v15_" + str(oi)):
+                st.session_state.escrow_balance -= o.get("total",0)
+                st.session_state.my_earnings += o.get("commission",0)
+                o["status"] = "Delivered"
+                o["tracking"] = "Delivered - Escrow Released"
+                st.success("Delivered! Escrow released.")
+                st.rerun()
+    st.markdown("""<div class="section-head"><h2>Seller Inbox</h2></div>""", unsafe_allow_html=True)
+    seller_check = st.text_input("Your Seller WhatsApp", key="seller_check_v15")
+    if seller_check:
+        inbox = [o for o in st.session_state.seller_inbox if seller_check in o["seller_phone"]]
+        if len(inbox) == 0:
+            st.write("No orders yet.")
+        for j, o in enumerate(inbox):
+            st.markdown('<div class="notif">NEW ORDER Buyer: ' + o["buyer"] + ' Wants: ' + o["item"] + ' N' + str(o.get("total", o["price"])) + ' Tracking: ' + o.get("tracking","") + '</div>', unsafe_allow_html=True)
+            colA, colB = st.columns(2)
+            with colA:
+                if st.button("YES I Have It", key="yes_v15_" + str(j)):
+                    o["status"] = "Available"
+                    o["tracking"] = "Packed - Waiting Rider"
+                    for mo in st.session_state.my_orders:
+                        if mo["item"] == o["item"] and mo["buyer"] == o["buyer"]:
+                            mo["status"] = "Available"
+                            mo["tracking"] = "Packed - Waiting Rider"
+                    st.rerun()
+            with colB:
+                if st.button("NO Sold Out", key="no_v15_" + str(j)):
+                    o["status"] = "Sold Out"
+                    o["tracking"] = "Sold Out"
+                    for mo in st.session_state.my_orders:
+                        if mo["item"] == o["item"] and mo["buyer"] == o["buyer"]:
+                            mo["status"] = "Sold Out"
+                            mo["tracking"] = "Sold Out"
+                    st.rerun()
+            if o["status"] == "Available":
+                if st.button("Rider Picked Up", key="rider_v15_" + str(j)):
+                    o["tracking"] = "On The Way - Rider Picked Up"
+                    for mo in st.session_state.my_orders:
+                        if mo["item"] == o["item"] and mo["buyer"] == o["buyer"]:
+                            mo["tracking"] = "On The Way - Rider Picked Up"
+                    st.rerun()
+                if st.button("Mark Delivered", key="deliv_v15_" + str(j)):
+                    o["tracking"] = "Delivered - Waiting Buyer Confirmation"
+                    for mo in st.session_state.my_orders:
+                        if mo["item"] == o["item"] and mo["buyer"] == o["buyer"]:
+                            mo["tracking"] = "Delivered - Waiting Buyer Confirmation"
+                    st.rerun()
+
+if page == "Profile":
+    st.markdown("""<div class="section-head"><h2>Profile + Chat</h2></div>""", unsafe_allow_html=True)
+    st.write("Name: " + (buyer_name or "Guest"))
+    st.write("Phone: " + (buyer_phone or "No number"))
+    st.write("Escrow Held: N" + str(st.session_state.escrow_balance))
+    st.write("Your Earnings: N" + str(st.session_state.my_earnings))
+    st.write("Online users: " + ", ".join(st.session_state.online_users))
+    if st.checkbox("Auto-refresh chat", value=True, key="autorefresh_v15"):
+        time.sleep(8)
+        st.rerun()
+    tab1, tab2 = st.tabs(["General", "DM"])
+    with tab1:
+        for m in st.session_state.chat_msgs:
+            if m["room"] == "General":
+                cls = "chat-me" if m["user"] == buyer_name else "chatbox"
+                st.markdown('<div class="' + cls + '"><b>' + m["user"] + '</b><br>' + m["msg"] + '</div>', unsafe_allow_html=True)
+        msg = st.text_input("Type message", key="chat_general_v15")
+        if st.button("Send", key="send_general_v15"):
+            if not buyer_name:
+                st.error("Set Name first.")
+            elif msg:
+                st.session_state.chat_msgs.append({"room":"General","user":buyer_name,"msg":msg,"time":datetime.now().strftime("%H:%M")})
+                st.rerun()
+    with tab2:
+        dm_with = st.selectbox("Chat with", st.session_state.online_users, key="dm_select_v15")
+        dm_room = "DM_" + dm_with
+        for m in st.session_state.chat_msgs:
+            if m["room"] == dm_room:
+                cls = "chat-me" if m["user"] == buyer_name else "chatbox"
+                st.markdown('<div class="' + cls + '"><b>' + m["user"] + '</b><br>' + m["msg"] + '</div>', unsafe_allow_html=True)
+        dm_msg = st.text_input("DM message", key="dm_msg_v15")
+        if st.button("Send DM", key="send_dm_v15"):
+            if not buyer_name:
+                st.error("Set Name first.")
+            elif dm_msg:
+                st.session_state.chat_msgs.append({"room":dm_room,"user":buyer_name,"msg":dm_msg,"time":datetime.now().strftime("%H:%M")})
+                st.rerun()
+
+nav = st.segmented_control("Nav", ["Home","Shop","Orders","Profile"], selection_mode="single", default=st.session_state.page, label_visibility="collapsed", key="nav_v15")
+if nav and nav != st.session_state.page:
+    st.session_state.page = nav
+    st.rerun()
+st.link_button("Share Row Economy Market", "https://wa.me/?text=Check%20Row%20Economy%20Market%20-%20Post%20FREE")
