@@ -1,4 +1,5 @@
 import streamlit as st
+st.set_page_config(page_title="Row Market", layout="wide", initial_sidebar_state="collapsed")
 
 if "cat" not in st.session_state:
     st.session_state.cat = "All"
@@ -10,72 +11,47 @@ if "orders" not in st.session_state:
     st.session_state.orders = []
 if "msgs" not in st.session_state:
     st.session_state.msgs = []
-if "page" not in st.session_state:
-    st.session_state.page = "Home"
 
 st.markdown("""
 <style>
-/* FIX: Allow wrap, no sideways scroll */
-[data-testid="stHorizontalBlock"] { flex-wrap: wrap !important; gap: 8px !important; }
-[data-testid="column"] { min-width: calc(50% - 8px) !important; flex: 1 1 calc(50% - 8px) !important; }
-div.stButton > button { width: 100% !important; border-radius: 14px !important; padding: 10px 2px !important; font-size: 14px !important; }
-div.stLinkButton > a { width: 100% !important; background: #16a34a !important; color: white !important; border-radius: 14px !important; }
-.cat-box { text-align:center; padding:14px 2px; border-radius:16px; margin-bottom:2px; font-size:32px; }
+header {visibility:hidden !important}
+.block-container {padding-top:0px !important; padding-left:8px !important; padding-right:8px !important; max-width:100% !important}
+div.stButton > button { width:100% !important; background:#16a34a !important; color:white !important; border-radius:14px !important; padding:12px !important; }
+div.stLinkButton > a { width:100% !important; background:#16a34a !important; color:white !important; border-radius:14px !important; text-align:center !important; }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+.card { border-radius:16px; padding:16px 6px; text-align:center; font-size:32px; }
+.card p { font-size:13px; margin:4px 0 0 0; color:#111; }
+.navgrid { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px; text-align:center; margin-top:16px; padding:10px 0; border-top:1px solid #eee; }
 </style>
 """, unsafe_allow_html=True)
 
 st.markdown("""
-<div style="background:#16a34a;padding:16px 12px;border-radius:0 0 20px 20px;text-align:center">
-<h1 style="color:white;margin:0;font-size:30px">Row Market</h1>
+<div style="background:#16a34a;padding:18px 10px 14px 10px;border-radius:0 0 20px 20px;text-align:center;margin-top:0">
+<h1 style="color:white;margin:0;font-size:28px">Row Market</h1>
 </div>
 """, unsafe_allow_html=True)
 
 s = st.text_input("🔍 Ask Mama Oloja - What are you looking for today?")
 q = s
 
-st.markdown("<h3 style='margin:10px 0 5px 0'>Categories <span style='float:right;color:#16a34a;font-size:14px'>See all ></span></h3>", unsafe_allow_html=True)
+st.markdown("<h3 style='margin:10px 0 0 0'>Categories <span style='float:right;color:#16a34a;font-size:14px'>See all ></span></h3>", unsafe_allow_html=True)
 
-# 2 PER ROW - FITS PHONE, NO SCROLL
-a1, a2 = st.columns(2)
-with a1:
-    st.markdown("<div class='cat-box' style='background:#fbcfe8'>🧴</div><p style='text-align:center;font-size:13px;margin:0'>Perfume</p>", unsafe_allow_html=True)
-    if st.button("Perfume", key="c1"):
-        st.session_state.cat = "Perfume"
-with a2:
-    st.markdown("<div class='cat-box' style='background:#bfdbfe'>👕</div><p style='text-align:center;font-size:13px;margin:0'>Clothes</p>", unsafe_allow_html=True)
-    if st.button("Clothes", key="c2"):
-        st.session_state.cat = "Clothes"
+# HTML GRID - STAYS 2 PER ROW ON PHONE
+st.markdown("""
+<div class="grid2">
+<div class="card" style="background:#fbcfe8">🧴<p>Perfume</p></div>
+<div class="card" style="background:#bfdbfe">👕<p>Clothes</p></div>
+<div class="card" style="background:#bfdbfe">📱<p>Phones</p></div>
+<div class="card" style="background:#fed7aa">🍲<p>Food</p></div>
+<div class="card" style="background:#fed7aa">🚗<p>Car Mart</p></div>
+<div class="card" style="background:#bbf7d0">💼<p>Services</p></div>
+<div class="card" style="background:#fbcfe8">🎟️<p>Tickets</p></div>
+<div class="card" style="background:#a7f3d0">💬<p>Chat Rooms</p></div>
+</div>
+""", unsafe_allow_html=True)
 
-b1, b2 = st.columns(2)
-with b1:
-    st.markdown("<div class='cat-box' style='background:#bfdbfe'>📱</div><p style='text-align:center;font-size:13px;margin:0'>Phones</p>", unsafe_allow_html=True)
-    if st.button("Phones", key="c3"):
-        st.session_state.cat = "Phones"
-with b2:
-    st.markdown("<div class='cat-box' style='background:#fed7aa'>🍲</div><p style='text-align:center;font-size:13px;margin:0'>Food</p>", unsafe_allow_html=True)
-    if st.button("Food", key="c4"):
-        st.session_state.cat = "Food"
-
-d1, d2 = st.columns(2)
-with d1:
-    st.markdown("<div class='cat-box' style='background:#fed7aa'>🚗</div><p style='text-align:center;font-size:13px;margin:0'>Car Mart</p>", unsafe_allow_html=True)
-    if st.button("Car Mart", key="c5"):
-        st.session_state.cat = "Car"
-with d2:
-    st.markdown("<div class='cat-box' style='background:#bbf7d0'>💼</div><p style='text-align:center;font-size:13px;margin:0'>Services</p>", unsafe_allow_html=True)
-    if st.button("Services", key="c6"):
-        st.session_state.cat = "Services"
-
-e1, e2 = st.columns(2)
-with e1:
-    st.markdown("<div class='cat-box' style='background:#fbcfe8'>🎟️</div><p style='text-align:center;font-size:13px;margin:0'>Tickets</p>", unsafe_allow_html=True)
-    if st.button("Tickets", key="c7"):
-        st.session_state.cat = "Tickets"
-with e2:
-    st.markdown("<div class='cat-box' style='background:#a7f3d0'>💬</div><p style='text-align:center;font-size:13px;margin:0'>Chat Rooms</p>", unsafe_allow_html=True)
-    if st.button("Chat Rooms", key="c8"):
-        st.session_state.cat = "Chat"
-
+ct_list = ["All", "Perfume", "Clothes", "Phones", "Food", "Car", "Services", "Tickets", "Chat"]
+st.session_state.cat = st.selectbox("Tap to choose category", ct_list, key="catpick")
 st.write("Category:", st.session_state.cat)
 
 st.markdown("<h3>Featured Listing <span style='float:right;color:#16a34a;font-size:14px'>See all ></span></h3>", unsafe_allow_html=True)
@@ -101,8 +77,7 @@ st.subheader("Sell FREE")
 nm = st.text_input("Your Name", key="nm1")
 pd = st.text_input("Product Name", key="pd1")
 pr = st.text_input("Price", key="pr1")
-ct_list = ["Perfume", "Clothes", "Phones", "Food", "Car", "Services", "Tickets", "Chat"]
-ct = st.selectbox("Category", ct_list, key="ct1")
+ct = st.selectbox("Category", ct_list[1:], key="ct1")
 pic = st.file_uploader("Add Photo", type=["jpg", "png", "jpeg"], key="pic1")
 if pic is not None:
     st.image(pic)
@@ -142,7 +117,7 @@ if len(st.session_state.orders) > 0:
     st.link_button("Order on WhatsApp", u)
 
 st.subheader("Chat Rooms")
-rm = st.selectbox("Chat Room", ct_list, key="rm1")
+rm = st.selectbox("Chat Room", ct_list[1:], key="rm1")
 cm = st.text_input("Chat Message", key="cm1")
 if st.button("Send Chat", key="send1"):
     st.session_state.msgs.append(rm + " : " + cm)
@@ -177,16 +152,13 @@ st.subheader("Share Row Market")
 w = "https://wa.me/?text=RowMarketAbuja"
 st.link_button("Share on WhatsApp", w)
 st.write("Row Market Abuja FREE - Post goods FREE - Chat FREE")
-st.markdown("<hr>", unsafe_allow_html=True)
 
-n1, n2 = st.columns(2)
-if n1.button("🏠 Home", key="n1"):
-    st.session_state.page = "Home"
-if n2.button("🛍️ Shop", key="n2"):
-    st.session_state.page = "Shop"
-n3, n4 = st.columns(2)
-if n3.button("🧾 Orders", key="n3"):
-    st.session_state.page = "Orders"
-if n4.button("👤 Profile", key="n4"):
-    st.session_state.page = "Profile"
-st.write("Page:", st.session_state.page)
+st.markdown("""
+<div class="navgrid">
+<div>🏠<br><b>Home</b></div>
+<div>🛍️<br>Shop</div>
+<div>🧾<br>Orders</div>
+<div>👤<br>Profile</div>
+</div>
+""", unsafe_allow_html=True)
+st.write("Page: Home - Scroll to use all sections")
