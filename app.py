@@ -10,8 +10,17 @@ search=st.text_input("S", placeholder="Ask Mama Oloja - What are you looking for
 st.markdown("<div style='display:flex;justify-content:space-between;padding:10px 14px'><b>Categories</b><a href='?cat=All' style='color:#00A651;text-decoration:none'>See all ></a></div>", unsafe_allow_html=True)
 st.markdown("<div style='display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;padding:0 14px'><a href='?cat=Perfume' style='text-decoration:none'><div style='background:#FFE4F1;border-radius:16px;padding:14px;text-align:center;font-size:28px'>🧴</div><p style='text-align:center;color:#111;font-size:13px'>Perfume</p></a><a href='?cat=Clothes' style='text-decoration:none'><div style='background:#D6EAF8;border-radius:16px;padding:14px;text-align:center;font-size:28px'>👕</div><p style='text-align:center;color:#111;font-size:13px'>Clothes</p></a><a href='?cat=Phones' style='text-decoration:none'><div style='background:#D6EAF8;border-radius:16px;padding:14px;text-align:center;font-size:28px'>📱</div><p style='text-align:center;color:#111;font-size:13px'>Phones</p></a><a href='?cat=Food' style='text-decoration:none'><div style='background:#FFE8CC;border-radius:16px;padding:14px;text-align:center;font-size:28px'>🍲</div><p style='text-align:center;color:#111;font-size:13px'>Food</p></a></div>", unsafe_allow_html=True)
 st.markdown("<div style='display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;padding:10px 14px'><a href='?cat=Car Mart' style='text-decoration:none'><div style='background:#FFE8CC;border-radius:16px;padding:14px;text-align:center;font-size:28px'>🚗</div><p style='text-align:center;color:#111;font-size:13px'>Car Mart</p></a><a href='?cat=Services' style='text-decoration:none'><div style='background:#D5F5E3;border-radius:16px;padding:14px;text-align:center;font-size:28px'>💼</div><p style='text-align:center;color:#111;font-size:13px'>Services</p></a><a href='?cat=Tickets' style='text-decoration:none'><div style='background:#FADBD8;border-radius:16px;padding:14px;text-align:center;font-size:28px'>🎟️</div><p style='text-align:center;color:#111;font-size:13px'>Tickets</p></a><a href='?cat=Chat Rooms' style='text-decoration:none'><div style='background:#D5F5E3;border-radius:16px;padding:14px;text-align:center;font-size:28px'>💬</div><p style='text-align:center;color:#111;font-size:13px'>Chat Rooms</p></a></div>", unsafe_allow_html=True)
-st.markdown("<div style='display:flex;justify-content:space-between;padding:8px 14px'><b>Featured Listing</b><span style='color:#00A651'>See all ></span></div>", unsafe_allow_html=True)
+st.markdown("<div style='display:flex;justify-content:space-between;padding:8px 14px'><b>Featured Listing - Showing: "+cat_now+"</b><span style='color:#00A651'>See all ></span></div>", unsafe_allow_html=True)
+shown=[]
 for line in st.session_state.g:
+    p=line.split("|")
+    ok_cat=(cat_now=="All" or p[5]==cat_now)
+    ok_search=(search=="" or search.lower() in line.lower())
+    if ok_cat and ok_search:
+        shown.append(line)
+if len(shown)==0:
+    st.info("No goods in "+cat_now+" yet. Be the first to post!")
+for line in shown:
     p=line.split("|")
     seller=p[0]
     name=p[1]
@@ -30,10 +39,35 @@ for line in st.session_state.g:
     card+="<a href='"+link+"' style='display:block;background:#00A651;color:white;text-align:center;padding:12px;border-radius:14px;text-decoration:none;font-weight:bold;margin-top:12px'>Chat on WhatsApp</a></div>"
     st.markdown(card, unsafe_allow_html=True)
 st.markdown("<div style='display:flex;gap:8px;padding:0 14px'><div style='text-align:center'><div style='font-size:36px'>👩🏾</div><span style='background:#00A651;color:white;font-size:10px;padding:3px 7px;border-radius:10px'>Mama Oloja AI</span></div><div style='background:#D5F5E3;border-radius:18px;padding:12px;flex:1'>Welcome my dear, I can help you find the best price in the market.</div></div>", unsafe_allow_html=True)
-q=st.text_input("Ask Mama", placeholder="Ask Mama Oloja...", label_visibility="collapsed")
+q=st.text_input("Ask Mama", placeholder="Ask Mama Oloja... e.g. Rice, AC", label_visibility="collapsed")
 if q:
-    st.success("Mama Oloja: I found "+q+" for you above.")
+    found=[l for l in st.session_state.g if q.lower() in l.lower()]
+    if len(found)>0:
+        f=found[0].split("|")
+        st.success("Mama Oloja: Yes my dear! "+f[1]+" is N"+f[2]+" from "+f[0]+" in "+f[3]+". Tap Chat on WhatsApp above!")
+    else:
+        st.warning("Mama Oloja: Sorry my dear, no "+q+" yet. Post it and I will find buyer for you.")
 st.markdown("<div style='padding:16px'><b>Sell - FREE for First 10</b><br>1 Name 2 WhatsApp 3 Location 4 Pictures 5 Price</div>", unsafe_allow_html=True)
 with st.form("f"):
     n1=st.text_input("1. Your Name")
     n2=st.text_input("2. WhatsApp")
+    n3=st.selectbox("3. Location", ["Abuja","Osun & Oyo State","Ogbomoso","Ilorin","Lagos"])
+    n4=st.selectbox("Category", ["Food","Phones","Clothes","Perfume","Car Mart","Services","Tickets","Chat Rooms"])
+    n5=st.text_input("5. Product Name")
+    n6=st.text_input("5. Price - e.g. 25000")
+    pic=st.file_uploader("4. Upload Picture", type=["jpg","png"])
+    if pic:
+        st.image(pic)
+    go=st.form_submit_button("POST MY GOODS FOR FREE")
+    if go:
+        if n1=="" or n2=="":
+            st.error("Fill Name and WhatsApp")
+        elif n5=="":
+            st.error("Fill Product Name")
+        else:
+            new=n1+"|"+n5+"|"+n6+"|"+n3+"|"+n2+"|"+n4+"|NO"
+            st.session_state.g.append(new)
+            st.success("Done! Your goods are LIVE!")
+            st.balloons()
+            st.rerun()
+st.markdown("<div style='background:white;display:flex;justify-content:space-around;padding:12px;border-top:1px solid #eee'><span>Home</span><span>Shop</span><span>Orders</span><span>Profile</span></div>", unsafe_allow_html=True)
