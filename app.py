@@ -12,32 +12,41 @@ q=st.text_input("Ask", placeholder="Ask Mama Oloja - What are you looking for?")
 if q:
     st.info("Mama dey find: "+q)
 st.markdown("### Categories")
-a,b,c,d=st.columns(4)
-with a:
-    st.markdown("<div style='background:#FDE7F3;padding:14px;border-radius:18px;text-align:center'>🧴</div>", unsafe_allow_html=True)
-    st.markdown("<center>Perfume</center>")
-with b:
-    st.markdown("<div style='background:#E0F2FE;padding:14px;border-radius:18px;text-align:center'>👕</div>", unsafe_allow_html=True)
-    st.markdown("<center>Clothes</center>")
-with c:
-    st.markdown("<div style='background:#DBEAFE;padding:14px;border-radius:18px;text-align:center'>📱</div>", unsafe_allow_html=True)
-    st.markdown("<center>Phones</center>")
-with d:
-    st.markdown("<div style='background:#FEF3C7;padding:14px;border-radius:18px;text-align:center'>🍲</div>", unsafe_allow_html=True)
-    st.markdown("<center>Food</center>")
-e,f,g,h=st.columns(4)
-with e:
-    st.markdown("<div style='background:#FFEDD5;padding:14px;border-radius:18px;text-align:center'>🚗</div>", unsafe_allow_html=True)
-    st.markdown("<center>Car Mart</center>")
-with f:
-    st.markdown("<div style='background:#DCFCE7;padding:14px;border-radius:18px;text-align:center'>💼</div>", unsafe_allow_html=True)
-    st.markdown("<center>Services</center>")
-with g:
-    st.markdown("<div style='background:#FCE7F3;padding:14px;border-radius:18px;text-align:center'>🎟️</div>", unsafe_allow_html=True)
-    st.markdown("<center>Tickets</center>")
-with h:
-    st.markdown("<div style='background:#DCFCE7;padding:14px;border-radius:18px;text-align:center'>💬</div>", unsafe_allow_html=True)
-    st.markdown("<center>Chat Rooms</center>")
+cat1="<div style='display:flex;"
+cat1+="flex-wrap:wrap;gap:8px'>"
+cat1+="<div style='width:23%;text-align:center'>"
+cat1+="<div style='background:#FDE7F3;"
+cat1+="padding:14px;border-radius:18px'>🧴</div>"
+cat1+="Perfume</div>"
+cat1+="<div style='width:23%;text-align:center'>"
+cat1+="<div style='background:#E0F2FE;"
+cat1+="padding:14px;border-radius:18px'>👕</div>"
+cat1+="Clothes</div>"
+cat1+="<div style='width:23%;text-align:center'>"
+cat1+="<div style='background:#DBEAFE;"
+cat1+="padding:14px;border-radius:18px'>📱</div>"
+cat1+="Phones</div>"
+cat1+="<div style='width:23%;text-align:center'>"
+cat1+="<div style='background:#FEF3C7;"
+cat1+="padding:14px;border-radius:18px'>🍲</div>"
+cat1+="Food</div>"
+cat1+="<div style='width:23%;text-align:center'>"
+cat1+="<div style='background:#FFEDD5;"
+cat1+="padding:14px;border-radius:18px'>🚗</div>"
+cat1+="Car Mart</div>"
+cat1+="<div style='width:23%;text-align:center'>"
+cat1+="<div style='background:#DCFCE7;"
+cat1+="padding:14px;border-radius:18px'>💼</div>"
+cat1+="Services</div>"
+cat1+="<div style='width:23%;text-align:center'>"
+cat1+="<div style='background:#FCE7F3;"
+cat1+="padding:14px;border-radius:18px'>🎟️</div>"
+cat1+="Tickets</div>"
+cat1+="<div style='width:23%;text-align:center'>"
+cat1+="<div style='background:#DCFCE7;"
+cat1+="padding:14px;border-radius:18px'>💬</div>"
+cat1+="Chat Rooms</div></div>"
+st.markdown(cat1, unsafe_allow_html=True)
 st.markdown("### Featured Listing")
 f1="<div style='background:white;"
 f1+="padding:16px;border-radius:20px;"
@@ -75,6 +84,7 @@ c2+="<p>Pay: <b>Transfer Before Delivery</b></p>"
 c2+="<p>Delivery: <b>Pickup Only</b></p></div>"
 st.markdown(c2, unsafe_allow_html=True)
 st.link_button("Chat Mama T", "https://wa.me/2349046044472")
+st.markdown("### New Goods")
 for g in st.session_state.goods:
     st.success(g)
 st.markdown("### Sell - FREE")
