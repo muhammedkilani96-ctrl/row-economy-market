@@ -97,3 +97,71 @@ st.link_button("Share on WhatsApp",w)
 st.write("Row Market Abuja FREE")
 st.write("Post goods FREE")
 st.write("Chat FREE")
+import streamlit as st
+if "cat" not in st.session_state:
+    st.session_state.cat="All"
+if "goods" not in st.session_state:
+    st.session_state.goods=[]
+if "photos" not in st.session_state:
+    st.session_state.photos=[]
+if "orders" not in st.session_state:
+    st.session_state.orders=[]
+if "msgs" not in st.session_state:
+    st.session_state.msgs=[]
+st.markdown('<div style="background-color:#16a34a;padding:12px">',unsafe_allow_html=True)
+st.markdown('<h1 style="color:white">Row Market</h1>',unsafe_allow_html=True)
+st.markdown('<p style="color:white">Row Market Abuja - FREE</p>',unsafe_allow_html=True)
+st.markdown('</div>',unsafe_allow_html=True)
+q=st.text_input("Ask Mama Oloja")
+s=st.text_input("Type here to search")
+st.subheader("Categories")
+a,b=st.columns(2)
+if a.button("Perfume"):
+    st.session_state.cat="Perfume"
+if b.button("Clothes"):
+    st.session_state.cat="Clothes"
+a2,b2=st.columns(2)
+if a2.button("Phones"):
+    st.session_state.cat="Phones"
+if b2.button("Food"):
+    st.session_state.cat="Food"
+a3,b3=st.columns(2)
+if a3.button("Car Mart"):
+    st.session_state.cat="Car"
+if b3.button("Services"):
+    st.session_state.cat="Services"
+a4,b4=st.columns(2)
+if a4.button("Tickets"):
+    st.session_state.cat="Tickets"
+if b4.button("Chat Rooms"):
+    st.session_state.cat="Chat"
+st.write("Category:")
+st.write(st.session_state.cat)
+st.subheader("Featured Listing")
+st.write("Horlance Auto Cooling Ltd")
+st.write("VERIFIED - Car AC Repair")
+st.write("Osun & Oyo State")
+st.write("WhatsApp 09046044472")
+u="https://wa.me/2349046044472"
+st.link_button("Chat on WhatsApp",u)
+st.write("Mama Oloja AI:")
+st.write("Welcome my dear, I can help")
+st.write("you find best price.")
+st.subheader("Sell FREE")
+nm=st.text_input("Your Name")
+pd=st.text_input("Product Name")
+pr=st.text_input("Price")
+ct1=["Perfume","Clothes","Phones","Food"]
+ct2=["Car","Services","Tickets","Chat"]
+ct3=ct1+ct2
+ct=st.selectbox("Category",ct3)
+pic=st.file_uploader("Add Photo",type=["jpg","png","jpeg"])
+if pic is not None:
+    st.image(pic)
+if st.button("Post Good"):
+    item=nm+" - "+pd+" - N"+pr+" - "+ct
+    st.session_state.goods.append(item)
+    st.session_state.photos.append(pic)
+    st.write("Posted! Thank you")
+st.subheader("Shop")
+st.write("Total Goods:")
