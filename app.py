@@ -43,7 +43,10 @@ st.subheader("Sell FREE")
 nm=st.text_input("Your Name")
 pd=st.text_input("Product Name")
 pr=st.text_input("Price")
-ct=st.selectbox("Category", ["Perfume","Clothes","Phones","Food","Car","Services","Tickets","Chat"])
+ct1=["Perfume","Clothes","Phones","Food"]
+ct2=["Car","Services","Tickets","Chat"]
+ct3=ct1+ct2
+ct=st.selectbox("Category",ct3)
 if st.button("Post Good"):
     item=nm+" - "+pd+" - N"+pr+" - "+ct
     st.session_state.goods.append(item)
@@ -64,3 +67,33 @@ for g in st.session_state.goods:
     if ok:
         st.write(g)
         st.write("---")
+st.subheader("Mama Answers")
+ql=q.lower()
+if "rice" in ql:
+    st.write("Rice N80000 Abuja best price")
+if "perfume" in ql:
+    st.write("Perfume N15000")
+if "car" in ql:
+    st.write("Car go Horlance")
+    st.write("09046044472")
+if "phone" in ql:
+    st.write("Phone test first")
+if "food" in ql:
+    st.write("Food fresh daily")
+if "clothes" in ql:
+    st.write("Clothes new stock")
+if "hello" in ql:
+    st.write("Mama Welcome dear")
+if "hi" in ql:
+    st.write("Mama Welcome dear")
+st.subheader("My Profile")
+pn=st.text_input("Profile Name")
+if st.button("Save Profile"):
+    st.write("Profile Saved:")
+    st.write(pn)
+st.subheader("Share Row Market")
+w="https://wa.me/?text=RowMarketAbuja"
+st.link_button("Share on WhatsApp",w)
+st.write("Row Market Abuja FREE")
+st.write("Post goods FREE")
+st.write("Chat FREE")
