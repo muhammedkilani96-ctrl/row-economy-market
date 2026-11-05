@@ -11,6 +11,7 @@ h4='<p style="color:white">Buy Cheap. Sell Fast.</p></div>'
 st.markdown(h1+h2+h3+h4, unsafe_allow_html=True)
 q=st.text_input('Ask Mama Oloja - What are you looking for?')
 s=st.text_input('Type here to search...')
+s=s.lower()
 if st.session_state.p=='Home':
     st.subheader('Categories - See all >')
     a,b,c,d=st.columns(4)
@@ -40,57 +41,8 @@ if st.session_state.p=='Home':
     c16='💬<br>Chat Rooms</div>'
     h.markdown(c15+c16, unsafe_allow_html=True)
     st.subheader('Featured Listing - See all >')
-    f1='<div style="background:white">'
-    f2='<b>Horlance Auto Cooling Ltd</b>'
-    f3=' ✅ VERIFIED</div>'
-    st.markdown(f1+f2+f3, unsafe_allow_html=True)
-    st.write('🔧 Car AC Repair')
-    st.write('📍 Osun & Oyo State')
-    st.write('🟢 WhatsApp 09046044472')
-    st.link_button('Chat on WhatsApp', 'https://wa.me/2349046044472')
-    st.subheader('New Goods')
-    for x in st.session_state.g:
-        st.info(x[0])
-        st.link_button('Chat Seller', 'https://wa.me/'+x[1])
-    m1='<div style="background:#D6FFD6">'
-    m2='Welcome my dear, I can help you find best price'
-    m3='</div>'
-    st.markdown(m1+m2+m3, unsafe_allow_html=True)
-    st.subheader('Sell - FREE')
-    st.write('Post in 30 seconds. Buyer chats you.')
-    nm=st.text_input('Your Name')
-    pd=st.text_input('Product Name')
-    pr=st.text_input('Price')
-    wa=st.text_input('Your WhatsApp Number')
-    cg=st.selectbox('Category', ['Food','Clothes','Phones','Perfume','Car Mart','Services','Tickets'])
-    go=st.button('POST MY GOODS FOR FREE')
-    if go:
-        t=nm+' - '+pd+' - N'+pr+' - '+cg
-        w='234'+wa[1:] if len(wa)==11 else wa
-        st.session_state.g.append((t,w))
-        st.success('Posted!')
-        st.balloons()
-        st.rerun()
-if st.session_state.p=='Shop':
-    st.subheader('Shop - Row Market')
-    st.info('Horlance - Car AC - N25000')
-    st.link_button('Chat', 'https://wa.me/2349046044472')
-    for x in st.session_state.g:
-        st.info(x[0])
-        st.link_button('Chat Seller', 'https://wa.me/'+x[1])
-if st.session_state.p=='Orders':
-    st.subheader('Orders')
-    st.write('Check WhatsApp for orders')
-    for x in st.session_state.g:
-        st.info(x[0])
-if st.session_state.p=='Profile':
-    st.subheader('Profile')
-    st.write('Row Market - Abuja, Nigeria')
-    st.write('Total goods:')
-    st.write(len(st.session_state.g))
-    for x in st.session_state.g:
-        st.info(x[0])
-nav=st.segmented_control('Menu', ['Home','Shop','Orders','Profile'])
-if nav:
-    st.session_state.p=nav
-    st.rerun()
+    if s=='' or 'horlance' in s or 'car' in s or 'ac' in s:
+        f1='<div style="background:white">'
+        f2='<b>Horlance Auto Cooling Ltd</b>'
+        f3=' ✅ VERIFIED</div>'
+        st
