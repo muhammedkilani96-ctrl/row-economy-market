@@ -10,11 +10,15 @@ st.markdown(h1, unsafe_allow_html=True)
 st.markdown("### Mama Oloja")
 q=st.text_input("Ask Mama", placeholder="Rice, AC...")
 st.markdown("### Featured")
-st.markdown("**Horlance Auto**")
-st.markdown("Car AC Repair - N25000")
-st.markdown("Osun & Oyo - 09046044472")
-st.markdown("Payment: Pay on Delivery")
-st.markdown("Delivery: Delivery Available")
+c1="<div style='background:white;"
+c1+="padding:16px;border-radius:20px;"
+c1+="box-shadow:0 4px 16px #EDEDED'>"
+c1+="<b>Horlance Auto Cooling Ltd</b>"
+c1+="<p>Car AC Repair - <b>N25000</b></p>"
+c1+="<p>Osun & Oyo - 09046044472</p>"
+c1+="<p>Payment: <b>Pay on Delivery</b></p>"
+c1+="<p>Delivery: <b>Delivery Available</b></p></div>"
+st.markdown(c1, unsafe_allow_html=True)
 link="https://wa.me/2349046044472"
 st.link_button("Chat on WhatsApp", link)
 st.markdown("**Mama T**")
