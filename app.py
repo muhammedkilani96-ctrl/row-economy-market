@@ -5,6 +5,14 @@ if "goods" not in st.session_state:
 if "page" not in st.session_state:
     st.session_state.page="Home"
 
+def to_wa(num):
+    n="".join([c for c in num if c.isdigit()])
+    if len(n)==11 and n.startswith("0"):
+        return "234"+n[1:]
+    if len(n)==10:
+        return "234"+n
+    return n
+
 top = """<div style="background:#00A651;padding:18px;border-radius:0 0 25px 25px;color:white;text-align:center"><b style="font-size:28px">ROW ECONOMY</b><p>Nigeria Sweetest Market</p></div>"""
 st.markdown(top, unsafe_allow_html=True)
 
@@ -51,13 +59,17 @@ elif st.session_state.page=="Orders":
         st.info("No orders yet")
     else:
         for item in st.session_state.goods:
-            st.success("Order: "+item)
+            st.success(item[0])
+            st.link_button("Chat Seller on WhatsApp", "https://wa.me/"+item[1])
 elif st.session_state.page=="Shop":
     st.markdown("### Shop - All Goods")
     st.success("Horlance - Car AC Repair - N25000")
+    st.link_button("Chat Horlance on WhatsApp", "https://wa.me/2349046044472")
     st.success("Mama T - Bag of Rice - N45000")
+    st.link_button("Chat Mama T on WhatsApp", "https://wa.me/2349046044472")
     for item in st.session_state.goods:
-        st.success(item)
+        st.success(item[0])
+        st.link_button("Chat Seller on WhatsApp", "https://wa.me/"+item[1])
 else:
     st.markdown("### Featured Listing")
     card1 = """<div style="background:white;padding:16px;border-radius:20px;box-shadow:0 4px 16px #EDEDED"><span style="background:#00A651;color:white;padding:4px 10px;border-radius:20px;float:right">VERIFIED</span><b>Horlance Auto Cooling Ltd</b><p>🔧 Car AC Repair</p><p>📍 Osun & Oyo State</p><p>💬 WhatsApp 09046044472</p><p style="font-size:50px;text-align:center">🚗❄️</p><a href="https://wa.me/2349046044472" style="display:block;background:#00A651;color:white;text-align:center;padding:12px;border-radius:12px;text-decoration:none"><b>Chat on WhatsApp</b></a></div>"""
@@ -69,20 +81,22 @@ else:
     st.link_button("Chat Mama T", "https://wa.me/2349046044472")
     st.markdown("### New Goods")
     for item in st.session_state.goods:
-        st.success(item)
+        st.success(item[0])
+        st.link_button("Chat Seller on WhatsApp", "https://wa.me/"+item[1])
 
 st.markdown("### Sell - FREE")
 nm=st.text_input("Your Name")
 pd=st.text_input("Product Name")
 pr=st.text_input("Price")
+wa=st.text_input("Your WhatsApp Number", placeholder="e.g. 09046044472")
 pay=st.selectbox("Payment", ["Pay on Delivery","Transfer Before Delivery"])
 dlv=st.selectbox("Delivery", ["Pickup Only","Delivery Available"])
 if st.button("POST MY GOODS FOR FREE"):
-    if nm=="" or pd=="":
-        st.warning("Fill Name and Product first")
+    if nm=="" or pd=="" or wa=="":
+        st.warning("Fill Name, Product and WhatsApp Number first")
     else:
-        txt=nm+" - "+pd+" - N"+pr
-        st.session_state.goods.append(txt)
+        txt=nm+" - "+pd+" - N"+pr+" - WhatsApp "+wa+" - "+pay+" - "+dlv
+        st.session_state.goods.append((txt, to_wa(wa)))
         st.success("Posted! "+txt)
         st.balloons()
 
