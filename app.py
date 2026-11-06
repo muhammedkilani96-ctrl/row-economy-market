@@ -1,78 +1,128 @@
 import streamlit as st
-import random
-st.set_page_config(page_title="ROW - AI TWIN - @kelly - Shop Never Sleep", page_icon="👯", layout="wide")
-if 'coins' not in st.session_state:
-    st.session_state['coins'] = 100
+st.set_page_config(page_title="ROW AI TWIN - @kelly", page_icon="👯", layout="wide")
 if 'script' not in st.session_state:
     st.session_state['script'] = ""
-if 'video_prompt' not in st.session_state:
-    st.session_state['video_prompt'] = ""
-if 'pic_prompt' not in st.session_state:
-    st.session_state['pic_prompt'] = ""
-if 'master' not in st.session_state:
-    st.session_state['master'] = ""
-if 'my_product' not in st.session_state:
-    st.session_state['my_product'] = ""
-if 'voice_style' not in st.session_state:
-    st.session_state['voice_style'] = "Funny"
 if 'twin_name' not in st.session_state:
     st.session_state['twin_name'] = ""
 if 'twin_on' not in st.session_state:
     st.session_state['twin_on'] = False
+if 'my_product' not in st.session_state:
+    st.session_state['my_product'] = ""
 if 'twin_lang' not in st.session_state:
     st.session_state['twin_lang'] = "Pidgin"
-st.markdown('<style>@keyframes floaty {0%{transform:translateY(0px) scale(1);}50%{transform:translateY(-15px) scale(1.05);}100%{transform:translateY(0px) scale(1);}} @keyframes shine {0%{box-shadow:0 0 10px #FFD700;}50%{box-shadow:0 0 40px #ff2d55, 0 0 60px #FFD700;}100%{box-shadow:0 0 10px #FFD700;}} @keyframes dance {0%{transform:rotate(-10deg);}50%{transform:rotate(10deg);}100%{transform:rotate(-10deg);}} @keyframes blink {0%{opacity:1;}50%{opacity:0.3;}100%{opacity:1;}} .twin-live{animation:blink 1s infinite; color:#00ff00;} .mama-dance{animation:dance 0.8s infinite; font-size:60px;}</style>', unsafe_allow_html=True)
-st.markdown('<div style="background:linear-gradient(to right, #7b2ff7, #ff2d55, #ff9a00); padding:20px; border-radius:20px; text-align:center; color:white;"><h1 style="color:white;">AI TWIN - YOUR SHOP NEVER SLEEP!</h1><h3 style="color:white;">Create Your Twin - Twin Go Sell For You Even When You Dey Sleep!</h3><p>100% FREE FOR NOW - By @kelly</p><p>👯 ✨ 👯</p></div>', unsafe_allow_html=True)
-st.write("### STEP 1 - CREATE YOUR AI TWIN - YOUR TWIN NA YOUR SECOND YOU!")
+if 'twin_person' not in st.session_state:
+    st.session_state['twin_person'] = "Funny"
+if 'twin_price' not in st.session_state:
+    st.session_state['twin_price'] = ""
+if 'twin_shop' not in st.session_state:
+    st.session_state['twin_shop'] = ""
+st.markdown('<div style="background:linear-gradient(to right, #7b2ff7, #ff2d55); padding:20px; border-radius:20px; text-align:center; color:white;"><h1 style="color:white;">AI TWIN - SHOP NEVER SLEEP!</h1><h3 style="color:white;">Create Twin - Twin Go Sell For You When You Dey Sleep!</h3><p>By @kelly</p></div>', unsafe_allow_html=True)
+st.write("STEP 1 - CREATE YOUR AI TWIN")
 twin_name_in = st.text_input("Your Name:", placeholder="e.g. Mary")
-twin_shop = st.text_input("Your Shop Name:", placeholder="e.g. Blessing Cosmetics")
-twin_product = st.text_input("Your Main Product:", placeholder="e.g. Black Rapture, Face Serum, Red Shoe...")
+twin_shop = st.text_input("Shop Name:", placeholder="e.g. Blessing Cosmetics")
+twin_product = st.text_input("Main Product:", placeholder="e.g. Black Rapture")
 twin_price = st.text_input("Price:", placeholder="e.g. 4000")
-twin_phone = st.text_input("WhatsApp Number:", placeholder="e.g. 09031889875")
-twin_lang = st.selectbox("Twin Language - Twin Go Speak Customer Language:", ["Pidgin - For Lagos Market!", "English - For London Customer!", "Yoruba - E ku ise!", "Igbo - Ndewo!", "Hausa - Sannu!"])
-twin_person = st.selectbox("Twin Personality:", ["Funny Twin - Dey Joke, Dey Make People Laugh!", "Sweet Twin - Soft, Dey Pet Customer Like Baby!", "Shout Twin - Loud Market Woman, Dey Shout For Market!", "Boss Twin - Calm, Rich, Premium Seller!"])
-twin_time = st.selectbox("When Twin Go Post Magic Video?", ["Every Morning 7am - Best! Customer Wake Up See Am!", "Every Evening 7pm - After Work, People Dey Buy!", "Every Morning + Evening - Double Sales!"])
+twin_lang = st.selectbox("Twin Language:", ["Pidgin", "English", "Yoruba", "Igbo", "Hausa"])
+twin_person = st.selectbox("Twin Personality:", ["Funny Twin", "Sweet Twin", "Shout Twin", "Boss Twin"])
+twin_time = st.selectbox("When Twin Go Post?", ["Every Morning 7am", "Every Evening 7pm", "Morning + Evening"])
 if st.button("CREATE MY AI TWIN NOW!"):
     if not twin_name_in or not twin_product:
-        st.warning("Abeg put your name and product first!")
+        st.warning("Abeg put name and product!")
     else:
         st.session_state['twin_name'] = twin_name_in
-        st.session_state['twin_on'] = True
-        st.session_state['twin_lang'] = twin_lang
+        st.session_state['twin_shop'] = twin_shop
         st.session_state['my_product'] = twin_product
-        st.session_state['voice_style'] = twin_person
-        pinfo = twin_product
-        if twin_price:
-            pinfo = pinfo + " - Price " + twin_price
-        if twin_shop:
-            pinfo = pinfo + " - from " + twin_shop
-        if twin_lang and "Pidgin" in twin_lang:
-            vtext = "My pikin, na me be Twin of " + twin_name_in + "! " + twin_name_in + " dey sleep, but me I no dey sleep! Come see o! " + pinfo + "! E good well well! Chat me now, I go reply you sharp sharp! Follow @kelly!"
-        elif twin_lang and "Yoruba" in twin_lang:
-            vtext = "E ku ise! Na me be Twin of " + twin_name_in + "! " + pinfo + "! E dara pupo! Chat me now, mo wa online! Follow @kelly!"
-        elif twin_lang and "Igbo" in twin_lang:
-            vtext = "Ndewo! Na me be Twin of " + twin_name_in + "! " + pinfo + "! O di mma! Chat me now, I dey online! Follow @kelly!"
-        elif twin_lang and "Hausa" in twin_lang:
-            vtext = "Sannu! Na me be Twin of " + twin_name_in + "! " + pinfo + "! Yana da kyau! Chat me now, ina online! Follow @kelly!"
+        st.session_state['twin_price'] = twin_price
+        st.session_state['twin_lang'] = twin_lang
+        st.session_state['twin_person'] = twin_person
+        st.session_state['twin_on'] = True
+        base = twin_product + " Price " + twin_price
+        if twin_lang == "Pidgin":
+            vtext = "My pikin, na Twin of " + twin_name_in + " be this! I no dey sleep! Come see " + base + "! Chat me now! Follow @kelly!"
+        elif twin_lang == "Yoruba":
+            vtext = "E ku ise! Na Twin of " + twin_name_in + " be this! " + base + "! E dara! Chat me now! Follow @kelly!"
+        elif twin_lang == "Igbo":
+            vtext = "Ndewo! Na Twin of " + twin_name_in + " be this! " + base + "! O di mma! Chat me now! Follow @kelly!"
+        elif twin_lang == "Hausa":
+            vtext = "Sannu! Na Twin of " + twin_name_in + " be this! " + base + "! Yana da kyau! Chat me now! Follow @kelly!"
         else:
-            vtext = "Hello my lovely customer! I am the AI Twin of " + twin_name_in + "! " + twin_name_in + " is sleeping, but I am awake for you! Check this: " + pinfo + "! It is beautiful, perfect for you! Chat me now, I reply instantly! Follow @kelly!"
+            vtext = "Hello! I am Twin of " + twin_name_in + "! I am awake for you! Check " + base + "! Chat me now! Follow @kelly!"
         st.session_state['script'] = vtext
-        st.session_state['pic_prompt'] = "AI Twin of " + twin_name_in + ", " + twin_person + ", with product " + twin_product + " floating and shining like magic, sparkles, confetti, smiling, dancing, bright, TikTok style, Nigerian market"
-        st.session_state['video_prompt'] = "AI Twin of " + twin_name_in + ", " + twin_person + ", product " + twin_product + " floating, shining, talking, waving, lips moving, dancing, TikTok style, 4k, 15 seconds, sparkles, END SCREEN: big text @kelly with confetti for last 2 seconds"
-        st.session_state['master'] = "Create 15-30 sec AI Twin advert. Twin of " + twin_name_in + " for shop " + twin_shop + ". Product: " + pinfo + ". Language: " + twin_lang + ". Personality: " + twin_person + ". Voiceover: " + vtext + " Add bold text: " + pinfo + ". End with big @kelly + confetti + Follow @kelly."
 if st.session_state['twin_on']:
-    st.success("TWIN CREATED! " + st.session_state['twin_name'] + " Twin Dey Online Now! Shop Never Sleep Again!")
+    st.success("TWIN LIVE! Twin of " + st.session_state['twin_name'] + " dey online!")
     st.balloons()
-    st.markdown('<div style="background:black; padding:20px; border-radius:20px; color:white;"><h2 style="color:white;">YOUR AI TWIN - LIVE NOW!</h2><p><span class="twin-live">● LIVE</span> - Twin Dey Online 24/7 - Even When You Dey Sleep!</p><h1 style="color:#FFD700;">Twin of ' + st.session_state['twin_name'] + '</h1><p>Shop: ' + twin_shop + ' | Product: ' + st.session_state['my_product'] + ' | Language: ' + st.session_state['twin_lang'] + '</p><p>Personality: ' + st.session_state['voice_style'] + '</p><p>Auto-Post: ' + twin_time + '</p></div>', unsafe_allow_html=True)
-    st.write("### TWIN MAGIC PROJECTOR - TWIN PIC DEY TALK!")
-    st.write("Upload your product pic, Twin go use am to sell!")
-    uploaded = st.file_uploader("Upload Your Product Pic For Twin To Sell:", type=["jpg", "jpeg", "png"])
+    st.markdown('<div style="background:black; padding:20px; border-radius:20px; color:white;"><h2 style="color:white;">YOUR AI TWIN - LIVE NOW!</h2><p style="color:#00ff00;">LIVE - Twin Dey Online 24/7</p><h1 style="color:#FFD700;">Twin of ' + st.session_state['twin_name'] + '</h1><p>Shop: ' + st.session_state['twin_shop'] + '</p><p>Product: ' + st.session_state['my_product'] + '</p><p>Language: ' + st.session_state['twin_lang'] + '</p><p>Personality: ' + st.session_state['twin_person'] + '</p><p>Auto-Post: ' + twin_time + '</p></div>', unsafe_allow_html=True)
+    st.write("STEP 2 - UPLOAD YOUR PRODUCT PIC - TWIN GO SELL AM!")
+    uploaded = st.file_uploader("Upload Product Pic:", type=["jpg", "jpeg", "png"])
     if uploaded:
-        st.image(uploaded, caption="TWIN MAGIC PIC - Your Product Dey Float, Dey Shine, Dey Talk! - @kelly", use_column_width=True)
-        st.markdown('<div style="text-align:center;"><p style="font-size:40px;">✨ 👯 ✨</p><p style="color:#ff2d55;">Twin Dey Hold Your Product, Dey Shine Like Gold!</p></div>', unsafe_allow_html=True)
+        st.image(uploaded, caption="TWIN MAGIC PIC - Your Product Dey Shine! - @kelly", use_column_width=True)
+        st.write("Your Pic Dey Shine Like Gold! Twin Dey Hold Am!")
     else:
-        st.info("Upload your product pic above - Twin go show am for projector!")
-    st.markdown('<div style="background:linear-gradient(to right, #7b2ff7, #ff2d55); padding:15px; border-radius:15px; display:flex; justify-content:space-between; align-items:center;"><div><h2 style="color:white;">TWIN DEY TALK</h2><p style="color:white;">' + st.session_state['script'][:150] + '...</p></div><div class="mama-dance">👯</div></div>', unsafe_allow_html=True)
-    st.write("### TWIN AUTO-REPLY - TWIN GO REPLY CUSTOMER FOR YOU!")
-    st.write("Copy this, put for your WhatsApp Auto-Reply / Status - Twin go reply even when you dey sleep!")
-    st.code("Hello my dear! Na Twin of " + st.session_state['twin_name'] + " be this! I dey online 24/7! You
+        st.info("Upload your product pic above - Twin go show am!")
+    st.write("TWIN DEY TALK:")
+    st.write(st.session_state['script'])
+    st.write("TWIN AUTO-REPLY - Copy Am For WhatsApp:")
+    reply1 = "Hello! Na Twin of "
+    reply2 = st.session_state['twin_name']
+    reply3 = " be this! I dey online! You want "
+    reply4 = st.session_state['my_product']
+    reply5 = " Price "
+    reply6 = st.session_state['twin_price']
+    reply7 = " Chat me now! Follow @kelly!"
+    full_reply = reply1 + reply2 + reply3 + reply4 + reply5 + reply6 + reply7
+    st.code(full_reply)
+    st.write("TWIN MORNING MAGIC - Copy Am Every Morning:")
+    m1 = "Good Morning! Twin of "
+    m2 = st.session_state['twin_name']
+    m3 = " don wake up! Today: "
+    m4 = st.session_state['my_product']
+    m5 = " Price "
+    m6 = st.session_state['twin_price']
+    m7 = " Order now! Follow @kelly!"
+    full_morning = m1 + m2 + m3 + m4 + m5 + m6 + m7
+    st.code(full_morning)
+    st.markdown('<div style="background:#111; color:white; padding:20px; border-radius:15px; text-align:center;"><h1 style="color:white;">THANKS FOR WATCHING</h1><h1 style="color:#FFD700;">@kelly</h1><p>Follow @kelly - Twin Dey Online!</p></div>', unsafe_allow_html=True)
+    st.write("POST TWIN NOW:")
+    share1 = "Meet My AI Twin! Twin of "
+    share2 = st.session_state['twin_name']
+    share3 = " dey sell "
+    share4 = st.session_state['my_product']
+    share5 = " 24/7! Follow @kelly!"
+    share_text = share1 + share2 + share3 + share4 + share5
+    st.markdown("[POST TWIN NOW - WhatsApp](https://wa.me/?text=" + share_text.replace(" ", "%20") + ")")
+    st.markdown("[POST TWIN NOW - TikTok](https://www.tiktok.com/upload)")
+    st.markdown("[POST TWIN NOW - Instagram](https://www.instagram.com/reels/)")
+    st.download_button("SAVE TWIN PACKAGE", st.session_state['script'], file_name="kelly-twin.txt")
+    st.write("TWIN VIDEO PROMPT - For Hailuo:")
+    vp1 = "AI Twin of "
+    vp2 = st.session_state['twin_name']
+    vp3 = " product "
+    vp4 = st.session_state['my_product']
+    vp5 = " floating, shining, talking, dancing, TikTok style, END with @kelly"
+    vp_full = vp1 + vp2 + vp3 + vp4 + vp5
+    st.code(vp_full)
+    st.markdown("[Make Real Twin Video FREE - Hailuo](https://hailuoai.video)")
+    st.markdown("[Make Twin Voice FREE - TTSMaker](https://ttsmaker.com)")
+    if st.button("Delete Twin"):
+        st.session_state['twin_on'] = False
+        st.session_state['script'] = ""
+        st.rerun()
+else:
+    st.write("HOW TWIN GO WORK:")
+    st.write("1. Create Twin - Put name, product")
+    st.write("2. Twin Go Wake Up - Twin dey online 24/7")
+    st.write("3. You Sleep, Twin Sell - You wake up see orders!")
+st.markdown("---")
+st.markdown('<div style="background:linear-gradient(to bottom right, #0a7a42, #d4c400); padding:20px; border-radius:20px; color:white;"><h2 style="color:#FFD700;">ROW ECONOMY MARKET</h2><h1>Welcome back, muhammed!</h1><p>Follow @kelly - AI Twin Live</p></div>', unsafe_allow_html=True)
+st.info("Mama Oloja Guarantee: If seller scam you, we refund you. 100% Safe - Follow @kelly")
+search = st.text_input("Search Shop:", placeholder="Search serum, sunscreen, Black Rapture...")
+st.header("Shop - All Products")
+PRODUCTS = [("Black Rapture", 4000, "Mary", "09031889875", "Lagos", "Bold, long-lasting"), ("Face Serum", 4000, "Blessing", "07052528772", "Abuja", "Clear face, glow"), ("Rolex Watch", 10000, "Arinfe", "090915907990", "Ibadan", "Black strap, with box"), ("Lip Combo", 6000, "Arinfe", "090915907990", "Ibadan", "Brown + Pink + Liner")]
+for name, price, seller, phone, loc, desc in PRODUCTS:
+    if search and search.lower() not in name.lower():
+        continue
+    st.write(name + " - " + str(price) + " | " + seller + " - " + loc)
+    st.write(desc)
+    st.markdown("[Buy via WhatsApp - " + seller + "](https://wa.me/234" + phone[1:] + "?text=Hello " + seller + ", I want " + name + " - " + str(price) + " from ROW Market - @kelly)")
+    st.markdown("---")
+st.write("2026 Row Economy Market - Powered by Mama Oloja - Follow @kelly")
