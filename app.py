@@ -9,6 +9,14 @@ st.set_page_config(
     layout="wide"
 )
 
+# F - PAYSTACK SETTINGS - CHANGE THIS TO YOUR LINK
+# Go to paystack.com > Payment Pages > Create Page > Copy Link
+# Paste your link here. Example: https://paystack.com/pay/rowmarket
+PAYSTACK_LINK = "https://paystack.com/pay/rowmarket"
+PAYSTACK_NAME = "Row Economy Market"
+# Your Paystack email for receipt
+PAYSTACK_EMAIL = "rowmarket@gmail.com"
+
 SHEET_ID = "1w8P3SQiChShHPQzShpgznR-lay-awTHmu_x-VHI9IU8E"
 ADMIN_CODE = "ROW123"
 
@@ -44,8 +52,9 @@ if "escrow_balance" not in st.session_state:
     st.session_state.escrow_balance = 0
 if "my_earnings" not in st.session_state:
     st.session_state.my_earnings = 0
+if "paid_orders" not in st.session_state:
+    st.session_state.paid_orders = 0
 
-PAYSTACK_LINK = "https://paystack.shop/rowmarket"
 BANK_NAME = "OPay / GTB"
 ACCOUNT_NAME = "Row Economy Market - Horlance"
 ACCOUNT_NUMBER = "9046044472"
@@ -154,8 +163,9 @@ def open_cat(cat_name):
     st.session_state.page = "Category"
     st.rerun()
 
+# E - JUMIA STYLE TOP BAR - SHORT LINES ONLY
 st.title("Row Economy Market")
-st.caption("Buy and Sell Free - Escrow Protected")
+st.caption("Buy and Sell Free - Escrow Protected by Paystack")
 st.divider()
 
 buyer_name = st.session_state.my_name
@@ -202,9 +212,8 @@ def show_category_page(cat_name):
             st.image(uploaded, caption="Product preview", width=200)
         if p_img_link:
             img_to_use = p_img_link
-        st.write("STEP 2 - YOUR FACE / SHOP PIC (NEW)")
+        st.write("STEP 2 - YOUR FACE / SHOP PIC")
         st.caption("USAGE: Buyers trust sellers they can see.")
-        st.caption("Paste your face photo link, or upload below.")
         seller_uploaded = st.file_uploader("Upload Your Face / Shop Photo", type=["jpg", "png", "jpeg"], key="seller_pic_" + cat_name)
         seller_pic_link = st.text_input("OR Paste Your Face Photo Link", key="seller_link_" + cat_name)
         seller_pic_to_use = "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100"
@@ -264,8 +273,6 @@ def show_category_page(cat_name):
         st.success("Transfer: " + BANK_NAME)
         st.success("Name: " + ACCOUNT_NAME)
         st.success("Number: " + ACCOUNT_NUMBER)
-    if "Escrow" in payment:
-        st.link_button("Pay Safely via Escrow", PAYSTACK_LINK)
     for idx, g in enumerate(filtered):
         st.divider()
         st.image(g["img"], width=350)
@@ -297,6 +304,9 @@ def show_category_page(cat_name):
         st.write("Total with delivery: N" + str(total))
         st.caption("Escrow: N" + str(comm) + " to Market.")
         st.caption("Seller gets: N" + str(seller_gets))
+        # F - PAYSTACK ESCROW FLOW
+        st.write("PAY WITH PAYSTACK - ESCROW")
+        st.caption("USAGE: 1. Tap ORDER 2. Tap Pay on Paystack 3. Pay 4. Tap I Have Paid")
         if st.button("Chat Seller - Talk before you buy", key="chat_" + cat_name + "_" + str(idx)):
             st.session_state.page = "Profile"
             st.rerun()
@@ -314,17 +324,48 @@ def show_category_page(cat_name):
                     "total": total,
                     "delivery": delivery_loc,
                     "payment": payment,
-                    "status": "Pending",
-                    "tracking": "Pending - Waiting Seller",
+                    "status": "Awaiting Paystack Payment",
+                    "tracking": "Waiting for Paystack Payment",
                     "commission": comm,
                     "seller_gets": seller_gets,
+                    "paid": False,
                 }
                 st.session_state.my_orders.append(order)
                 st.session_state.seller_inbox.append(order)
-                st.session_state.escrow_balance += total
-                st.success("Order placed in " + cat_name + "!")
-                st.success("Escrow held. Seller will reply YES / NO.")
+                st.success("Order created! Now pay on Paystack below.")
                 st.balloons()
+        # Paystack Button - Shows for this product
+        if payment == "Escrow - Paystack (Safest)":
+            pay_msg = "Pay N" + str(total) + " for " + g["item"]
+            pay_msg = pay_msg + " - Row Economy Market Escrow"
+            st.link_button("Pay N" + str(total) + " on Paystack - Escrow", PAYSTACK_LINK)
+            st.caption("USAGE: Paystack opens. Pay with card / transfer. Then come back and tap I Have Paid.")
+            st.caption("Paystack Page: " + PAYSTACK_LINK)
+            st.caption("Amount to pay: N" + str(total))
+            if st.button("I Have Paid on Paystack - Confirm", key="paid_" + cat_name + "_" + str(idx)):
+                if not buyer_name:
+                    st.error("Set Name on Home first.")
+                else:
+                    found = False
+                    for o in st.session_state.my_orders:
+                        if o["item"] == g["item"] and o["buyer"] == buyer_name and not o.get("paid"):
+                            o["paid"] = True
+                            o["status"] = "Paid - Escrow Held"
+                            o["tracking"] = "Paid - Waiting Seller YES"
+                            found = True
+                    for o in st.session_state.seller_inbox:
+                        if o["item"] == g["item"] and o["buyer"] == buyer_name and not o.get("paid"):
+                            o["paid"] = True
+                            o["status"] = "Paid - Escrow Held"
+                            o["tracking"] = "Paid - Waiting Seller YES"
+                    if found:
+                        st.session_state.escrow_balance += total
+                        st.session_state.paid_orders += 1
+                        st.success("Payment confirmed! Escrow held N" + str(total))
+                        st.success("Seller will now see PAID. Seller taps YES.")
+                        st.rerun()
+                    else:
+                        st.info("Tap ORDER NOW first, then tap I Have Paid.")
         msg = "Hello " + g["name"]
         msg = msg + ", Row Economy Market NEW ORDER in "
         msg = msg + cat_name + ": " + g["item"]
@@ -337,7 +378,22 @@ def show_category_page(cat_name):
         st.caption("USAGE: Tell seller you ordered.")
 
 if page == "Home":
+    # E - JUMIA STYLE HOME
     st.success("DEAL OF THE DAY - 12% OFF - Use code ROW12")
+    st.caption("E - Jumia Style: Search, Categories, Deals")
+    search_q = st.text_input("Search Row Economy Market - Type Rice, iPhone, Perfume")
+    st.caption("USAGE: Type to search all products.")
+    if search_q:
+        st.write("Search results for: " + search_q)
+        all_g2 = get_goods()
+        for gg in all_g2:
+            txt2 = gg["item"] + gg["name"] + gg["cat"]
+            if search_q.lower() in txt2.lower():
+                st.image(gg["img"], width=250)
+                st.write(gg["name"] + " - " + gg["item"])
+                st.write("Price: N" + str(deal_price(gg["price"])) + " - " + gg["cat"])
+                if st.button("Open " + gg["cat"] + " Page", key="search_open_" + gg["item"][:5]):
+                    open_cat(gg["cat"])
     with st.expander("Your Details - Tap to set Name and WhatsApp"):
         st.caption("USAGE: Set your name once. Orders and Chat use this name.")
         my_name_input = st.text_input("Your Name", value=st.session_state.my_name)
@@ -355,42 +411,51 @@ if page == "Home":
             st.rerun()
         st.caption("USAGE: Tap after you invite a friend.")
         st.write("You are: " + (st.session_state.my_name or "Guest"))
-    search_q = st.text_input("Search - Ask Mama Oloja")
-    st.caption("USAGE: Type Rice, iPhone, Perfume to find it fast.")
-    st.header("Categories")
-    st.write("Tap any button - it opens its OWN page with ONLY that category.")
-    st.info("HOW TO USE: 1. Tap category 2. See ONLY that category 3. Tap ORDER 4. Tap Back to Home")
-    if st.button("Perfume - Tap to see ONLY Perfumes"):
+    st.header("Categories - Like Jumia")
+    st.caption("Tap any colored card - it opens its OWN page.")
+    st.info("HOW TO USE: 1. Tap category 2. See ONLY that category 3. Tap ORDER 4. Pay on Paystack 5. Tap I Have Paid")
+    # E - COLORED CATEGORY CARDS - Using Streamlit colors
+    st.error("Perfume Market - Oud, Designer Perfumes")
+    st.caption("Tap below to see ONLY Perfumes")
+    if st.button("Open Perfume Market"):
         open_cat("Perfume")
-    st.caption("Perfume: Oud, Designer Perfumes")
-    if st.button("Clothes - Tap to see ONLY Clothes"):
+    st.info("Clothes Market - Ankara, Gowns, Shirts")
+    st.caption("Tap below to see ONLY Clothes")
+    if st.button("Open Clothes Market"):
         open_cat("Clothes")
-    st.caption("Clothes: Ankara, Gowns, Shirts")
-    if st.button("Phones - Tap to see ONLY Phones"):
+    st.success("Phones Market - iPhone, Samsung")
+    st.caption("Tap below to see ONLY Phones")
+    if st.button("Open Phones Market"):
         open_cat("Phones")
-    st.caption("Phones: iPhone, Samsung")
-    if st.button("Food - Tap to see ONLY Food"):
+    st.warning("Food Market - Rice, Garri, Oil")
+    st.caption("Tap below to see ONLY Food")
+    if st.button("Open Food Market"):
         open_cat("Food")
-    st.caption("Food: Rice, Garri, Oil")
-    if st.button("Car Mart - Tap to see ONLY Cars"):
+    st.error("Car Mart - Car AC, Repairs")
+    st.caption("Tap below to see ONLY Cars")
+    if st.button("Open Car Mart"):
         open_cat("Car")
-    st.caption("Car Mart: Car AC, Repairs")
-    if st.button("Services - Tap to see ONLY Services"):
+    st.success("Services Market - Plumber, Hair, Makeup")
+    st.caption("Tap below to see ONLY Services")
+    if st.button("Open Services Market"):
         open_cat("Services")
-    st.caption("Services: Plumber, Hair, Makeup")
-    if st.button("Tickets - Tap to see ONLY Tickets"):
+    st.info("Tickets Market - Events, Flights")
+    st.caption("Tap below to see ONLY Tickets")
+    if st.button("Open Tickets Market"):
         open_cat("Tickets")
-    st.caption("Tickets: Events, Flights")
-    if st.button("Chat Rooms - Tap to chat with sellers"):
+    st.warning("Chat Rooms - Talk to Mama Oloja")
+    st.caption("Tap below to chat")
+    if st.button("Open Chat Rooms"):
         open_cat("Chat")
-    st.caption("Chat Rooms: Talk to Mama Oloja")
-    st.header("Preview")
-    st.caption("USAGE: Quick preview. Tap Open Page for full market.")
+    st.header("Flash Deals - Today Only")
+    st.caption("USAGE: Best prices today. Tap Open Page for full market.")
     all_goods = get_goods()
-    for g in all_goods[:3]:
+    for g in all_goods[:4]:
+        st.divider()
         st.image(g["img"], width=350)
         st.write(g["name"] + " - " + g["item"] + " - " + g["cat"])
-        st.write("Price: N" + str(deal_price(g["price"])))
+        st.write("Old: N" + str(g["price"]) + " Now: N" + str(deal_price(g["price"])))
+        st.success("12% OFF - Flash Deal")
         if st.button("Open " + g["cat"] + " Page", key="open_" + g["cat"] + "_" + g["item"][:4]):
             open_cat(g["cat"])
 
@@ -405,8 +470,10 @@ if page == "Shop":
         st.rerun()
 
 if page == "Orders":
-    st.header("My Orders + Tracking")
-    st.caption("USAGE: See what you ordered. When delivered, tap Confirm to release Escrow.")
+    st.header("My Orders + Tracking + Paystack")
+    st.caption("USAGE: Pay on Paystack, tap I Have Paid, then wait for seller YES.")
+    st.write("Paid Orders: " + str(st.session_state.paid_orders))
+    st.write("Escrow Held: N" + str(st.session_state.escrow_balance))
     if len(st.session_state.my_orders) == 0:
         st.info("No orders yet. Go Home, tap Category, tap ORDER NOW.")
     for oi, o in enumerate(st.session_state.my_orders):
@@ -416,6 +483,17 @@ if page == "Orders":
         st.write("Total: N" + str(o.get("total", o["price"])))
         st.write("Tracking: " + o.get("tracking", ""))
         st.write("Status: " + o["status"])
+        st.write("Paid on Paystack: " + str(o.get("paid", False)))
+        if not o.get("paid") and "Paystack" in o.get("payment", ""):
+            st.link_button("Pay Now on Paystack N" + str(o.get("total", 0)), PAYSTACK_LINK)
+            if st.button("I Have Paid - Confirm Escrow", key="order_paid_" + str(oi)):
+                o["paid"] = True
+                o["status"] = "Paid - Escrow Held"
+                o["tracking"] = "Paid - Waiting Seller YES"
+                st.session_state.escrow_balance += o.get("total", 0)
+                st.session_state.paid_orders += 1
+                st.success("Payment confirmed! Escrow held.")
+                st.rerun()
         if o["status"] == "Available":
             if st.button("Confirm Delivery - Release Escrow", key="confirm_" + str(oi)):
                 st.session_state.escrow_balance -= o.get("total", 0)
@@ -424,9 +502,8 @@ if page == "Orders":
                 o["tracking"] = "Delivered - Escrow Released"
                 st.success("Delivered! Escrow released.")
                 st.rerun()
-    st.header("Seller Inbox")
-    st.caption("USAGE: Seller, type your WhatsApp to see orders for you.")
-    st.caption("Tap YES if you have it, NO if sold out.")
+    st.header("Seller Inbox - PAID Orders First")
+    st.caption("USAGE: Seller, type your WhatsApp. PAID orders mean money is held.")
     seller_check = st.text_input("Your Seller WhatsApp")
     if seller_check:
         inbox = []
@@ -441,14 +518,21 @@ if page == "Orders":
             st.write("Wants: " + o["item"])
             st.write("Total: N" + str(o.get("total", o["price"])))
             st.write("Tracking: " + o.get("tracking", ""))
+            if o.get("paid"):
+                st.success("PAID on Paystack - Money is in Escrow - Safe to deliver")
+            else:
+                st.warning("NOT PAID YET - Do NOT deliver until PAID")
             if st.button("YES I Have It", key="yes_" + str(j)):
-                o["status"] = "Available"
-                o["tracking"] = "Packed - Waiting Rider"
-                for mo in st.session_state.my_orders:
-                    if mo["item"] == o["item"] and mo["buyer"] == o["buyer"]:
-                        mo["status"] = "Available"
-                        mo["tracking"] = "Packed - Waiting Rider"
-                st.rerun()
+                if not o.get("paid") and "Paystack" in o.get("payment", ""):
+                    st.error("Buyer has NOT paid on Paystack yet. Wait for PAID.")
+                else:
+                    o["status"] = "Available"
+                    o["tracking"] = "Packed - Waiting Rider"
+                    for mo in st.session_state.my_orders:
+                        if mo["item"] == o["item"] and mo["buyer"] == o["buyer"]:
+                            mo["status"] = "Available"
+                            mo["tracking"] = "Packed - Waiting Rider"
+                    st.rerun()
             if st.button("NO Sold Out", key="no_" + str(j)):
                 o["status"] = "Sold Out"
                 o["tracking"] = "Sold Out"
@@ -478,6 +562,7 @@ if page == "Profile":
     st.write("Phone: " + (buyer_phone or "No number"))
     st.write("Escrow Held: N" + str(st.session_state.escrow_balance))
     st.write("Your Earnings: N" + str(st.session_state.my_earnings))
+    st.write("Paid Orders: " + str(st.session_state.paid_orders))
     st.write("Online: " + ", ".join(st.session_state.online_users))
     if st.button("Go to Home to Set Name"):
         st.session_state.page = "Home"
@@ -519,18 +604,21 @@ if page == "Profile":
 
 if page == "Admin":
     st.header("Admin Panel - Row Economy Market")
-    st.caption("USAGE: Only YOU as owner can open this. Control sellers and orders.")
+    st.caption("USAGE: Only YOU as owner can open this.")
     admin_input = st.text_input("Enter Admin Code", type="password")
     if admin_input == "":
-        st.info("Enter code to unlock Admin. Your code is ROW123. Change it in code later.")
+        st.info("Enter code to unlock Admin. Your code is ROW123.")
     elif admin_input != ADMIN_CODE:
         st.error("Wrong code. Try again.")
     else:
         st.success("Welcome Admin - Horlance")
         st.write("Escrow Held: N" + str(st.session_state.escrow_balance))
         st.write("Your Earnings: N" + str(st.session_state.my_earnings))
+        st.write("Paid Orders: " + str(st.session_state.paid_orders))
         st.write("Total Orders: " + str(len(st.session_state.my_orders)))
         st.write("Total Products: " + str(len(get_goods())))
+        st.write("Paystack Link: " + PAYSTACK_LINK)
+        st.caption("USAGE: Change PAYSTACK_LINK at top of code to your real link.")
         st.subheader("All Orders - Admin Control")
         st.caption("USAGE: See every order. Delete fake orders.")
         for oi, o in enumerate(st.session_state.my_orders):
@@ -539,9 +627,18 @@ if page == "Admin":
             st.write("Seller: " + o["seller"])
             st.write("Item: " + o["item"] + " - N" + str(o.get("total", o["price"])))
             st.write("Status: " + o["status"] + " - " + o.get("tracking", ""))
+            st.write("Paid: " + str(o.get("paid", False)))
             if st.button("Delete This Order", key="admin_del_order_" + str(oi)):
                 st.session_state.my_orders.pop(oi)
                 st.rerun()
+            if not o.get("paid"):
+                if st.button("Mark as Paid - Admin", key="admin_paid_" + str(oi)):
+                    o["paid"] = True
+                    o["status"] = "Paid - Escrow Held"
+                    o["tracking"] = "Paid - Waiting Seller YES"
+                    st.session_state.escrow_balance += o.get("total", 0)
+                    st.success("Marked as PAID by Admin")
+                    st.rerun()
         st.subheader("All Products - Admin Control")
         st.caption("USAGE: Delete fake products. Verify good sellers.")
         all_g = get_goods()
