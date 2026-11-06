@@ -10,6 +10,7 @@ st.set_page_config(
 )
 
 SHEET_ID = "1w8P3SQiChShHPQzShpgznR-lay-awTHmu_x-VHI9IU8E"
+ADMIN_CODE = "ROW123"
 
 if "my_orders" not in st.session_state:
     st.session_state.my_orders = []
@@ -74,11 +75,14 @@ def get_goods():
             im = str(r.get("Image", ""))
             if im == "" or im == "nan":
                 im = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600"
+            sp = str(r.get("SellerPic", ""))
+            if sp == "" or sp == "nan":
+                sp = "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100"
             vf = str(r.get("Verified", "")).upper() == "TRUE"
             goods.append(
                 {"name": nm, "item": it, "price": pr,
                  "cat": ct, "loc": lc, "phone": ph,
-                 "img": im, "verified": vf}
+                 "img": im, "seller_pic": sp, "verified": vf}
             )
         except:
             pass
@@ -90,7 +94,8 @@ def get_goods():
              "price": 25000, "cat": "Car",
              "loc": "Osun & Oyo State",
              "img": "https://images.unsplash.com/photo-1625047509168-a7026f36de04?w=600",
-             "phone": "2349046044472", "verified": True}
+             "phone": "2349046044472", "verified": True,
+             "seller_pic": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100"}
         )
         goods.append(
             {"name": "Mama Ada",
@@ -98,7 +103,8 @@ def get_goods():
              "price": 85000, "cat": "Food",
              "loc": "Wuse 2, Abuja",
              "img": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600",
-             "phone": "2349046044472", "verified": True}
+             "phone": "2349046044472", "verified": True,
+             "seller_pic": "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=100"}
         )
         goods.append(
             {"name": "Tunde Perfumes",
@@ -106,7 +112,8 @@ def get_goods():
              "price": 15000, "cat": "Perfume",
              "loc": "Garki, Abuja",
              "img": "https://images.unsplash.com/photo-1541643600914-78b084683601?w=600",
-             "phone": "2349046044472", "verified": False}
+             "phone": "2349046044472", "verified": False,
+             "seller_pic": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100"}
         )
         goods.append(
             {"name": "Chidi Phones",
@@ -114,7 +121,8 @@ def get_goods():
              "price": 280000, "cat": "Phones",
              "loc": "Wuse 2, Abuja",
              "img": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=600",
-             "phone": "2349046044472", "verified": False}
+             "phone": "2349046044472", "verified": False,
+             "seller_pic": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100"}
         )
         goods.append(
             {"name": "Aisha Fashion",
@@ -122,7 +130,8 @@ def get_goods():
              "price": 25000, "cat": "Clothes",
              "loc": "Gwarinpa, Abuja",
              "img": "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=600",
-             "phone": "2349046044472", "verified": False}
+             "phone": "2349046044472", "verified": False,
+             "seller_pic": "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=100"}
         )
     return goods
 
@@ -145,7 +154,6 @@ def open_cat(cat_name):
     st.session_state.page = "Category"
     st.rerun()
 
-# TOP HEADER - SIMPLE, NO HTML
 st.title("Row Economy Market")
 st.caption("Buy and Sell Free - Escrow Protected")
 st.divider()
@@ -186,13 +194,24 @@ def show_category_page(cat_name):
         p_price = st.number_input("Price (Naira)", min_value=0)
         p_loc = st.text_input("Location")
         p_phone = st.text_input("Your WhatsApp", value=buyer_phone)
-        uploaded = st.file_uploader("Upload Photo", type=["jpg", "png", "jpeg"])
-        p_img_link = st.text_input("OR Paste Photo Link")
+        st.write("STEP 1 - Product Photo")
+        uploaded = st.file_uploader("Upload Product Photo", type=["jpg", "png", "jpeg"])
+        p_img_link = st.text_input("OR Paste Product Photo Link")
         img_to_use = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600"
         if uploaded is not None:
-            st.image(uploaded, caption="Your photo preview", width=200)
+            st.image(uploaded, caption="Product preview", width=200)
         if p_img_link:
             img_to_use = p_img_link
+        st.write("STEP 2 - YOUR FACE / SHOP PIC (NEW)")
+        st.caption("USAGE: Buyers trust sellers they can see.")
+        st.caption("Paste your face photo link, or upload below.")
+        seller_uploaded = st.file_uploader("Upload Your Face / Shop Photo", type=["jpg", "png", "jpeg"], key="seller_pic_" + cat_name)
+        seller_pic_link = st.text_input("OR Paste Your Face Photo Link", key="seller_link_" + cat_name)
+        seller_pic_to_use = "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100"
+        if seller_uploaded is not None:
+            st.image(seller_uploaded, caption="Your face preview", width=100)
+        if seller_pic_link:
+            seller_pic_to_use = seller_pic_link
         if st.button("POST IN " + cat_name.upper() + " NOW"):
             if p_name and p_item and p_price > 0:
                 is_ver = p_name in st.session_state.verified_sellers
@@ -202,9 +221,12 @@ def show_category_page(cat_name):
                      "price": int(p_price), "cat": cat_name,
                      "loc": p_loc or "Abuja",
                      "phone": p_phone or "2349046044472",
-                     "img": img_to_use, "verified": is_ver}
+                     "img": img_to_use,
+                     "seller_pic": seller_pic_to_use,
+                     "verified": is_ver}
                 )
                 st.success("Posted in " + cat_name + "!")
+                st.success("Your face pic will show on your product.")
                 st.balloons()
                 st.rerun()
             else:
@@ -242,18 +264,20 @@ def show_category_page(cat_name):
         st.success("Transfer: " + BANK_NAME)
         st.success("Name: " + ACCOUNT_NAME)
         st.success("Number: " + ACCOUNT_NUMBER)
-        st.caption("USAGE: Transfer then send receipt on WhatsApp.")
     if "Escrow" in payment:
         st.link_button("Pay Safely via Escrow", PAYSTACK_LINK)
     for idx, g in enumerate(filtered):
         st.divider()
         st.image(g["img"], width=350)
+        st.caption("Product photo above")
+        st.image(g.get("seller_pic", ""), width=80)
+        st.caption("Seller face / shop pic above - Buy from real people")
         st.subheader(g["item"])
         st.write("Seller: " + g["name"])
         if g["name"] in st.session_state.verified_sellers or g["verified"]:
             st.success("VERIFIED Seller")
         else:
-            st.write("New Seller")
+            st.write("New Seller - Ask Admin to verify")
         st.write("Category: " + g["cat"])
         st.write("Location: " + g["loc"])
         fee = delivery_fee(delivery_loc)
@@ -493,12 +517,68 @@ if page == "Profile":
                 )
                 st.rerun()
 
+if page == "Admin":
+    st.header("Admin Panel - Row Economy Market")
+    st.caption("USAGE: Only YOU as owner can open this. Control sellers and orders.")
+    admin_input = st.text_input("Enter Admin Code", type="password")
+    if admin_input == "":
+        st.info("Enter code to unlock Admin. Your code is ROW123. Change it in code later.")
+    elif admin_input != ADMIN_CODE:
+        st.error("Wrong code. Try again.")
+    else:
+        st.success("Welcome Admin - Horlance")
+        st.write("Escrow Held: N" + str(st.session_state.escrow_balance))
+        st.write("Your Earnings: N" + str(st.session_state.my_earnings))
+        st.write("Total Orders: " + str(len(st.session_state.my_orders)))
+        st.write("Total Products: " + str(len(get_goods())))
+        st.subheader("All Orders - Admin Control")
+        st.caption("USAGE: See every order. Delete fake orders.")
+        for oi, o in enumerate(st.session_state.my_orders):
+            st.divider()
+            st.write("Buyer: " + o["buyer"] + " - " + o.get("buyer_phone", ""))
+            st.write("Seller: " + o["seller"])
+            st.write("Item: " + o["item"] + " - N" + str(o.get("total", o["price"])))
+            st.write("Status: " + o["status"] + " - " + o.get("tracking", ""))
+            if st.button("Delete This Order", key="admin_del_order_" + str(oi)):
+                st.session_state.my_orders.pop(oi)
+                st.rerun()
+        st.subheader("All Products - Admin Control")
+        st.caption("USAGE: Delete fake products. Verify good sellers.")
+        all_g = get_goods()
+        for gi, g in enumerate(all_g):
+            st.divider()
+            st.image(g["img"], width=200)
+            st.write(g["name"] + " - " + g["item"] + " - " + g["cat"])
+            st.write("Price: N" + str(g["price"]) + " - " + g["loc"])
+            if g["name"] in st.session_state.verified_sellers:
+                st.success("VERIFIED")
+            else:
+                st.write("Not Verified")
+            if st.button("Verify This Seller", key="admin_verify_" + str(gi)):
+                if g["name"] not in st.session_state.verified_sellers:
+                    st.session_state.verified_sellers.append(g["name"])
+                st.success(g["name"] + " is now VERIFIED")
+                st.rerun()
+            if st.button("Delete This Product", key="admin_del_prod_" + str(gi)):
+                found = False
+                for lg in list(st.session_state.local_goods):
+                    if lg["item"] == g["item"] and lg["name"] == g["name"]:
+                        st.session_state.local_goods.remove(lg)
+                        found = True
+                if not found:
+                    st.info("Demo product - cannot delete demo. Delete from Google Sheet.")
+                else:
+                    st.success("Deleted")
+                st.rerun()
+        st.subheader("Verified Sellers List")
+        st.write(", ".join(st.session_state.verified_sellers))
+
 st.divider()
 st.write("You are on: " + page)
-st.caption("USAGE: Home = Categories, Shop = Home, Orders = Your orders, Profile = Chat")
+st.caption("USAGE: Home = Categories, Shop = Home, Orders = Your orders, Profile = Chat, Admin = Owner only")
 nav = st.segmented_control(
     "Nav",
-    ["Home", "Shop", "Orders", "Profile"],
+    ["Home", "Shop", "Orders", "Profile", "Admin"],
     selection_mode="single",
     default="Home" if page == "Category" else page,
     label_visibility="collapsed"
