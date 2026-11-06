@@ -1,89 +1,103 @@
 import streamlit as st
 import random
-st.set_page_config(page_title="ROW Economy Market - Video Anime", page_icon="🎬", layout="wide")
+st.set_page_config(page_title="ROW Economy Market - Type Anything Anime", page_icon="🎬", layout="wide")
 if 'coins' not in st.session_state:
     st.session_state['coins'] = 100
 if 'script' not in st.session_state:
     st.session_state['script'] = ""
-if 'paid' not in st.session_state:
-    st.session_state['paid'] = False
 if 'video_prompt' not in st.session_state:
     st.session_state['video_prompt'] = ""
 if 'pic_prompt' not in st.session_state:
     st.session_state['pic_prompt'] = ""
-
-st.markdown('<div style="background:#ff2d55; padding:20px; border-radius:15px; text-align:center; color:white;"><h1 style="color:white;">MAMA OLOJA VIDEO ANIME</h1><h3 style="color:white;">Real Video - Girl Dey Move, Mouth Dey Talk!</h3><p>Generate FREE, Download Video Package na 200 ONLY!</p><p>Pay to Opay 8116911722 - Kilani Muhammed Opeyemi</p></div>', unsafe_allow_html=True)
-st.write("### SEE SAMPLE VIDEO ANIME - How Your Video Go Look")
-st.write("This na sample - Your own video go get your product + your voice!")
-st.video("https://cdn.coverr.co/videos/coverr-anime-girl-looking-at-the-camera-1585/1080p.mp4")
-st.caption("Sample: Cute Anime Girl talking - Your video go be like this, but with your product!")
-st.markdown("---")
-st.write("### STEP 1 - PICK YOUR PRODUCT (FREE)")
-prod = st.selectbox("Pick your product:", ["Black Rapture - 4000 - Mary - 09031889875", "Black Rapture - 4000 - Arinfe - 090915907990", "Face Serum - 4000 - Blessing - 07052528772", "Rolex Watch - 10000 - Arinfe - 090915907990", "Lip Combo - 6000 - Arinfe - 090915907990", "Jersey Scarf - 3500 - Arinfe - 090915907990", "Yum Yum Combo - 12000 - Arinfe - 090915907990", "Vintage Radio - 10000 - Mary - 09031889875"])
+if 'my_product' not in st.session_state:
+    st.session_state['my_product'] = ""
+st.markdown('<div style="background:#ff2d55; padding:20px; border-radius:15px; text-align:center; color:white;"><h1 style="color:white;">MAMA OLOJA VIDEO ANIME - FREE!</h1><h3 style="color:white;">Type ANYTHING - We Go Make Anime Advert For Am!</h3><p>100% FREE FOR NOW - No Payment!</p></div>', unsafe_allow_html=True)
+st.write("Type anything you dey sell - shoe, hair, perfume, cake, car AC, groundnut, anything!")
+st.write("Example: Try type - Red Shoe 8000 - or - Hair Wig 15000 - or - Jollof Rice")
+custom = st.text_input("SEARCH BAR - Type Your Product Here:", placeholder="e.g. Red Shoe 8000, Hair Wig 15000, Cake, Car AC Repair, Groundnut...")
+price = st.text_input("Your Price (Optional):", placeholder="e.g. 8000")
+seller_name = st.text_input("Your Name / Shop Name (Optional):", placeholder="e.g. Mary, Blessing Shop")
 style = st.selectbox("Anime Girl Style:", ["C - Cute Anime Girl Pink Hair - Best for TikTok!", "A - Fine Anime Babe - Brown Skin", "B - Cool Anime Boy - For Boys Products"])
-if st.button("Generate My Video Advert (FREE Preview)"):
-    if "Black Rapture" in prod:
-        st.session_state['script'] = "My pikin, come see o! Black Rapture don land! E dey smell like money, e dey last all day! Chat me now to order. Mama Oloja talk am, e no be lie!"
-    elif "Rolex" in prod:
-        st.session_state['script'] = "My pikin, see Rolex Watch! E go make you look like big boy! Price na 10,000 only, with box! Chat me now, no dull!"
-    elif "Face Serum" in prod:
-        st.session_state['script'] = "My pikin, your face go glow! Face Serum na 4,000 only! E go clear your face, make you shine! Chat Blessing now!"
+st.write("Quick Pick - Tap one if you no wan type:")
+col1, col2, col3, col4 = st.columns(4)
+if col1.button("Black Rapture"):
+    custom = "Black Rapture Perfume 4000"
+if col2.button("Face Serum"):
+    custom = "Face Serum 4000"
+if col3.button("Rolex Watch"):
+    custom = "Rolex Watch 10000"
+if col4.button("Lip Combo"):
+    custom = "Lip Combo 6000"
+st.write("You type: " + custom if custom else "You never type anything yet - type for search bar above!")
+if st.button("Generate My Video Advert - FREE!"):
+    if not custom:
+        st.warning("Abeg type your product for search bar first! Example: Red Shoe 8000")
     else:
-        st.session_state['script'] = "My pikin, come see o! " + prod + "! E good well well, price sweet! Chat me now to order. Mama Oloja recommend am!"
-    if "Cute" in style or "C -" in style:
-        char = "Cute anime girl, pink hair, big eyes, smiling, Nigerian market background"
-    elif "Fine" in style or "A -" in style:
-        char = "Beautiful anime babe, brown skin, long black hair, smiling, Nigerian market background"
-    else:
-        char = "Cool anime boy, short hair, smiling, holding product, Nigerian market background"
-    st.session_state['video_prompt'] = char + ", holding " + prod + ", waving hand, lips moving and talking, blinking, lively, TikTok anime style, bright colors, 4k"
-    st.session_state['pic_prompt'] = char + ", holding " + prod + ", full body, smiling at camera, bright, high quality, TikTok style"
+        st.session_state['my_product'] = custom
+        pname = custom
+        pinfo = pname
+        if price:
+            pinfo = pname + " - Price " + price
+        if seller_name:
+            pinfo = pinfo + " - from " + seller_name
+        low = pname.lower()
+        if "shoe" in low or "sneaker" in low or "heel" in low:
+            st.session_state['script'] = "My pikin, come see o! " + pinfo + "! E fine well well, e go make your leg fine! If you wear am, everybody go dey look you! Chat me now to order, e dey hot! Mama Oloja talk am!"
+        elif "hair" in low or "wig" in low:
+            st.session_state['script'] = "My pikin, come see o! " + pinfo + "! E soft, e fine, e go make you look like queen! No wahala, just wear am and shine! Chat me now to order! Mama Oloja recommend am!"
+        elif "cake" in low or "food" in low or "rice" in low or "snack" in low or "groundnut" in low:
+            st.session_state['script'] = "My pikin, come taste o! " + pinfo + "! E sweet, e fresh, e go make your belle happy! Order now, e go finish quick! Chat me now! Mama Oloja talk am, e no be lie!"
+        elif "car" in low or "ac" in low:
+            st.session_state['script'] = "My pikin, your car AC don spoil? No worry! " + pinfo + "! We go fix am sharp sharp, e go cold like ice! Chat me now! Mama Oloja guarantee am!"
+        elif "perfume" in low or "rapture" in low:
+            st.session_state['script'] = "My pikin, come see o! " + pinfo + "! E dey smell like money, e dey last all day! Chat me now to order. Mama Oloja talk am, e no be lie!"
+        elif "watch" in low or "rolex" in low:
+            st.session_state['script'] = "My pikin, see " + pinfo + "! E go make you look like big boy, big girl! Chat me now, no dull!"
+        elif "serum" in low or "cream" in low or "face" in low or "skin" in low:
+            st.session_state['script'] = "My pikin, your face go glow! " + pinfo + "! E go clear your face, make you shine! Chat me now!"
+        else:
+            st.session_state['script'] = "My pikin, come see o! " + pinfo + "! E good well well, price sweet, quality top! Chat me now to order. Mama Oloja recommend am, e no be lie!"
+        if "Cute" in style or "C -" in style:
+            char = "Cute anime girl, pink hair, big eyes, smiling, Nigerian market background"
+        elif "Fine" in style or "A -" in style:
+            char = "Beautiful anime babe, brown skin, long black hair, smiling, Nigerian market background"
+        else:
+            char = "Cool anime boy, short hair, smiling, holding product, Nigerian market background"
+        st.session_state['video_prompt'] = char + ", holding " + pinfo + ", waving hand, lips moving and talking, blinking, lively, TikTok anime style, bright colors, 4k"
+        st.session_state['pic_prompt'] = char + ", holding " + pinfo + ", full body, smiling at camera, bright, high quality, TikTok style"
 if st.session_state['script']:
-    st.success("Preview Ready! - Script + Video Prompt Ready!")
+    st.success("Your Video Package Ready - 100% FREE! For: " + st.session_state['my_product'])
+    st.balloons()
+    st.markdown("### YOUR VIDEO ANIME PACKAGE - DO AM IN 3 MINS - FREE!")
+    st.markdown("#### STEP A - MAKE ANIME PICTURE - FREE")
+    st.write("Copy this prompt, go Bing Create, paste am, download picture:")
+    st.code(st.session_state.get('pic_prompt', ''))
+    st.markdown("[Click Here - Make Picture FREE (Bing Create)](https://www.bing.com/images/create)")
+    st.markdown("---")
+    st.markdown("#### STEP B - MAKE VIDEO FROM PICTURE - FREE")
+    st.write("Go Hailuo AI, upload picture wey you just make, paste this Video Prompt:")
+    st.code(st.session_state.get('video_prompt', ''))
+    st.markdown("[Click Here - Make Video FREE (Hailuo AI)](https://hailuoai.video)")
+    st.markdown("[Alternative - Make Video FREE (Kling AI)](https://klingai.com)")
+    st.write("Wait 1 min, Download Video! Girl go dey move, mouth go dey talk!")
+    st.markdown("---")
+    st.markdown("#### STEP C - ADD MAMA OLOJA VOICE - FREE")
     st.write("Your Mama Oloja Script:")
     st.write(st.session_state['script'])
-    st.write("Style: " + style)
-    st.info("Preview na FREE. To unlock Video Package (Picture Prompt + Video Prompt + Voice Steps), pay 200 below.")
+    st.write("Copy script, go TTSMaker, paste am, Voice: Female Warm, Speed 0.9x, Download MP3:")
+    st.code(st.session_state['script'])
+    st.download_button("Download Script FREE", st.session_state['script'], file_name="mama-oloja-script.txt")
+    st.markdown("[Click Here - Make Voice FREE (TTSMaker)](https://ttsmaker.com)")
     st.markdown("---")
-    st.subheader("STEP 2 - Pay 200 To Unlock VIDEO Package")
-    st.write("Opay Number: 8116911722")
-    st.write("Name: Kilani Muhammed Opeyemi")
-    st.write("Amount: 200")
-    st.write("Narration: Video Anime - Your Name")
-    ref = st.text_input("Enter Your Opay Name + Reference:", placeholder="e.g. MARY - 200")
-    if st.button("I Don Pay 200 - Unlock Video Package"):
-        if ref:
-            st.session_state['paid'] = True
-            st.success("Payment received! Video Package don unlock!")
-        else:
-            st.warning("Abeg enter Opay name + reference first.")
-    if st.session_state['paid']:
-        st.markdown("### YOUR REAL VIDEO ANIME PACKAGE - DO AM IN 3 MINS!")
-        st.balloons()
-        st.markdown("#### STEP A - MAKE ANIME PICTURE (FREE)")
-        st.write("Copy this prompt, go Bing Create, paste am, download picture:")
-        st.code(st.session_state.get('pic_prompt', ''))
-        st.markdown("[Click Here - Make Picture FREE (Bing Create)](https://www.bing.com/images/create)")
-        st.markdown("---")
-        st.markdown("#### STEP B - MAKE VIDEO FROM PICTURE (FREE)")
-        st.write("Go Hailuo AI, upload picture wey you just make, paste this Video Prompt:")
-        st.code(st.session_state.get('video_prompt', ''))
-        st.markdown("[Click Here - Make Video FREE (Hailuo AI)](https://hailuoai.video)")
-        st.markdown("[Alternative - Make Video FREE (Kling AI)](https://klingai.com)")
-        st.write("Wait 1 min, Download Video! Girl go dey move, mouth go dey talk!")
-        st.markdown("---")
-        st.markdown("#### STEP C - ADD MAMA OLOJA VOICE")
-        st.write("Copy script below, go TTSMaker, paste am, Voice: Female Warm, Speed 0.9x, Download MP3:")
-        st.code(st.session_state['script'])
-        st.download_button("Download Script", st.session_state['script'], file_name="mama-oloja-script.txt")
-        st.markdown("[Click Here - Make Voice FREE (TTSMaker)](https://ttsmaker.com)")
-        st.markdown("---")
-        st.markdown("#### STEP D - JOIN VIDEO + VOICE (FREE)")
-        st.write("Go CapCut App (for phone), Import Video + Voice, Export, Post for TikTok / WhatsApp Status!")
-        st.markdown("[Download CapCut FREE](https://www.capcut.com)")
-        st.write("Need Help Make Video? Chat us: https://wa.me/2348116911722 - We go help you make am for 500 extra!")
-    else:
-        st.warning("Video Package Locked - Pay 200 to Opay 8116911722 to unlock Picture Prompt + Video Prompt + Voice Steps.")
+    st.markdown("#### STEP D - JOIN VIDEO + VOICE - FREE")
+    st.write("Go CapCut App (for phone), Import Video + Voice, Export, Post for TikTok / WhatsApp Status!")
+    st.markdown("[Download CapCut FREE](https://www.capcut.com)")
+    st.write("Enjoy FREE for now! Share am with your friends! Tag @row.economy.market for TikTok!")
+    st.write("Need Help? Chat us FREE: https://wa.me/2348116911722")
+    if st.button("Make Another Advert - Clear"):
+        st.session_state['script'] = ""
+        st.session_state['my_product'] = ""
+        st.rerun()
 st.markdown("---")
 st.markdown('<div style="background:black; color:white; padding:10px; border-radius:15px;"><span>Ikorodu, Lagos</span> <span>100 Coins</span></div>', unsafe_allow_html=True)
 st.markdown('<div style="background:linear-gradient(to bottom right, #0a7a42, #d4c400); padding:20px; border-radius:20px; color:white;"><h2 style="color:#FFD700;">ROW ECONOMY MARKET</h2><h1>Welcome back, muhammed!</h1><p>Everything you need, near you. No scam. Mama Oloja dey watch for you.</p><p>4.9 Rating - 2,347 Happy Buyers - FREE Delivery Today In Ikorodu</p></div>', unsafe_allow_html=True)
@@ -97,7 +111,7 @@ if st.button("SPIN NOW - It is FREE!"):
     st.success("You won: " + prize + "!")
     if "Coins" in prize:
         st.session_state['coins'] += 50
-search = st.text_input("Search:", placeholder="Search serum, sunscreen, Black Rapture...")
+search = st.text_input("Search Shop:", placeholder="Search serum, sunscreen, Black Rapture...")
 st.write("Blessing Cosmetics")
 with st.expander("Seller Login", expanded=True):
     st.success("Logged in as Blessing Cosmetics")
@@ -134,7 +148,7 @@ with st.expander("Upload Product - Sellers"):
     pp = st.number_input("Price", value=0)
     if st.button("Post Product"):
         if pn:
-            st.success(pn + " - " + str(pp) + " posted! Want Video Anime? Scroll to TOP - RED BANNER - 200 only!")
+            st.success(pn + " - " + str(pp) + " posted! Want Video Anime FREE? Scroll to TOP - Type anything for search bar!")
         else:
             st.warning("Enter Product Name first.")
 st.header("Hot Deals - Face Serum 4,000")
@@ -152,5 +166,5 @@ if st.button("Send Message"):
 st.markdown("---")
 st.write("Your Coins: " + str(st.session_state['coins']))
 st.write("Want to Sell? Join FREE - WhatsApp Admin: https://wa.me/2348116911722")
-st.write("Video Anime: 200 to Opay 8116911722 - Kilani Muhammed Opeyemi")
+st.write("Video Anime: 100% FREE FOR NOW - Type Anything!")
 st.write("2026 Row Economy Market - Powered by Mama Oloja")
