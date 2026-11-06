@@ -6,45 +6,38 @@ from datetime import datetime
 
 st.set_page_config(page_title="Row Economy Market", page_icon="🛒", layout="centered")
 
-# ===== PREMIUM CSS - BEST DESIGN EVER =====
+# ===== ULTIMATE CSS =====
 st.markdown("""
 <style>
-.stApp {background: #F6F7FB;}
-.topbar {background: #0A0A0A; color: white; padding: 10px 14px; border-radius: 0 0 20px 20px; display: flex; justify-content: space-between; font-size: 12px; font-weight: 700;}
-.hero-premium {background: linear-gradient(135deg, #0B3D2E 0%, #0A9D4D 45%, #FFB800 100%); border-radius: 26px; padding: 24px 18px 20px 18px; color: white; position: relative; overflow: hidden; box-shadow: 0 12px 30px rgba(10,157,77,0.35);}
-.hero-premium h1 {font-size: 36px; line-height: 0.95; margin: 0; color: white; font-weight: 900; letter-spacing: -1px;}
-.hero-premium h1 span {color: #FFD700;}
-.hero-premium p {font-size: 14px; opacity: 0.92; margin: 8px 0 0 0;}
-.hero-btn {background: white; color: #0B3D2E; padding: 9px 16px; border-radius: 999px; font-weight: 800; font-size: 13px; display: inline-block; margin-top: 12px; margin-right: 8px;}
-.hero-badge {background: rgba(255,255,255,0.22); border: 1px solid rgba(255,255,255,0.4); padding: 5px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; display: inline-block; margin-top: 10px;}
-.flash {background: #FF2D55; color: white; border-radius: 16px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;}
-.flash b {font-size: 16px;}
-.flash span {background: white; color: #FF2D55; padding: 4px 8px; border-radius: 8px; font-weight: 900; font-size: 13px;}
-.story-wrap {display: flex; gap: 12px; overflow-x: auto; padding: 6px 2px;}
-.story {text-align: center; min-width: 68px;}
-.story-circle {width: 62px; height: 62px; border-radius: 50%; border: 3px solid #FF2D55; display: flex; align-items: center; justify-content: center; font-size: 30px; background: white; margin: 0 auto;}
-.story-live {background: #FF2D55; color: white; font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 999px; margin-top: -10px; display: inline-block;}
-.story-name {font-size: 11px; font-weight: 700; margin-top: 4px;}
-.mama-premium {background: white; border-radius: 22px; padding: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); border: 1px solid #EDE7FF;}
-.mama-header {display: flex; align-items: center; gap: 10px;}
-.mama-avatar {width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg,#7B2FFF,#FF2D55); display: flex; align-items: center; justify-content: center; font-size: 26px;}
-.chat-bubble-user {background: #0A9D4D; color: white; padding: 10px 12px; border-radius: 16px 16px 4px 16px; margin: 8px 0; max-width: 90%; margin-left: auto; font-size: 14px;}
-.chat-bubble-mama {background: #F1EFFF; color: #222; padding: 10px 12px; border-radius: 16px 16px 16px 4px; margin: 8px 0; max-width: 92%; font-size: 14px;}
-.cat-premium {background: white; border-radius: 18px; padding: 14px 6px; text-align: center; box-shadow: 0 3px 12px rgba(0,0,0,0.05);}
-.cat-premium div {font-size: 28px;}
-.cat-premium span {font-size: 12px; font-weight: 800;}
-.seller-week {background: linear-gradient(135deg,#FFF8D6,#FFE9A8); border: 2px solid #FFD700; border-radius: 20px; padding: 14px;}
-.product-premium {background: white; border-radius: 22px; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.07); margin-bottom: 16px; border: 1px solid #F0F0F0;}
-.product-top {height: 150px; display: flex; align-items: center; justify-content: center; font-size: 72px; position: relative;}
-.discount {position: absolute; top: 10px; left: 10px; background: #FF2D55; color: white; font-size: 11px; font-weight: 900; padding: 4px 8px; border-radius: 999px;}
-.heart {position: absolute; top: 10px; right: 10px; background: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);}
-.product-body {padding: 12px 14px 14px 14px;}
-.price-big {color: #0A9D4D; font-weight: 900; font-size: 20px;}
-.old {color: #999; text-decoration: line-through; font-size: 13px;}
-.stars {color: #FFB800; font-size: 13px; font-weight: 800;}
-.testimonial {background: white; border-radius: 18px; padding: 14px; border-left: 4px solid #0A9D4D; margin-bottom: 10px;}
-.bottom-nav {position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #EEE; z-index: 999;}
-.stButton > button {border-radius: 12px !important; font-weight: 700 !important;}
+.stApp {background:#F6F7FB;}
+.topbar {background:#0A0A0A; color:white; padding:10px 14px; border-radius:0 0 20px 20px; display:flex; justify-content:space-between; font-size:12px; font-weight:700;}
+.hero-ultimate {background: linear-gradient(135deg,#0B3D2E 0%, #0A9D4D 45%, #FFB800 100%); border-radius:26px; padding:24px 18px 20px 18px; color:white; box-shadow:0 12px 30px rgba(10,157,77,0.35);}
+.hero-ultimate h1 {font-size:36px; line-height:0.95; margin:0; color:white; font-weight:900; letter-spacing:-1px;}
+.hero-ultimate h1 span {color:#FFD700;}
+.bonus-box {background: linear-gradient(135deg,#FF2D55,#FF8A00); border-radius:18px; padding:14px; color:white; text-align:center;}
+.bonus-box h2 {color:white; margin:0;}
+.spin-box {background:white; border-radius:20px; padding:16px; text-align:center; box-shadow:0 6px 20px rgba(0,0,0,0.08); border:2px dashed #FFB800;}
+.refer-box {background: linear-gradient(135deg,#7B2FFF,#B44DFF); border-radius:18px; padding:16px; color:white;}
+.trust-bar {background:#E8F5E9; border-radius:14px; padding:10px; font-size:13px; font-weight:700; color:#0B3D2E; text-align:center;}
+.flash {background:#FF2D55; color:white; border-radius:16px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center;}
+.flash span {background:white; color:#FF2D55; padding:4px 8px; border-radius:8px; font-weight:900;}
+.mama-premium {background:white; border-radius:22px; padding:16px; box-shadow:0 8px 24px rgba(0,0,0,0.08); border:1px solid #EDE7FF;}
+.mama-avatar {width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,#7B2FFF,#FF2D55); display:flex; align-items:center; justify-content:center; font-size:26px;}
+.chat-user {background:#0A9D4D; color:white; padding:10px 12px; border-radius:16px 16px 4px 16px; margin:8px 0; max-width:90%; margin-left:auto; font-size:14px;}
+.chat-mama {background:#F1EFFF; color:#222; padding:10px 12px; border-radius:16px 16px 16px 4px; margin:8px 0; max-width:92%; font-size:14px;}
+.cat-premium {background:white; border-radius:18px; padding:14px 6px; text-align:center; box-shadow:0 3px 12px rgba(0,0,0,0.05);}
+.product-premium {background:white; border-radius:22px; overflow:hidden; box-shadow:0 6px 20px rgba(0,0,0,0.07); margin-bottom:16px; border:1px solid #F0F0F0;}
+.product-top {height:150px; display:flex; align-items:center; justify-content:center; font-size:72px; position:relative;}
+.discount {position:absolute; top:10px; left:10px; background:#FF2D55; color:white; font-size:11px; font-weight:900; padding:4px 8px; border-radius:999px;}
+.free-del {position:absolute; bottom:10px; left:10px; background:#0A9D4D; color:white; font-size:11px; font-weight:800; padding:4px 8px; border-radius:999px;}
+.heart {position:absolute; top:10px; right:10px; background:white; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px;}
+.product-body {padding:12px 14px 14px 14px;}
+.price-big {color:#0A9D4D; font-weight:900; font-size:20px;}
+.old {color:#999; text-decoration:line-through; font-size:13px;}
+.stars {color:#FFB800; font-size:13px; font-weight:800;}
+.testimonial {background:white; border-radius:18px; padding:14px; border-left:4px solid #0A9D4D; margin-bottom:10px;}
+.seller-week {background:linear-gradient(135deg,#FFF8D6,#FFE9A8); border:2px solid #FFD700; border-radius:20px; padding:14px;}
+.stButton > button {border-radius:12px !important; font-weight:700 !important;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -60,60 +53,114 @@ if "chats" not in st.session_state: st.session_state.chats = {"blessing": [], "h
 if "seller" not in st.session_state: st.session_state.seller = None
 if "unread" not in st.session_state: st.session_state.unread = {"blessing": 0, "horlance": 0, "market_square": 0}
 if "category" not in st.session_state: st.session_state.category = "Home"
-if "invite" not in st.session_state: st.session_state.invite = 0
 if "cart" not in st.session_state: st.session_state.cart = []
 if "liked" not in st.session_state: st.session_state.liked = set()
 if "mama_history" not in st.session_state: st.session_state.mama_history = []
+if "coins" not in st.session_state: st.session_state.coins = 0
+if "claimed_bonus" not in st.session_state: st.session_state.claimed_bonus = False
+if "spun" not in st.session_state: st.session_state.spun = False
+if "refer_count" not in st.session_state: st.session_state.refer_count = 0
+if "user_name" not in st.session_state: st.session_state.user_name = ""
+if "orders" not in st.session_state: st.session_state.orders = 0
 
 # ===== TOP BAR =====
-st.markdown(f'<div class="topbar"><span>📍 Ikorodu, Lagos • {datetime.now().strftime("%I:%M %p")}</span><span>🔔 {sum(st.session_state.unread.values())} • 🛒 {len(st.session_state.cart)}</span></div>', unsafe_allow_html=True)
+st.markdown(f'<div class="topbar"><span>📍 Ikorodu, Lagos • {datetime.now().strftime("%I:%M %p")}</span><span>🪙 {st.session_state.coins} Coins • 🛒 {len(st.session_state.cart)}</span></div>', unsafe_allow_html=True)
 
-# ===== HERO PREMIUM =====
-st.markdown("""
-<div class="hero-premium">
+# ===== WELCOME - ASK NAME ONCE - MAKES IT PERSONAL =====
+if not st.session_state.user_name:
+    st.markdown("""
+    <div class="hero-ultimate">
+    <div style="font-size:12px; font-weight:800; letter-spacing:1px;">✦ WELCOME TO ROW ECONOMY ✦</div>
+    <h1>Welcome,<br>My Pikin! <span>👋</span></h1>
+    <p>Mama Oloja dey here. Tell me your name, make I treat you like family.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    nm = st.text_input("What is your name?", placeholder="E.g. Chinedu, Fatima, Tunde...")
+    if st.button("Enter Market ➡️"):
+        if nm:
+            st.session_state.user_name = nm
+            st.session_state.coins += 100
+            st.success(f"Welcome {nm}! You won 100 Coins + N500 OFF! Mama Oloja loves you!")
+            st.rerun()
+        else: st.error("Type your name first")
+    st.stop()
+
+# ===== HERO - PERSONALIZED =====
+st.markdown(f"""
+<div class="hero-ultimate">
 <div style="font-size:12px; font-weight:800; letter-spacing:1px;">✦ ROW ECONOMY MARKET ✦</div>
-<h1>Everything You<br>Need, <span>Near You.</span></h1>
-<p>🧕 Mama Oloja dey here. No scam. No fake. Just real sellers, real prices.</p>
-<div><span class="hero-btn">🛍️ Shop Now ↓</span><span class="hero-btn" style="background:#FFD700;">💬 Ask Mama Oloja</span></div>
-<div><span class="hero-badge">⭐ 4.9 Rating • 2,347 Happy Buyers</span> <span class="hero-badge">🎉 FREE for Sellers till Dec 6</span></div>
+<h1>Welcome back,<br>{st.session_state.user_name}! <span>👋</span></h1>
+<p>Everything you need, near you. No scam. Mama Oloja dey watch for you.</p>
+<div><span style="background:white; color:#0B3D2E; padding:9px 16px; border-radius:999px; font-weight:800; font-size:13px; display:inline-block; margin-top:12px;">🛍️ Shop Now ↓</span> <span style="background:#FFD700; color:#111; padding:9px 16px; border-radius:999px; font-weight:800; font-size:13px; display:inline-block; margin-top:12px;">🪙 {st.session_state.coins} Coins</span></div>
+<div style="background:rgba(255,255,255,0.22); border:1px solid rgba(255,255,255,0.4); padding:5px 10px; border-radius:999px; font-size:11px; font-weight:700; display:inline-block; margin-top:10px;">⭐ 4.9 Rating • 2,347 Happy Buyers • 🚚 FREE Delivery Today in Ikorodu</div>
 </div>
 """, unsafe_allow_html=True)
+
+# ===== TRUST BAR =====
+st.markdown('<div class="trust-bar">🛡️ Mama Oloja Guarantee: If seller scam you, we refund you. 100% Safe. ✅ Verified Sellers Only</div>', unsafe_allow_html=True)
+
+# ===== WELCOME BONUS + SPIN =====
+if not st.session_state.claimed_bonus:
+    st.markdown("""
+    <div class="bonus-box">
+    <h2>🎁 YOU WON ₦500 OFF!</h2>
+    <p style="margin:4px 0;">Your first order - Use code: <b>ROW500</b></p>
+    </div>
+    """, unsafe_allow_html=True)
+    if st.button("🎁 Claim My ₦500 OFF Now"):
+        st.session_state.claimed_bonus = True
+        st.session_state.coins += 500
+        st.success("Claimed! ₦500 OFF added. Use code ROW500 at checkout. Mama Oloja don bless you!")
+        st.rerun()
+else:
+    st.success(f"✅ You have claimed ₦500 OFF! Code: ROW500 | Coins: {st.session_state.coins}")
+
+# Spin & Win - Makes people come back daily
+st.markdown('<div class="spin-box"><b>🎡 SPIN & WIN - Daily Luck!</b><br><span style="font-size:13px; color:#666;">Spin once a day, win Coins, Free Delivery, Discount</span></div>', unsafe_allow_html=True)
+if not st.session_state.spun:
+    if st.button("🎡 SPIN NOW - It's FREE!"):
+        prize = random.choice(["₦200 OFF", "₦500 OFF", "FREE Delivery", "100 Coins", "₦100 OFF", "200 Coins"])
+        st.session_state.spun = True
+        st.session_state.coins += 100
+        st.balloons()
+        st.success(f"🎉 YOU WON: {prize}! +100 Coins added. Come back tomorrow to spin again!")
+        st.rerun()
+else:
+    st.info("You already spun today. Come back tomorrow for another spin! 🎡")
+
+# ===== REFER & EARN =====
+st.markdown(f"""
+<div class="refer-box">
+<b>👥 REFER & EARN ₦200</b><br>
+<span style="font-size:13px;">Invite friend, you get ₦200, friend gets ₦200. No limit!</span><br>
+<b>Your Referrals: {st.session_state.refer_count} • You earned: ₦{st.session_state.refer_count*200:,}</b><br>
+<span style="font-size:12px;">Your Link: roweconomy.streamlit.app?ref={st.session_state.user_name}</span>
+</div>
+""", unsafe_allow_html=True)
+if st.button("📤 Invite Friend - Earn ₦200"):
+    st.session_state.refer_count += 1
+    st.session_state.coins += 200
+    st.success(f"Thank you {st.session_state.user_name}! You earned ₦200! Share your link to WhatsApp now.")
+    st.link_button("Share on WhatsApp", f"https://wa.me/?text=Join%20Row%20Economy%20Market!%20I%20use%20it%20to%20buy%20cheap%20cosmetics%20and%20Car%20AC.%20Use%20my%20code%20{st.session_state.user_name}%20to%20get%20N500%20OFF!")
 
 # ===== FLASH SALE =====
-st.markdown("""
-<div class="flash"><div><b>⚡ FLASH SALE</b><br><span style="font-size:12px; font-weight:600;">Up to 30% OFF - Today Only</span></div><span>02 : 14 : 33</span></div>
-""", unsafe_allow_html=True)
+st.markdown('<div class="flash"><div><b>⚡ FLASH SALE</b><br><span style="font-size:12px;">Up to 30% OFF - Today Only</span></div><span>01 : 59 : 12</span></div>', unsafe_allow_html=True)
 
-# ===== STORIES - LIKE INSTAGRAM =====
-st.markdown("### 📸 Stories - Tap Seller")
-st.markdown("""
-<div class="story-wrap">
-<div class="story"><div class="story-circle">💄</div><span class="story-live">LIVE</span><div class="story-name">Blessing<br>⭐ 4.9</div></div>
-<div class="story"><div class="story-circle" style="border-color:#0A9D4D;">❄️</div><span class="story-live" style="background:#0A9D4D;">LIVE</span><div class="story-name">Horlance<br>⭐ 5.0</div></div>
-<div class="story"><div class="story-circle" style="border-color:#FFB800;">✨</div><div class="story-name">New<br>Seller?</div></div>
-<div class="story"><div class="story-circle" style="border-color:#7B2FFF;">🧕</div><div class="story-name">Mama<br>Oloja</div></div>
-</div>
-""", unsafe_allow_html=True)
-
-# ===== SEARCH + LOGIN + CART =====
-search = st.text_input("", placeholder="🔍 Search serum, sunscreen, Jollof rice, Car AC...", key="search_premium")
+# ===== SEARCH + CART + LOGIN =====
+search = st.text_input("", placeholder="🔍 Search serum, sunscreen, Jollof rice, Car AC...", key="search_ultimate")
 if search: st.session_state.category = "Search"
 
-c_top1, c_top2, c_top3 = st.columns(3)
-with c_top1:
-    if st.button("🎁 Invite +1"):
-        st.session_state.invite += 1; st.success(f"You invited {st.session_state.invite} friend(s)!")
-with c_top2:
+c1, c2 = st.columns(2)
+with c1:
     st.markdown(f"**🛒 Cart: {len(st.session_state.cart)}**")
     if st.session_state.cart:
         tot = sum([x['price'] for x in st.session_state.cart])
-        st.markdown(f"Total: **N{tot:,}**")
-        st.link_button("Checkout on WhatsApp", "https://wa.me/2347052528772?text=Hi%20I%20want%20to%20checkout%20my%20cart")
-        if st.button("Clear Cart"):
-            st.session_state.cart=[]; st.rerun()
-with c_top3:
+        st.markdown(f"Total: **N{tot:,}** - With ROW500: **N{max(0, tot-500):,}**")
+        st.link_button("Checkout on WhatsApp", "https://wa.me/2347052528772?text=Hi%20I%20want%20to%20checkout%20my%20cart%20CODE%20ROW500")
+        if st.button("Clear Cart"): st.session_state.cart=[]; st.rerun()
+with c2:
     if st.session_state.seller: st.markdown(f"✅ {SELLERS[st.session_state.seller]['name']}")
-    else: st.markdown("👤 Guest")
+    else: st.markdown(f"👤 {st.session_state.user_name} | 🪙 {st.session_state.coins}")
 
 with st.expander("🔐 Seller Login"):
     if st.session_state.seller is None:
@@ -128,7 +175,7 @@ with st.expander("🔐 Seller Login"):
         st.success(f"Logged in as {SELLERS[st.session_state.seller]['name']}")
         if st.button("Logout"): st.session_state.seller=None; st.rerun()
 
-# ===== MAMA OLOJA - CHATGPT STYLE =====
+# ===== MAMA OLOJA =====
 PRODUCTS_DB = [
     {"name": "Face Serum", "price": 4000, "old": 5500, "seller": "Blessing", "phone": "07052528772", "for": "glow dull dark spot pimple uneven tone serum", "desc": "For glow, dark marks, dull skin", "emoji": "💧", "bg": "#E0F7FF", "sold": "1.2k sold", "rating": "4.9"},
     {"name": "Ceramide Serum", "price": 5000, "old": 6500, "seller": "Blessing", "phone": "07052528772", "for": "dry sensitive stressed dehydrated serum", "desc": "For dry, sensitive, stressed skin", "emoji": "💧", "bg": "#FFE0F0", "sold": "890 sold", "rating": "4.8"},
@@ -136,7 +183,7 @@ PRODUCTS_DB = [
     {"name": "Biore UV Sunscreen", "price": 5000, "old": 6500, "seller": "Blessing", "phone": "07052528772", "for": "sun sunscreen protect oily", "desc": "Light, everyday, no white cast", "emoji": "☀️", "bg": "#FFF3D6", "sold": "3.4k sold", "rating": "4.9"},
     {"name": "Nivea Sun Sensitive SPF50", "price": 9000, "old": 11000, "seller": "Blessing", "phone": "07052528772", "for": "sun sunscreen sensitive", "desc": "Sensitive skin, immediate protect", "emoji": "☀️", "bg": "#E0F7FF", "sold": "760 sold", "rating": "4.8"},
     {"name": "Skin Aqua SPF50+", "price": 10000, "old": 12000, "seller": "Blessing", "phone": "07052528772", "for": "sun sunscreen", "desc": "Super moisture", "emoji": "☀️", "bg": "#E0FFE0", "sold": "540 sold", "rating": "4.7"},
-    {"name": "La Roche-Posay Anthelios", "price": 17000, "old": 20000, "seller": "Blessing", "phone": "07052528772", "for": "sun sunscreen sensitive pharmacy", "desc": "Pharmacy grade, best for sensitive", "emoji": "☀️", "bg": "#F1EFFF", "sold": "320 sold", "rating": "5.0"},
+    {"name": "La Roche-Posay Anthelios", "price": 17000, "old": 20000, "seller": "Blessing", "phone": "07052528772", "for": "sun sunscreen sensitive pharmacy", "desc": "Pharmacy grade", "emoji": "☀️", "bg": "#F1EFFF", "sold": "320 sold", "rating": "5.0"},
     {"name": "TONYMOLY Ceramide Toner", "price": 6000, "old": 7500, "seller": "Blessing", "phone": "07052528772", "for": "dry toner sensitive", "desc": "Bouncy, soft, moisturized", "emoji": "💧", "bg": "#FFE0F0", "sold": "980 sold", "rating": "4.8"},
     {"name": "Estelin Whitening Toner", "price": 8000, "old": 9500, "seller": "Blessing", "phone": "07052528772", "for": "toner bright whitening uneven", "desc": "Brightening, uneven tone", "emoji": "💧", "bg": "#FFF3D6", "sold": "670 sold", "rating": "4.7"},
     {"name": "Simple Soothing Toner", "price": 10000, "old": 11500, "seller": "Blessing", "phone": "07052528772", "for": "toner sensitive", "desc": "Alcohol-free, sensitive", "emoji": "💧", "bg": "#E0FFE0", "sold": "430 sold", "rating": "4.8"},
@@ -147,7 +194,6 @@ PRODUCTS_DB = [
     {"name": "AC Leak Fixing", "price": 0, "old": 0, "seller": "Horlance", "phone": "09046044472", "for": "ac car leak gas", "desc": "Leak detection & fixing", "emoji": "🔧", "bg": "#E0FFE0", "sold": "180 jobs", "rating": "4.9"},
     {"name": "Full AC Servicing", "price": 0, "old": 0, "seller": "Horlance", "phone": "09046044472", "for": "ac car servicing full", "desc": "Full AC system servicing", "emoji": "❄️", "bg": "#F1EFFF", "sold": "290 jobs", "rating": "5.0"},
 ]
-
 def mama_answer(q):
     q=q.lower().strip()
     budget=None
@@ -157,18 +203,18 @@ def mama_answer(q):
         nums2=re.findall(r'(\d{3,})', q.replace(",",""))
         if nums2: budget=int(nums2[0])
     if any(w in q for w in ["hello","hi ","good morning","good afternoon","how are you"]):
-        return "Hello my pikin! Welcome to Row Market. Wetin you dey find? Tell me: 1) Product 2) Budget 3) Area. E.g. 'I need serum under 5000 in Ikorodu'"
+        return f"Hello {st.session_state.user_name}! Welcome back! Wetin you dey find today? Tell me product + budget + area."
     food_words=["jollof","rice","food","stew","soup","amala","eba","suya","shawarma","pizza","burger","chicken","hungry"]
     if any(w in q for w in food_words):
         return f"For '{q}' - Honest talk, we NO get food seller YET. Na only Blessing (cosmetics) and Horlance (Car AC) we get. If you be food seller, join FREE - 8 slots left! If you be buyer, tell me your area + budget, I go find food seller for you."
     if any(w in q for w in ["cloth","dress","shirt","shoe","sneaker","bag","wig","hair"]):
-        return f"For '{q}' - We no get clothes seller yet. Tell me area + budget, or if YOU sell clothes, join FREE! Tap Clothes to be first!"
+        return f"For '{q}' - We no get clothes seller yet. Tell me area + budget, or if YOU sell clothes, join FREE!"
     if any(w in q for w in ["phone","iphone","samsung","laptop"]):
         return f"For '{q}' - We no get phone seller yet. Tell me which phone + budget + area."
     if any(w in q for w in ["ac","car","cool","horlance","compressor","gas"]):
-        return "For Car AC, na Horlance be number 1! Osun & Oyo. Gas, Compressor, Leak, Full Servicing. WhatsApp 09046044472, Call 09067551606. Tell dem Mama Oloja send you. Wetin be your car problem? Hot air? No gas? Noise?"
+        return "For Car AC, na Horlance be number 1! Osun & Oyo. Gas, Compressor, Leak, Full Servicing. WhatsApp 09046044472, Call 09067551606. Tell dem Mama Oloja send you."
     if any(w in q for w in ["pimple","acne","dark spot","dark mark"]):
-        return "For pimple / dark spot: 1) Illuminating Serum 5500 (dark marks) 2) Acwell Toner 10500 (cleansing) 3) Biore Sunscreen 5000 (MUST use). If money small, start with Illuminating Serum 5500 only. Chat Blessing - 07052528772"
+        return "For pimple / dark spot: 1) Illuminating Serum 5500 2) Acwell Toner 10500 3) Biore Sunscreen 5000. If money small, start with Illuminating Serum 5500 only. Chat Blessing - 07052528772"
     if "dry" in q: return "Dry skin? Ceramide Serum 5000 + TONYMOLY Toner 6000 = 11000. Chat Blessing - 07052528772"
     if "oily" in q: return "Oily skin? Face Serum 4000 + Biore Sunscreen 5000 = 9000. Chat Blessing - 07052528772"
     if "sensitive" in q: return "Sensitive? Simple Toner 10000 + Nivea Sun Sensitive 9000 + Ceramide Serum 5000. Chat Blessing - 07052528772"
@@ -203,38 +249,34 @@ def mama_answer(q):
 
 st.markdown("""
 <div class="mama-premium">
-<div class="mama-header"><div class="mama-avatar">🧕</div><div><b style="font-size:16px;">Mama Oloja</b> <span style="color:#0A9D4D; font-size:12px;">● Online • Replies in 2 secs</span><br><span style="font-size:12px; color:#666;">Your Market Aunty - She sabi price, skin & Car AC</span></div></div>
+<div style="display:flex; align-items:center; gap:10px;"><div class="mama-avatar">🧕</div><div><b style="font-size:16px;">Mama Oloja</b> <span style="color:#0A9D4D; font-size:12px;">● Online • Replies in 2 secs</span><br><span style="font-size:12px; color:#666;">Your Market Aunty - She sabi price, skin & Car AC</span></div></div>
 </div>
 """, unsafe_allow_html=True)
-
-# Chat history bubbles
 for h in st.session_state.mama_history[-4:]:
-    if h["role"]=="user": st.markdown(f'<div class="chat-bubble-user">{h["text"]}</div>', unsafe_allow_html=True)
-    else: st.markdown(f'<div class="chat-bubble-mama">🧕 {h["text"]}</div>', unsafe_allow_html=True)
-
+    if h["role"]=="user": st.markdown(f'<div class="chat-user">{h["text"]}</div>', unsafe_allow_html=True)
+    else: st.markdown(f'<div class="chat-mama">🧕 {h["text"]}</div>', unsafe_allow_html=True)
 qm1, qm2, qm3 = st.columns(3)
 if qm1.button("😩 Pimple"): st.session_state.mama_history.append({"role":"user","text":"I have pimple"}); st.session_state.mama_history.append({"role":"mama","text":mama_answer("I have pimple")}); st.rerun()
 if qm2.button("💰 Under 5000"): st.session_state.mama_history.append({"role":"user","text":"Under 5000"}); st.session_state.mama_history.append({"role":"mama","text":mama_answer("under 5000")}); st.rerun()
 if qm3.button("❄️ Car AC hot"): st.session_state.mama_history.append({"role":"user","text":"Car AC hot"}); st.session_state.mama_history.append({"role":"mama","text":mama_answer("car ac hot")}); st.rerun()
-
-ask = st.text_input("Ask Mama Oloja...", placeholder="E.g. I need serum under 5000 in Ikorodu...", key="mama_premium")
+ask = st.text_input("Ask Mama Oloja...", placeholder="E.g. I need serum under 5000 in Ikorodu...", key="mama_ult")
 if ask:
     st.session_state.mama_history.append({"role":"user","text":ask})
     st.session_state.mama_history.append({"role":"mama","text":mama_answer(ask)})
     st.rerun()
 
-# ===== CATEGORIES PREMIUM =====
+# ===== CATEGORIES =====
 st.markdown("### 🗂️ Categories")
 cat_data = [("💄","Cosmetics","#FBD6E3"),("👕","Clothes","#CDE6FF"),("📱","Phones","#CDE6FF"),("🍲","Food","#FFE2B8"),("🚗","Car Mart","#FFE2B8"),("🧰","Services","#CFF5D6"),("🎟️","Tickets","#FBD6E3"),("💬","Chat","#CFF5D6")]
 cols = st.columns(4)
 for i,(emo,name,col) in enumerate(cat_data):
     with cols[i%4]:
-        st.markdown(f'<div class="cat-premium" style="background:{col};"><div>{emo}</div><span>{name}</span></div>', unsafe_allow_html=True)
-        if st.button(name, key=f"cat_p_{name}"): st.session_state.category=name; st.rerun()
+        st.markdown(f'<div class="cat-premium" style="background:{col};"><div style="font-size:28px;">{emo}</div><span>{name}</span></div>', unsafe_allow_html=True)
+        if st.button(name, key=f"cat_u_{name}"): st.session_state.category=name; st.rerun()
 if st.button("🏠 Home - Show All"): st.session_state.category="Home"; st.rerun()
 st.markdown(f"**Viewing: {st.session_state.category}**")
 
-# ===== SELLER OF THE WEEK =====
+# ===== SELLER OF WEEK =====
 st.markdown("""
 <div class="seller-week">
 <b>👑 SELLER OF THE WEEK</b><br>
@@ -268,8 +310,8 @@ with st.expander("📸 Upload Product - Picture / Video (Sellers)"):
                 st.success(f"Posted! {up_name} - N{up_price:,} is LIVE!"); st.rerun()
             else: st.error("Add Name + Picture/Video")
 
-# ===== PRODUCTS PREMIUM =====
-def product_card_premium(p, idx):
+# ===== PRODUCTS =====
+def product_card_ultimate(p, idx):
     discount = ""
     if p['old']>0 and p['price']>0:
         off = int((p['old']-p['price'])/p['old']*100)
@@ -279,27 +321,27 @@ def product_card_premium(p, idx):
     old_txt = f"<span class='old'>N{p['old']:,}</span>" if p['old']>p['price'] and p['price']>0 else ""
     st.markdown(f"""
     <div class="product-premium">
-    <div class="product-top" style="background:{p['bg']};">{discount}<div class="heart">{heart}</div>{p['emoji']}</div>
+    <div class="product-top" style="background:{p['bg']};">{discount}<div class="heart">{heart}</div><div class="free-del">🚚 FREE Delivery Today</div>{p['emoji']}</div>
     <div class="product-body">
     <div style="font-weight:900; font-size:15px;">{p['name']}</div>
     <div style="font-size:12px; color:#888;">by {p['seller']} ✅ Verified • {p['sold']}</div>
     <div><span class="stars">⭐ {p['rating']}</span> <span style="font-size:12px; color:#666;">({p['sold']})</span></div>
-    <div style="margin:6px 0;"><span class="price-big">{price_txt}</span> {old_txt}</div>
+    <div style="margin:6px 0;"><span class="price-big">{price_txt}</span> {old_txt} <span style="font-size:12px; color:#FF2D55; font-weight:800;">Use ROW500 = N{max(0,p['price']-500):,} if first order</span></div>
     <div style="font-size:13px; color:#666;">{p['desc']}</div>
     </div>
     </div>
     """, unsafe_allow_html=True)
     c1,c2,c3 = st.columns(3)
     with c1:
-        if st.button("❤️", key=f"like_{p['name']}_{idx}"):
+        if st.button("❤️", key=f"like_u_{p['name']}_{idx}"):
             if p['name'] in st.session_state.liked: st.session_state.liked.remove(p['name'])
-            else: st.session_state.liked.add(p['name'])
+            else: st.session_state.liked.add(p['name']); st.session_state.coins+=10
             st.rerun()
     with c2:
-        if st.button("🛒 Add", key=f"add_p_{p['name']}_{idx}"):
-            st.session_state.cart.append(p); st.success(f"Added {p['name']}!"); st.rerun()
+        if st.button("🛒 Add", key=f"add_u_{p['name']}_{idx}"):
+            st.session_state.cart.append(p); st.session_state.coins+=20; st.success(f"Added {p['name']}! +20 Coins!"); st.rerun()
     with c3:
-        st.link_button("💬 Chat", f"https://wa.me/234{p['phone'][1:]}?text=Hi%20I%20want%20{p['name']}%20from%20Row%20Economy%20Market")
+        st.link_button("💬 Chat", f"https://wa.me/234{p['phone'][1:]}?text=Hi%20I%20want%20{p['name']}%20from%20Row%20Economy%20Market%20CODE%20ROW500")
 
 to_show = PRODUCTS_DB
 if st.session_state.category=="Cosmetics": to_show=[p for p in PRODUCTS_DB if p['seller']=="Blessing"]
@@ -326,14 +368,14 @@ if to_show and st.session_state.category!="Chat":
     elif st.session_state.category=="Search": st.markdown("### 🔍 Search Results")
     else: st.markdown(f"### {st.session_state.category}")
     for idx,p in enumerate(to_show):
-        product_card_premium(p, idx)
+        product_card_ultimate(p, idx)
 
 # ===== TESTIMONIALS =====
-st.markdown("### 💬 What Buyers Say")
+st.markdown("### 💬 What Buyers Say - 2,347 Happy Buyers")
 st.markdown("""
-<div class="testimonial"><b>⭐⭐⭐⭐⭐ Chiamaka - Ikorodu</b><br>"Mama Oloja helped me pick correct serum. My face don glow! Blessing delivered same day."</div>
-<div class="testimonial"><b>⭐⭐⭐⭐⭐ Tunde - Osun</b><br>"Horlance fixed my AC in 1 hour. Cold like fridge now. I recommend!"</div>
-<div class="testimonial"><b>⭐⭐⭐⭐⭐ Fatima - Lagos</b><br>"I thought it was scam, but Mama Oloja no dey lie. Real sellers, real prices."</div>
+<div class="testimonial"><b>⭐⭐⭐⭐⭐ Chiamaka - Ikorodu</b><br>"Mama Oloja helped me pick correct serum. My face don glow! Blessing delivered same day. I won N500 OFF!"</div>
+<div class="testimonial"><b>⭐⭐⭐⭐⭐ Tunde - Osun</b><br>"Horlance fixed my AC in 1 hour. Cold like fridge now. I recommend! Free delivery sef."</div>
+<div class="testimonial"><b>⭐⭐⭐⭐⭐ Fatima - Lagos</b><br>"I thought it was scam, but Mama Oloja no dey lie. Real sellers, real prices. I invited 3 friends and earned N600!"</div>
 """, unsafe_allow_html=True)
 
 # ===== CHAT =====
@@ -346,7 +388,7 @@ if st.session_state.category in ["Home","Chat"]:
         if st.button("Mark as Read"): st.session_state.unread[room]=0; st.rerun()
     for m in st.session_state.chats[room]:
         st.markdown(f"**{m['sender']}:** {m['text']}")
-    yn = st.text_input("Your Name", key=f"n_{room}")
+    yn = st.text_input("Your Name", value=st.session_state.user_name, key=f"n_{room}")
     mt = st.text_input("Type message...", key=f"m_{room}")
     if st.button("Send Message", key=f"s_{room}"):
         if yn and mt:
@@ -360,7 +402,8 @@ if st.session_state.category in ["Home","Chat"]:
                 st.session_state.chats[room].append({"sender": f"{SELLERS[st.session_state.seller]['name']} (Seller)", "text": rep}); st.rerun()
 
 st.markdown("---")
-st.markdown("**How to Pay:** Chat seller -> Confirm price -> Transfer / Pay on delivery -> Delivered. No scam, Mama Oloja dey watch.")
+st.markdown(f"**Your Coins: {st.session_state.coins}** - Earn coins by liking, adding to cart, inviting friends. Use coins for discount!")
+st.markdown("**How to Pay:** Chat seller -> Confirm price -> Use code ROW500 for N500 OFF -> Transfer / Pay on delivery -> Delivered.")
 st.markdown("**Want to Sell?** Join FREE - 8 slots left. WhatsApp Admin.")
 st.markdown("© 2026 Row Economy Market - Powered by Mama Oloja 🧕")
 st.markdown("<br><br>", unsafe_allow_html=True)
