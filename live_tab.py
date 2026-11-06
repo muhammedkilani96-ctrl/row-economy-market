@@ -43,13 +43,20 @@ st.markdown("""
 
 def make_hash(p): return hashlib.sha256(p.encode()).hexdigest()
 TEMP_HASH = make_hash("row123")
+ADMIN_HASH = make_hash("kilani 247")
 SELLERS = {
     "blessing": {"name": "Blessing Cosmetics", "phone": "07052528772", "password_hash": TEMP_HASH, "verified": True, "location": "Ikorodu, Lagos", "type": "Cosmetics"},
     "horlance": {"name": "Horlance Auto Cooling Ltd", "phone": "09046044472", "calling": "09067551606", "password_hash": TEMP_HASH, "verified": True, "location": "Osun & Oyo", "type": "Services"},
-    "admin": {"name": "Admin - Muhammed", "phone": "Admin", "password_hash": TEMP_HASH, "verified": True, "location": "Lagos", "type": "Admin"}
+    "admin": {"name": "Admin - Kilani Muhammed Opeyemi", "phone": "Admin", "password_hash": ADMIN_HASH, "verified": True, "location": "Lagos", "type": "Admin"},
+    "kilani": {"name": "Admin - Kilani Muhammed Opeyemi", "phone": "Admin", "password_hash": ADMIN_HASH, "verified": True, "location": "Lagos", "type": "Admin"},
+    "kilani muhammed": {"name": "Admin - Kilani Muhammed Opeyemi", "phone": "Admin", "password_hash": ADMIN_HASH, "verified": True, "location": "Lagos", "type": "Admin"},
+    "kilani muhammed opeyemi": {"name": "Admin - Kilani Muhammed Opeyemi", "phone": "Admin", "password_hash": ADMIN_HASH, "verified": True, "location": "Lagos", "type": "Admin"},
+    "kilani mohammed": {"name": "Admin - Kilani Muhammed Opeyemi", "phone": "Admin", "password_hash": ADMIN_HASH, "verified": True, "location": "Lagos", "type": "Admin"},
+    "kilani mohammed opeyemi": {"name": "Admin - Kilani Muhammed Opeyemi", "phone": "Admin", "password_hash": ADMIN_HASH, "verified": True, "location": "Lagos", "type": "Admin"},
+    "opeyemi": {"name": "Admin - Kilani Muhammed Opeyemi", "phone": "Admin", "password_hash": ADMIN_HASH, "verified": True, "location": "Lagos", "type": "Admin"},
 }
-# ===== NEW: USER ACCOUNTS - ANYBODY CAN SIGNUP =====
-if "users_db" not in st.session_state: st.session_state.users_db = {}  # name_lower -> {name, pass_hash, coins, phone}
+
+if "users_db" not in st.session_state: st.session_state.users_db = {}
 if "uploads" not in st.session_state: st.session_state.uploads = []
 if "chats" not in st.session_state: st.session_state.chats = {"blessing": [], "horlance": [], "market_square": []}
 if "seller" not in st.session_state: st.session_state.seller = None
@@ -67,10 +74,8 @@ if "user_logged_in" not in st.session_state: st.session_state.user_logged_in = F
 if "orders" not in st.session_state: st.session_state.orders = 0
 if "auth_mode" not in st.session_state: st.session_state.auth_mode = "login"
 
-# ===== TOP BAR =====
 st.markdown(f'<div class="topbar"><span>📍 Ikorodu, Lagos • {datetime.now().strftime("%I:%M %p")}</span><span>🪙 {st.session_state.coins} Coins • 🛒 {len(st.session_state.cart)}</span></div>', unsafe_allow_html=True)
 
-# ===== LOGIN / SIGNUP GATE - ANYBODY CAN JOIN =====
 if not st.session_state.user_logged_in:
     st.markdown("""
     <div class="hero-ultimate">
@@ -80,12 +85,11 @@ if not st.session_state.user_logged_in:
     </div>
     """, unsafe_allow_html=True)
     st.markdown('<div class="trust-bar">🛡️ Mama Oloja Guarantee: If seller scam you, we refund you. 100% Safe.</div>', unsafe_allow_html=True)
-
-    # Tabs: Login / Create Account / Seller Login
-    tab1, tab2, tab3 = st.tabs(["🔑 Login", "✨ Create Account", "🏪 Seller Login"])
+    tab1, tab2, tab3 = st.tabs(["🔑 Login (Buyers)", "✨ Create Account", "🏪 Seller / Admin Login"])
     with tab1:
         st.markdown('<div class="auth-box">', unsafe_allow_html=True)
         st.markdown("### 🔑 Login With Your Name & Password")
+        st.caption("Buyers: Login here. If you are new, tap Create Account.")
         login_name = st.text_input("Your Name", placeholder="E.g. Chinedu", key="login_name")
         login_pass = st.text_input("Your Password", type="password", placeholder="Your password", key="login_pass")
         if st.button("Login ➡️", key="login_btn"):
@@ -99,18 +103,16 @@ if not st.session_state.user_logged_in:
                 st.success(f"Welcome back, {st.session_state.user_name}! You have {st.session_state.coins} Coins.")
                 st.rerun()
             elif key in SELLERS and make_hash(login_pass) == SELLERS[key]["password_hash"]:
-                # Seller can also login as user
                 st.session_state.user_name = SELLERS[key]["name"]
                 st.session_state.seller = key
                 st.session_state.user_logged_in = True
-                st.success(f"Welcome Seller, {SELLERS[key]['name']}!")
+                st.success(f"Welcome, {SELLERS[key]['name']}!")
                 st.rerun()
             else:
                 st.error("Wrong Name or Password. If you are new, tap 'Create Account' above.")
-        st.markdown("Forgot password? WhatsApp Admin to reset - we go help you.")
+        st.markdown("Forgot password? WhatsApp Admin to reset.")
         st.link_button("📱 Reset Password on WhatsApp", "https://wa.me/2347052528772?text=Hi%20I%20forgot%20my%20Row%20Economy%20password")
         st.markdown('</div>', unsafe_allow_html=True)
-
     with tab2:
         st.markdown('<div class="auth-box">', unsafe_allow_html=True)
         st.markdown("### ✨ Create FREE Account - Get ₦500 OFF + 100 Coins!")
@@ -124,10 +126,10 @@ if not st.session_state.user_logged_in:
             if not new_name or not new_pass:
                 st.error("Type your Name and Password")
             elif len(new_pass) < 4:
-                st.error("Password must be at least 4 characters - make am strong small")
+                st.error("Password must be at least 4 characters")
             elif new_pass != new_pass2:
                 st.error("Passwords no match - type same password twice")
-            elif key in st.session_state.users_db:
+            elif key in st.session_state.users_db or key in SELLERS:
                 st.error(f"Account for {new_name} already exists! Tap Login instead.")
             elif not agree:
                 st.error("Tick the agreement box first")
@@ -140,32 +142,30 @@ if not st.session_state.user_logged_in:
                 st.balloons()
                 st.success(f"Welcome {new_name}! Account created! You got 100 Coins + ₦500 OFF! Code: ROW500")
                 st.rerun()
-        st.info("Your password is safe. Only you know am. Mama Oloja no go see am.")
+        st.info("Your password is safe. Only you know am.")
         st.markdown('</div>', unsafe_allow_html=True)
-
     with tab3:
-        st.markdown("### 🏪 Seller Login")
-        st.caption("Demo Sellers: blessing / row123 | horlance / row123 | admin / row123")
-        s_u = st.text_input("Seller Username", key="seller_u").lower().strip()
-        s_p = st.text_input("Seller Password", type="password", key="seller_p")
-        if st.button("Login as Seller", key="seller_login_btn"):
+        st.markdown("### 🏪 Seller / Admin Login")
+        st.caption("For Sellers & Admin ONLY. Buyers use Login / Create Account tabs.")
+        st.info("Admin: kilani / kilani 247  |  Sellers: blessing / row123 | horlance / row123")
+        s_u = st.text_input("Seller / Admin Username", placeholder="kilani", key="seller_u").lower().strip()
+        s_p = st.text_input("Password", type="password", placeholder="kilani 247 for Admin", key="seller_p")
+        if st.button("Login as Seller / Admin", key="seller_login_btn"):
             if s_u in SELLERS and make_hash(s_p) == SELLERS[s_u]["password_hash"]:
                 st.session_state.seller = s_u
                 st.session_state.user_name = SELLERS[s_u]["name"]
                 st.session_state.user_logged_in = True
-                st.success(f"Welcome Seller, {SELLERS[s_u]['name']}!")
+                st.success(f"Welcome {SELLERS[s_u]['name']}! 👑")
                 st.rerun()
             else:
-                st.error("Wrong seller username or password")
+                st.error("Wrong username or password. Admin: kilani / kilani 247")
         st.markdown("Want to be a seller? Join FREE - 8 slots left.")
         st.link_button("Join as Seller", "https://wa.me/2347052528772?text=Hi%20I%20want%20to%20sell%20in%20Row%20Economy%20Market")
     st.stop()
 
-# ===== AFTER LOGIN - SAVE COINS BACK TO USER DB =====
 if st.session_state.user_name.lower().strip() in st.session_state.users_db:
     st.session_state.users_db[st.session_state.user_name.lower().strip()]["coins"] = st.session_state.coins
 
-# ===== HERO - PERSONALIZED =====
 st.markdown(f"""
 <div class="hero-ultimate">
 <div style="font-size:12px; font-weight:800; letter-spacing:1px;">✦ ROW ECONOMY MARKET ✦</div>
@@ -177,24 +177,22 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 st.markdown('<div class="trust-bar">🛡️ Mama Oloja Guarantee: If seller scam you, we refund you. 100% Safe. ✅ Verified Sellers Only</div>', unsafe_allow_html=True)
 
-# Logout + My Account
 col_a, col_b = st.columns(2)
 with col_a:
     st.markdown(f"👤 Logged in as: **{st.session_state.user_name}**")
     if st.session_state.seller:
-        st.markdown(f"🏪 Seller: {SELLERS[st.session_state.seller]['name']}")
+        st.markdown(f"👑 Role: {SELLERS[st.session_state.seller]['type']} - {SELLERS[st.session_state.seller]['name']}")
 with col_b:
     if st.button("🚪 Logout"):
-        # Save coins before logout
         if st.session_state.user_name.lower().strip() in st.session_state.users_db:
             st.session_state.users_db[st.session_state.user_name.lower().strip()]["coins"] = st.session_state.coins
         st.session_state.user_logged_in = False
         st.session_state.user_name = ""
+        st.session_state.seller = None
         st.session_state.coins = 0
         st.session_state.cart = []
         st.rerun()
 
-# ===== WELCOME BONUS + SPIN =====
 if not st.session_state.claimed_bonus:
     st.markdown("""
     <div class="bonus-box">
@@ -205,7 +203,7 @@ if not st.session_state.claimed_bonus:
     if st.button("🎁 Claim My ₦500 OFF Now"):
         st.session_state.claimed_bonus = True
         st.session_state.coins += 500
-        st.success("Claimed! ₦500 OFF added. Use code ROW500 at checkout. Mama Oloja don bless you!")
+        st.success("Claimed! ₦500 OFF added. Use code ROW500 at checkout.")
         st.rerun()
 else:
     st.success(f"✅ You have claimed ₦500 OFF! Code: ROW500 | Coins: {st.session_state.coins}")
@@ -217,12 +215,11 @@ if not st.session_state.spun:
         st.session_state.spun = True
         st.session_state.coins += 100
         st.balloons()
-        st.success(f"🎉 YOU WON: {prize}! +100 Coins added. Come back tomorrow to spin again!")
+        st.success(f"🎉 YOU WON: {prize}! +100 Coins added. Come back tomorrow!")
         st.rerun()
 else:
-    st.info("You already spun today. Come back tomorrow for another spin! 🎡")
+    st.info("You already spun today. Come back tomorrow! 🎡")
 
-# ===== REFER & EARN =====
 st.markdown(f"""
 <div class="refer-box">
 <b>👥 REFER & EARN ₦200</b><br>
@@ -234,14 +231,11 @@ st.markdown(f"""
 if st.button("📤 Invite Friend - Earn ₦200"):
     st.session_state.refer_count += 1
     st.session_state.coins += 200
-    st.success(f"Thank you {st.session_state.user_name}! You earned ₦200! Share your link to WhatsApp now.")
-    st.link_button("Share on WhatsApp", f"https://wa.me/?text=Join%20Row%20Economy%20Market!%20I%20use%20it%20to%20buy%20cheap%20cosmetics%20and%20Car%20AC.%20Use%20my%20code%20{st.session_state.user_name}%20to%20get%20N500%20OFF!")
+    st.success(f"Thank you {st.session_state.user_name}! You earned ₦200!")
+    st.link_button("Share on WhatsApp", f"https://wa.me/?text=Join%20Row%20Economy%20Market!%20Use%20my%20code%20{st.session_state.user_name}%20to%20get%20N500%20OFF!")
 
-# ===== FLASH SALE =====
 st.markdown('<div class="flash"><div><b>⚡ FLASH SALE</b><br><span style="font-size:12px;">Up to 30% OFF - Today Only</span></div><span>01 : 59 : 12</span></div>', unsafe_allow_html=True)
-
-# ===== SEARCH + CART =====
-search = st.text_input("", placeholder="🔍 Search serum, sunscreen, Jollof rice, Car AC...", key="search_v8")
+search = st.text_input("", placeholder="🔍 Search serum, sunscreen, Jollof rice, Car AC...", key="search_v81")
 if search: st.session_state.category = "Search"
 st.markdown(f"**🛒 Cart: {len(st.session_state.cart)}**")
 if st.session_state.cart:
@@ -250,7 +244,6 @@ if st.session_state.cart:
     st.link_button("Checkout on WhatsApp", "https://wa.me/2347052528772?text=Hi%20I%20want%20to%20checkout%20my%20cart%20CODE%20ROW500")
     if st.button("Clear Cart"): st.session_state.cart=[]; st.rerun()
 
-# ===== MAMA OLOJA =====
 PRODUCTS_DB = [
     {"name": "Face Serum", "price": 4000, "old": 5500, "seller": "Blessing", "phone": "07052528772", "for": "glow dull dark spot pimple uneven tone serum", "desc": "For glow, dark marks, dull skin", "emoji": "💧", "bg": "#E0F7FF", "sold": "1.2k sold", "rating": "4.9"},
     {"name": "Ceramide Serum", "price": 5000, "old": 6500, "seller": "Blessing", "phone": "07052528772", "for": "dry sensitive stressed dehydrated serum", "desc": "For dry, sensitive, stressed skin", "emoji": "💧", "bg": "#FFE0F0", "sold": "890 sold", "rating": "4.8"},
@@ -334,20 +327,19 @@ qm1, qm2, qm3 = st.columns(3)
 if qm1.button("😩 Pimple"): st.session_state.mama_history.append({"role":"user","text":"I have pimple"}); st.session_state.mama_history.append({"role":"mama","text":mama_answer("I have pimple")}); st.rerun()
 if qm2.button("💰 Under 5000"): st.session_state.mama_history.append({"role":"user","text":"Under 5000"}); st.session_state.mama_history.append({"role":"mama","text":mama_answer("under 5000")}); st.rerun()
 if qm3.button("❄️ Car AC hot"): st.session_state.mama_history.append({"role":"user","text":"Car AC hot"}); st.session_state.mama_history.append({"role":"mama","text":mama_answer("car ac hot")}); st.rerun()
-ask = st.text_input("Ask Mama Oloja...", placeholder="E.g. I need serum under 5000 in Ikorodu...", key="mama_v8")
+ask = st.text_input("Ask Mama Oloja...", placeholder="E.g. I need serum under 5000 in Ikorodu...", key="mama_v81")
 if ask:
     st.session_state.mama_history.append({"role":"user","text":ask})
     st.session_state.mama_history.append({"role":"mama","text":mama_answer(ask)})
     st.rerun()
 
-# ===== CATEGORIES =====
 st.markdown("### 🗂️ Categories")
 cat_data = [("💄","Cosmetics","#FBD6E3"),("👕","Clothes","#CDE6FF"),("📱","Phones","#CDE6FF"),("🍲","Food","#FFE2B8"),("🚗","Car Mart","#FFE2B8"),("🧰","Services","#CFF5D6"),("🎟️","Tickets","#FBD6E3"),("💬","Chat","#CFF5D6")]
 cols = st.columns(4)
 for i,(emo,name,col) in enumerate(cat_data):
     with cols[i%4]:
         st.markdown(f'<div class="cat-premium" style="background:{col};"><div style="font-size:28px;">{emo}</div><span>{name}</span></div>', unsafe_allow_html=True)
-        if st.button(name, key=f"cat_v8_{name}"): st.session_state.category=name; st.rerun()
+        if st.button(name, key=f"cat_v81_{name}"): st.session_state.category=name; st.rerun()
 if st.button("🏠 Home - Show All"): st.session_state.category="Home"; st.rerun()
 st.markdown(f"**Viewing: {st.session_state.category}**")
 
@@ -368,8 +360,8 @@ with st.expander("📍 Turn On Location"):
     area = st.selectbox("Or pick Area:", ["Select Area","Ikorodu","Ikeja","Lekki","Surulere","Yaba","Gwagwalada","Kubwa","Lugbe","Wuse","Garki","Osun","Oyo","Other"])
     if area!="Select Area": st.success(f"📍 {area}")
 
-with st.expander("📸 Upload Product - Picture / Video (Sellers)"):
-    if st.session_state.seller is None: st.info("Login as seller to upload. Demo: blessing / row123")
+with st.expander("📸 Upload Product - Picture / Video (Sellers & Admin)"):
+    if st.session_state.seller is None: st.info("Login as seller / admin to upload. Admin: kilani / kilani 247")
     else:
         st.success(f"Uploading as: {SELLERS[st.session_state.seller]['name']}")
         up_name = st.text_input("Product Name")
@@ -383,8 +375,7 @@ with st.expander("📸 Upload Product - Picture / Video (Sellers)"):
                 st.success(f"Posted! {up_name} - N{up_price:,} is LIVE!"); st.rerun()
             else: st.error("Add Name + Picture/Video")
 
-# ===== PRODUCTS =====
-def product_card_v8(p, idx):
+def product_card_v81(p, idx):
     discount = ""
     if p['old']>0 and p['price']>0:
         off = int((p['old']-p['price'])/p['old']*100)
@@ -406,12 +397,12 @@ def product_card_v8(p, idx):
     """, unsafe_allow_html=True)
     c1,c2,c3 = st.columns(3)
     with c1:
-        if st.button("❤️", key=f"like_v8_{p['name']}_{idx}"):
+        if st.button("❤️", key=f"like_v81_{p['name']}_{idx}"):
             if p['name'] in st.session_state.liked: st.session_state.liked.remove(p['name'])
             else: st.session_state.liked.add(p['name']); st.session_state.coins+=10
             st.rerun()
     with c2:
-        if st.button("🛒 Add", key=f"add_v8_{p['name']}_{idx}"):
+        if st.button("🛒 Add", key=f"add_v81_{p['name']}_{idx}"):
             st.session_state.cart.append(p); st.session_state.coins+=20; st.success(f"Added {p['name']}! +20 Coins!"); st.rerun()
     with c3:
         st.link_button("💬 Chat", f"https://wa.me/234{p['phone'][1:]}?text=Hi%20I%20want%20{p['name']}%20from%20Row%20Economy%20Market%20CODE%20ROW500")
@@ -441,7 +432,7 @@ if to_show and st.session_state.category!="Chat":
     elif st.session_state.category=="Search": st.markdown("### 🔍 Search Results")
     else: st.markdown(f"### {st.session_state.category}")
     for idx,p in enumerate(to_show):
-        product_card_v8(p, idx)
+        product_card_v81(p, idx)
 
 st.markdown("### 💬 What Buyers Say - 2,347 Happy Buyers")
 st.markdown("""
@@ -468,7 +459,7 @@ if st.session_state.category in ["Home","Chat"]:
             st.success("Sent! Seller will see notification."); st.rerun()
     if st.session_state.seller:
         rep = st.text_input("Reply as Seller...", key=f"r_{room}")
-        if st.button("Reply as Seller", key=f"rb_{room}"):
+        if st.button("Reply as Seller / Admin", key=f"rb_{room}"):
             if rep:
                 st.session_state.chats[room].append({"sender": f"{SELLERS[st.session_state.seller]['name']} (Seller)", "text": rep}); st.rerun()
 
@@ -476,5 +467,5 @@ st.markdown("---")
 st.markdown(f"**Your Coins: {st.session_state.coins}** - Earn coins by liking, adding to cart, inviting friends.")
 st.markdown("**How to Pay:** Chat seller -> Confirm price -> Use code ROW500 for N500 OFF -> Transfer / Pay on delivery -> Delivered.")
 st.markdown("**Want to Sell?** Join FREE - 8 slots left. WhatsApp Admin.")
-st.markdown("© 2026 Row Economy Market - Powered by Mama Oloja 🧕")
+st.markdown("© 2026 Row Economy Market - Powered by Mama Oloja 🧕 - Admin: Kilani Muhammed Opeyemi")
 st.markdown("<br><br>", unsafe_allow_html=True)
