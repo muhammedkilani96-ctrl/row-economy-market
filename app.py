@@ -9,12 +9,9 @@ st.set_page_config(
     layout="wide"
 )
 
-# F - PAYSTACK SETTINGS - CHANGE THIS TO YOUR LINK
-# Go to paystack.com > Payment Pages > Create Page > Copy Link
-# Paste your link here. Example: https://paystack.com/pay/rowmarket
-PAYSTACK_LINK = "https://paystack.com/pay/rowmarket"
+# F - PAYSTACK - YOUR REAL LINK
+PAYSTACK_LINK = "https://paystack.shop/pay/rowmarket"
 PAYSTACK_NAME = "Row Economy Market"
-# Your Paystack email for receipt
 PAYSTACK_EMAIL = "rowmarket@gmail.com"
 
 SHEET_ID = "1w8P3SQiChShHPQzShpgznR-lay-awTHmu_x-VHI9IU8E"
@@ -163,7 +160,6 @@ def open_cat(cat_name):
     st.session_state.page = "Category"
     st.rerun()
 
-# E - JUMIA STYLE TOP BAR - SHORT LINES ONLY
 st.title("Row Economy Market")
 st.caption("Buy and Sell Free - Escrow Protected by Paystack")
 st.divider()
@@ -264,15 +260,16 @@ def show_category_page(cat_name):
     st.caption("USAGE: Choose where rider will deliver.")
     payment = st.selectbox(
         "Pay with",
-        ["Escrow - Paystack (Safest)",
-         "Pay on Delivery (Cash)",
-         "Bank Transfer to Row Economy Market"]
+        ["Bank Transfer - Escrow (Works Now)",
+         "Escrow - Paystack (Safest)",
+         "Pay on Delivery (Cash)"]
     )
-    st.caption("USAGE: Escrow = safest, we hold money.")
-    if payment == "Bank Transfer to Row Economy Market":
-        st.success("Transfer: " + BANK_NAME)
+    st.caption("USAGE: Bank Transfer works now. Paystack if approved.")
+    if payment == "Bank Transfer - Escrow (Works Now)":
+        st.success("Transfer to: " + BANK_NAME)
         st.success("Name: " + ACCOUNT_NAME)
         st.success("Number: " + ACCOUNT_NUMBER)
+        st.caption("USAGE: Transfer, then tap I Have Paid. Admin will confirm.")
     for idx, g in enumerate(filtered):
         st.divider()
         st.image(g["img"], width=350)
@@ -304,9 +301,8 @@ def show_category_page(cat_name):
         st.write("Total with delivery: N" + str(total))
         st.caption("Escrow: N" + str(comm) + " to Market.")
         st.caption("Seller gets: N" + str(seller_gets))
-        # F - PAYSTACK ESCROW FLOW
-        st.write("PAY WITH PAYSTACK - ESCROW")
-        st.caption("USAGE: 1. Tap ORDER 2. Tap Pay on Paystack 3. Pay 4. Tap I Have Paid")
+        st.write("PAY - ESCROW")
+        st.caption("USAGE: 1. Tap ORDER 2. Pay 3. Tap I Have Paid")
         if st.button("Chat Seller - Talk before you buy", key="chat_" + cat_name + "_" + str(idx)):
             st.session_state.page = "Profile"
             st.rerun()
@@ -324,48 +320,50 @@ def show_category_page(cat_name):
                     "total": total,
                     "delivery": delivery_loc,
                     "payment": payment,
-                    "status": "Awaiting Paystack Payment",
-                    "tracking": "Waiting for Paystack Payment",
+                    "status": "Awaiting Payment",
+                    "tracking": "Waiting for Payment",
                     "commission": comm,
                     "seller_gets": seller_gets,
                     "paid": False,
                 }
                 st.session_state.my_orders.append(order)
                 st.session_state.seller_inbox.append(order)
-                st.success("Order created! Now pay on Paystack below.")
+                st.success("Order created! Now pay below.")
                 st.balloons()
-        # Paystack Button - Shows for this product
         if payment == "Escrow - Paystack (Safest)":
-            pay_msg = "Pay N" + str(total) + " for " + g["item"]
-            pay_msg = pay_msg + " - Row Economy Market Escrow"
             st.link_button("Pay N" + str(total) + " on Paystack - Escrow", PAYSTACK_LINK)
-            st.caption("USAGE: Paystack opens. Pay with card / transfer. Then come back and tap I Have Paid.")
+            st.caption("USAGE: Paystack opens. Pay with card / transfer.")
             st.caption("Paystack Page: " + PAYSTACK_LINK)
             st.caption("Amount to pay: N" + str(total))
-            if st.button("I Have Paid on Paystack - Confirm", key="paid_" + cat_name + "_" + str(idx)):
-                if not buyer_name:
-                    st.error("Set Name on Home first.")
+            st.caption("In Paystack, type amount N" + str(total))
+            st.caption("In Order Item field, type: " + g["item"])
+        if payment == "Bank Transfer - Escrow (Works Now)":
+            st.success("Transfer N" + str(total) + " to " + ACCOUNT_NUMBER)
+            st.caption("Account: " + ACCOUNT_NAME + " - " + BANK_NAME)
+        if st.button("I Have Paid - Confirm Escrow", key="paid_" + cat_name + "_" + str(idx)):
+            if not buyer_name:
+                st.error("Set Name on Home first.")
+            else:
+                found = False
+                for o in st.session_state.my_orders:
+                    if o["item"] == g["item"] and o["buyer"] == buyer_name and not o.get("paid"):
+                        o["paid"] = True
+                        o["status"] = "Paid - Escrow Held"
+                        o["tracking"] = "Paid - Waiting Seller YES"
+                        found = True
+                for o in st.session_state.seller_inbox:
+                    if o["item"] == g["item"] and o["buyer"] == buyer_name and not o.get("paid"):
+                        o["paid"] = True
+                        o["status"] = "Paid - Escrow Held"
+                        o["tracking"] = "Paid - Waiting Seller YES"
+                if found:
+                    st.session_state.escrow_balance += total
+                    st.session_state.paid_orders += 1
+                    st.success("Payment confirmed! Escrow held N" + str(total))
+                    st.success("Seller will now see PAID. Seller taps YES.")
+                    st.rerun()
                 else:
-                    found = False
-                    for o in st.session_state.my_orders:
-                        if o["item"] == g["item"] and o["buyer"] == buyer_name and not o.get("paid"):
-                            o["paid"] = True
-                            o["status"] = "Paid - Escrow Held"
-                            o["tracking"] = "Paid - Waiting Seller YES"
-                            found = True
-                    for o in st.session_state.seller_inbox:
-                        if o["item"] == g["item"] and o["buyer"] == buyer_name and not o.get("paid"):
-                            o["paid"] = True
-                            o["status"] = "Paid - Escrow Held"
-                            o["tracking"] = "Paid - Waiting Seller YES"
-                    if found:
-                        st.session_state.escrow_balance += total
-                        st.session_state.paid_orders += 1
-                        st.success("Payment confirmed! Escrow held N" + str(total))
-                        st.success("Seller will now see PAID. Seller taps YES.")
-                        st.rerun()
-                    else:
-                        st.info("Tap ORDER NOW first, then tap I Have Paid.")
+                    st.info("Tap ORDER NOW first, then tap I Have Paid.")
         msg = "Hello " + g["name"]
         msg = msg + ", Row Economy Market NEW ORDER in "
         msg = msg + cat_name + ": " + g["item"]
@@ -378,9 +376,8 @@ def show_category_page(cat_name):
         st.caption("USAGE: Tell seller you ordered.")
 
 if page == "Home":
-    # E - JUMIA STYLE HOME
     st.success("DEAL OF THE DAY - 12% OFF - Use code ROW12")
-    st.caption("E - Jumia Style: Search, Categories, Deals")
+    st.caption("Jumia Style: Search, Categories, Deals")
     search_q = st.text_input("Search Row Economy Market - Type Rice, iPhone, Perfume")
     st.caption("USAGE: Type to search all products.")
     if search_q:
@@ -413,8 +410,7 @@ if page == "Home":
         st.write("You are: " + (st.session_state.my_name or "Guest"))
     st.header("Categories - Like Jumia")
     st.caption("Tap any colored card - it opens its OWN page.")
-    st.info("HOW TO USE: 1. Tap category 2. See ONLY that category 3. Tap ORDER 4. Pay on Paystack 5. Tap I Have Paid")
-    # E - COLORED CATEGORY CARDS - Using Streamlit colors
+    st.info("HOW TO USE: 1. Tap category 2. See ONLY that category 3. Tap ORDER 4. Pay 5. Tap I Have Paid")
     st.error("Perfume Market - Oud, Designer Perfumes")
     st.caption("Tap below to see ONLY Perfumes")
     if st.button("Open Perfume Market"):
@@ -471,7 +467,7 @@ if page == "Shop":
 
 if page == "Orders":
     st.header("My Orders + Tracking + Paystack")
-    st.caption("USAGE: Pay on Paystack, tap I Have Paid, then wait for seller YES.")
+    st.caption("USAGE: Pay, tap I Have Paid, then wait for seller YES.")
     st.write("Paid Orders: " + str(st.session_state.paid_orders))
     st.write("Escrow Held: N" + str(st.session_state.escrow_balance))
     if len(st.session_state.my_orders) == 0:
@@ -483,9 +479,12 @@ if page == "Orders":
         st.write("Total: N" + str(o.get("total", o["price"])))
         st.write("Tracking: " + o.get("tracking", ""))
         st.write("Status: " + o["status"])
-        st.write("Paid on Paystack: " + str(o.get("paid", False)))
-        if not o.get("paid") and "Paystack" in o.get("payment", ""):
-            st.link_button("Pay Now on Paystack N" + str(o.get("total", 0)), PAYSTACK_LINK)
+        st.write("Paid: " + str(o.get("paid", False)))
+        if not o.get("paid"):
+            if "Paystack" in o.get("payment", ""):
+                st.link_button("Pay Now on Paystack N" + str(o.get("total", 0)), PAYSTACK_LINK)
+            if "Bank Transfer" in o.get("payment", ""):
+                st.success("Transfer N" + str(o.get("total", 0)) + " to " + ACCOUNT_NUMBER)
             if st.button("I Have Paid - Confirm Escrow", key="order_paid_" + str(oi)):
                 o["paid"] = True
                 o["status"] = "Paid - Escrow Held"
@@ -519,12 +518,12 @@ if page == "Orders":
             st.write("Total: N" + str(o.get("total", o["price"])))
             st.write("Tracking: " + o.get("tracking", ""))
             if o.get("paid"):
-                st.success("PAID on Paystack - Money is in Escrow - Safe to deliver")
+                st.success("PAID - Money is in Escrow - Safe to deliver")
             else:
                 st.warning("NOT PAID YET - Do NOT deliver until PAID")
             if st.button("YES I Have It", key="yes_" + str(j)):
-                if not o.get("paid") and "Paystack" in o.get("payment", ""):
-                    st.error("Buyer has NOT paid on Paystack yet. Wait for PAID.")
+                if not o.get("paid"):
+                    st.error("Buyer has NOT paid yet. Wait for PAID.")
                 else:
                     o["status"] = "Available"
                     o["tracking"] = "Packed - Waiting Rider"
