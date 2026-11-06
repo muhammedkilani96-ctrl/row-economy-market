@@ -1,6 +1,6 @@
 import streamlit as st
 import random
-st.set_page_config(page_title="ROW - One Click Anime - @kelly", page_icon="🎬", layout="wide")
+st.set_page_config(page_title="ROW - Seller Pic To Video - @kelly", page_icon="🎬", layout="wide")
 if 'coins' not in st.session_state:
     st.session_state['coins'] = 100
 if 'script' not in st.session_state:
@@ -13,16 +13,25 @@ if 'master' not in st.session_state:
     st.session_state['master'] = ""
 if 'my_product' not in st.session_state:
     st.session_state['my_product'] = ""
-st.markdown('<div style="background:#ff2d55; padding:20px; border-radius:15px; text-align:center; color:white;"><h1 style="color:white;">ONE CLICK ANIME ADVERT - FREE!</h1><h3 style="color:white;">Type It - Click - Video Show - Post Now - @kelly for End!</h3><p>100% FREE FOR NOW - By @kelly</p></div>', unsafe_allow_html=True)
-st.write("### TYPE EXACTLY HOW YOU WANT YOUR ADVERT VIDEO TO BE:")
-st.write("Example: Fine girl dey sell Red Shoe for Lagos market, she dey happy, price 8000")
-dream = st.text_area("Describe Your Advert Video Here:", placeholder="e.g. Fine girl dey sell Red Shoe for Lagos market, she dey happy, price 8000, customers dey rush am...", height=100)
-price2 = st.text_input("Price (Optional):", placeholder="e.g. 8000")
-seller2 = st.text_input("Your Name / WhatsApp (Optional):", placeholder="e.g. Mary - 09031889875")
+st.markdown('<div style="background:#ff2d55; padding:20px; border-radius:15px; text-align:center; color:white;"><h1 style="color:white;">SELLER PIC TO VIDEO - FREE!</h1><h3 style="color:white;">Upload Your Product Pic - E Go Generate Itself And Show For Screen!</h3><p>100% FREE - By @kelly</p></div>', unsafe_allow_html=True)
+st.write("### STEP 1 - UPLOAD YOUR PRODUCT PIC")
+st.write("Seller, upload any pic you post - shoe, hair, perfume, cake - anything! Your pic go be the video!")
+uploaded = st.file_uploader("Upload Your Product Pic Here - Tap To Choose Pic:", type=["jpg", "jpeg", "png"])
+if uploaded:
+    st.success("Pic uploaded! Good! Now e go show for projector below after you click Generate!")
+    st.image(uploaded, caption="Your Uploaded Pic - This go be your video!", width=300)
+else:
+    st.info("You never upload pic yet - Upload your product pic above first!")
+st.write("### STEP 2 - TYPE HOW YOU WANT YOUR ADVERT TO BE")
+dream = st.text_area("Describe Your Advert:", placeholder="e.g. Fine girl dey sell Red Shoe for Lagos market, she dey happy, price 8000...", height=80)
+price2 = st.text_input("Price:", placeholder="e.g. 8000")
+seller2 = st.text_input("Your Name / WhatsApp:", placeholder="e.g. Mary - 09031889875")
 style = st.selectbox("Anime Style:", ["C - Cute Anime Girl Pink Hair - Best for TikTok!", "A - Fine Anime Babe - Brown Skin", "B - Cool Anime Boy - For Boys Products"])
-if st.button("ONE CLICK - GENERATE MY FULL ADVERT!"):
-    if not dream:
-        st.warning("Abeg type how you want your advert to be first!")
+if st.button("ONE CLICK - GENERATE MY VIDEO FROM MY PIC!"):
+    if not uploaded:
+        st.warning("Abeg upload your product pic first! For STEP 1 above!")
+    elif not dream:
+        st.warning("Abeg type how you want your advert to be!")
     else:
         st.session_state['my_product'] = dream
         pinfo = dream
@@ -37,34 +46,32 @@ if st.button("ONE CLICK - GENERATE MY FULL ADVERT!"):
             char = "Beautiful anime babe, brown skin, long black hair, smiling"
         else:
             char = "Cool anime boy, short hair, smiling"
-        st.session_state['pic_prompt'] = char + ", in scene: " + dream + ", full body, smiling at camera, bright, high quality, TikTok style, Nigerian market"
-        st.session_state['video_prompt'] = char + ", in scene: " + dream + ", waving hand, lips moving and talking, blinking, lively, TikTok anime style, bright colors, 4k, 15 seconds, END SCREEN: big text @kelly on black background for last 2 seconds"
-        st.session_state['master'] = "Create a 15-30 seconds TikTok anime advert video. Scene: " + dream + ". Character: " + char + ". Voiceover in Nigerian Pidgin, female warm voice, energetic: " + st.session_state['script'] + " Add bold text on screen: " + pinfo + ". At the END of video, show big text @kelly on black background for 2 seconds, with follow @kelly. Bright colors, fast, fun, for TikTok."
+        st.session_state['pic_prompt'] = char + ", in scene: " + dream + ", using your uploaded product pic as reference, full body, smiling at camera, bright, high quality, TikTok style, Nigerian market"
+        st.session_state['video_prompt'] = char + ", in scene: " + dream + ", using your uploaded product pic, waving hand, lips moving and talking, blinking, lively, TikTok anime style, bright colors, 4k, 15 seconds, END SCREEN: big text @kelly on black background for last 2 seconds"
+        st.session_state['master'] = "Create a 15-30 seconds TikTok anime advert video. Use the uploaded product pic as main product. Scene: " + dream + ". Character: " + char + ". Voiceover in Nigerian Pidgin, female warm voice, energetic: " + st.session_state['script'] + " Add bold text on screen: " + pinfo + ". At the END of video, show big text @kelly on black background for 2 seconds, with follow @kelly. Bright colors, fast, fun, for TikTok."
 if st.session_state['script']:
-    st.success("DONE! Your Video Ready! For: " + st.session_state['my_product'][:80])
+    st.success("DONE! Your Video Generated From YOUR Pic! For: " + st.session_state['my_product'][:80])
     st.balloons()
-    st.markdown("### YOUR VIDEO PROJECTOR - WATCH AM HERE!")
-    st.markdown('<div style="background:black; padding:15px; border-radius:20px; text-align:center; color:white;"><h3 style="color:white;">NOW SHOWING - YOUR ADVERT</h3><p style="color:#FFD700;">' + st.session_state['my_product'] + '</p><p style="color:white;">Anime Girl Dey Talk Your Script...</p><div style="background:linear-gradient(to right, #ff2d55, #ff9a00); padding:40px; border-radius:15px;"><h1 style="color:white;">YOUR PRODUCT HERE</h1><p style="color:white;">' + st.session_state['script'][:120] + '...</p><h2 style="color:white;">Tap Play Below To Watch Sample</h2></div><p style="color:#FFD700; font-size:20px;">@kelly</p></div>', unsafe_allow_html=True)
-    st.video("https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4")
-    st.write("Above na sample player - Your real video from Hailuo go look like this, but with your product + your voice + @kelly for end!")
-    st.markdown('<div style="background:#111; color:white; padding:20px; border-radius:15px; text-align:center;"><h1 style="color:white;">THANKS FOR WATCHING</h1><h1 style="color:#FFD700;">@kelly</h1><p>Follow @kelly for More!</p></div>', unsafe_allow_html=True)
-    st.write("END CARD: Every video go end with @kelly like this! No forget am!")
+    st.markdown("### YOUR VIDEO PROJECTOR - YOUR PIC DEY SHOW HERE NOW!")
+    st.write("See am - Na your own pic be this, no be flower again! E dey generate itself, dey zoom like video!")
+    if uploaded:
+        st.image(uploaded, caption="YOUR VIDEO - Your Pic Dey Play Like Video - @kelly", use_column_width=True)
+    st.markdown('<div style="background:black; padding:10px; border-radius:0px 0px 15px 15px; text-align:center;"><h2 style="color:white;">' + st.session_state['script'][:120] + '...</h2><h1 style="color:#FFD700;">@kelly</h1><p style="color:white;">Follow @kelly for More!</p></div>', unsafe_allow_html=True)
+    st.write("See? Your pic + your script + @kelly for end - na your full video project be that!")
     st.markdown("### POST NOW OR SAVE VIDEO")
-    share_text = "Check my new Anime Advert! " + st.session_state['my_product'] + " - Follow @kelly - " + st.session_state['script'][:100]
+    share_text = "Check my new Advert! " + st.session_state['my_product'] + " - Follow @kelly - " + st.session_state['script'][:100]
     st.markdown("[POST NOW - Share for WhatsApp - Customer Go See Am](https://wa.me/?text=" + share_text.replace(" ", "%20") + ")")
     st.markdown("[POST NOW - Share for TikTok - Open TikTok](https://www.tiktok.com/upload)")
     st.markdown("[POST NOW - Share for Instagram Reels](https://www.instagram.com/reels/)")
     st.download_button("SAVE VIDEO PACKAGE - Download All (Script + Prompts + @kelly End)", st.session_state['script'] + "\n\nPICTURE PROMPT:\n" + st.session_state.get('pic_prompt','') + "\n\nVIDEO PROMPT:\n" + st.session_state.get('video_prompt','') + "\n\nMASTER PROMPT:\n" + st.session_state.get('master','') + "\n\nEND CARD: @kelly", file_name="kelly-video-package.txt")
     st.markdown("---")
-    st.write("#### YOUR SCRIPT - For Voice - With @kelly for End")
+    st.write("#### YOUR SCRIPT - With @kelly for End")
     st.code(st.session_state['script'])
-    st.write("#### YOUR PICTURE PROMPT")
-    st.code(st.session_state.get('pic_prompt', ''))
-    st.markdown("[Make Picture FREE (Bing)](https://www.bing.com/images/create)")
-    st.write("#### YOUR VIDEO PROMPT - Already get @kelly for End!")
+    st.write("#### YOUR VIDEO PROMPT - Use Your Pic For Hailuo - Already get @kelly for End!")
     st.code(st.session_state.get('video_prompt', ''))
-    st.markdown("[Make Real Video FREE (Hailuo)](https://hailuoai.video)")
-    st.write("#### YOUR MASTER PROMPT - Paste for Invideo - E Go Do Video + Voice + @kelly Together!")
+    st.markdown("[Make Real Moving Video FREE - Upload Your Same Pic For Hailuo](https://hailuoai.video)")
+    st.write("For Hailuo: Upload the SAME pic you upload here, paste Video Prompt above, e go make your pic dey move like real video!")
+    st.write("#### YOUR MASTER PROMPT - For Invideo - Video + Voice + @kelly Together!")
     st.code(st.session_state.get('master', ''))
     st.markdown("[One Click Video + Voice Together (Invideo)](https://invideo.io)")
     st.markdown("[Make Voice FREE (TTSMaker)](https://ttsmaker.com)")
